@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# .NET
+bin/
+obj/
+.vs/
+*.user
+
+# Node
+node_modules/
+
+# Recursive Ignores
+work/
+bkp/
+publish/
+
+# Data
+*.db
+data/*
+!data/mintada_edges/
+!data/mintada_shapes/
+
+# Large Data
+scrappers/numista/coin_types/html/
+
+# OS
+Thumbs.db
+Desktop.ini

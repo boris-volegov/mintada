@@ -1,0 +1,144 @@
+.issuer-node {
+    display: flex;
+    flex-direction: column;
+}
+
+.issuer-row {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    user-select: none;
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: #005c3c;
+    text-decoration: none;
+    position: relative;
+    /* For absolute flag positioning */
+}
+
+.issuer-flag {
+    position: absolute;
+    left: 13px;
+    /* Closing the gap: 36px (text start) - 24px (width) + 1px overlap/shim */
+    /* top: 50%; transform: translateY(-50%);  <- not needed if height matches or using flex alignment? 
+       Actually, stripping it from flow means flex align-items won't center it vertically relative to row height. 
+       We need centered vertical alignment. */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.issuer-row:hover {
+    color: #00332a;
+}
+
+.issuer-row:hover .issuer-label .name {
+    text-decoration: underline;
+}
+
+.issuer-row:hover .issuer-label {
+    color: #00332a;
+}
+
+.issuer-row:hover .type {
+    color: #5a5a5a;
+    opacity: 1;
+    cursor: default;
+}
+
+
+.issuer-row.is-leaf {
+    color: #005c3c;
+}
+
+.issuer-row.is-section,
+.issuer-row.is-root {
+    color: #005c3c;
+}
+
+/* ONLY top-level roots get bold per user request - keeping 700 to distinguish, or user wants identical? 
+   User said "every single text... behave like breadcrumb". Breadcrumb is 600. 
+   I will respect the recent "Bold top-level" task by keeping it 700, 
+   but if user insists on exact match, I'd drop it. 
+   "Behave like" implies interaction. Structurally root being bolder is useful. */
+.issuer-row.is-root {
+    font-weight: 700;
+}
+
+.issuer-row.is-historical {
+    font-style: italic;
+    color: #005c3c;
+}
+
+.toggle-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+    /* Reduced margin */
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #5a5a5a;
+    /* Grey color as requested */
+    opacity: 0.6;
+    /* Subtle transparency */
+    transition: transform 0.2s ease;
+    /* Smooth rotation */
+    text-decoration: none !important;
+}
+
+.issuer-row:hover .toggle-icon {
+    text-decoration: none;
+    color: #5a5a5a;
+}
+
+.toggle-icon.expanded {
+    transform: rotate(90deg);
+}
+
+.spacer {
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+}
+
+
+.issuer-label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    transition: filter 0.2s;
+    min-width: 0;
+    /* Allows nested flex items to truncate */
+    flex: 1;
+}
+
+.issuer-label .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-inline-end: 0.2ch;
+    /* Fix clipped italic text */
+}
+
+/* .issuer-label:hover removed to prefer row hover style */
+
+.issuer-label .type {
+    font-size: 0.8em;
+    color: #5a5a5a;
+    font-style: italic;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-inline-end: 0.2ch;
+    /* Fix clipped italic parenthesis */
+}
+
+.issuer-children {
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,83 @@
+/* Coin View Styles */
+
+.coin-list {
+    margin-top: 20px;
+}
+
+.badge {
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Coin List Row Style */
+.coin-list-item {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+    gap: 30px;
+}
+
+.coin-list-item:last-child {
+    border-bottom: none;
+}
+
+.coin-list-images {
+    display: flex;
+    gap: 15px;
+}
+
+.coin-list-image-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.coin-list-image-wrapper img,
+.coin-list-image-wrapper .no-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: contain;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.coin-list-image-wrapper .no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #999;
+}
+
+.coin-list-info {
+    flex: 1;
+}
+
+.coin-list-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #005c3c;
+    margin-bottom: 8px;
+}
+
+.coin-list-meta {
+    font-size: 0.95rem;
+    color: #555;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}

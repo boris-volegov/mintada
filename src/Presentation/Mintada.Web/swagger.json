@@ -1,0 +1,445 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Mintada.Api | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://mintada-api:8080/"
+    }
+  ],
+  "paths": {
+    "/api/coin-types/{id}": {
+      "get": {
+        "tags": [
+          "CoinTypes"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinTypeDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinTypeDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinTypeDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Issuers": {
+      "get": {
+        "tags": [
+          "Issuers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IssuerDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IssuerDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IssuerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Issuers/{id}/coin-types": {
+      "get": {
+        "tags": [
+          "Issuers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Issuers/{slug}/coin-types": {
+      "get": {
+        "tags": [
+          "Issuers"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoinTypeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CoinTypeDetailDto": {
+        "type": "object",
+        "properties": {
+          "samples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoinTypeSampleDto"
+            }
+          },
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "issuerId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "edgeImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "period": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "rarityIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "coinTypeSlug": {
+            "type": "string"
+          },
+          "dateTimeInserted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issueTypeId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "obverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CoinTypeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "issuerId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "edgeImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "period": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "rarityIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "coinTypeSlug": {
+            "type": "string"
+          },
+          "dateTimeInserted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issueTypeId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "obverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CoinTypeSampleDto": {
+        "type": "object",
+        "properties": {
+          "obverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reverseImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sampleType": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "IssuerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "parentId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "urlSlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "territoryType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isHistoricalPeriod": {
+            "type": "boolean"
+          },
+          "isSection": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "CoinTypes"
+    },
+    {
+      "name": "Issuers"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 1. Yellow Brand Stripe (Split Layout) */
+.brand-stripe-container {
+    display: flex;
+    align-items: stretch;
+    /* Ensure both parts are same height */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    position: sticky;
+    top: 0;
+    height: 72px;
+    /* Explicit height ensures alignment */
+    background-color: #f5d228;
+    /* Fix: Hides sub-pixel rendering gaps */
+}
+
+.brand-part-solid {
+    background-color: #f5d228;
+    /* Solid Logo Yellow */
+    display: flex;
+    align-items: center;
+    padding-left: 48px;
+    padding-right: 12px;
+    /* Small buffer */
+}
+
+.brand-part-gradient {
+    flex: 1;
+    /* Take remaining width */
+    background: linear-gradient(to right, #f5d228 0%, #fffde7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    /* Push auth buttons to right */
+    padding-right: 48px;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    height: 100%;
+}
+
+.brand-logo {
+    height: 65px;
+    width: auto;
+    object-fit: contain;
+    /* Removed mix-blend-mode to ensure color match with background */
+}
+
+.language-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #005c3c;
+    /* Dark Green - Brand Color */
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-right: 24px;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.language-selector:hover {
+    opacity: 1;
+}
+
+.language-selector .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #005c3c;
+    /* Arrow color matching text */
+    margin-top: 2px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.btn-auth-ghost {
+    background: transparent;
+    border: 1px solid #005c3c;
+    color: #005c3c;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-auth-ghost:hover {
+    background: rgba(0, 92, 60, 0.1);
+}
+
+.btn-auth-solid {
+    background: #005c3c;
+    border: 1px solid #005c3c;
+    color: #f5d228;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-auth-solid:hover {
+    filter: brightness(0.85);
+    transform: translateY(-1px);
+}
+
+
+
+
+
+/* Main Content */
+.main-content-area {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-app);
+}
+
+.content-wrapper {
+    height: 100%;
+    overflow-y: auto;
+}

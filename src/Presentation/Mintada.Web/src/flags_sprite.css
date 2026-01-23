@@ -1,0 +1,6805 @@
+.sprite {
+    background-image: url('./assets/images/flags_sprite.png');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 24px;
+    height: 16px;
+}
+
+.sinconnu {
+    background-position: 0px 0px;
+}
+
+.saachen_free_imperial_city {
+    background-position: 0px -16px;
+}
+
+.saargau_section {
+    background-position: 0px -32px;
+}
+
+.saargau {
+    background-position: 0px -48px;
+}
+
+.sabbasid_caliphate {
+    background-position: 0px -64px;
+}
+
+.sabbasid_caliphate_section {
+    background-position: 0px -80px;
+}
+
+.sabbasid_governorates_section {
+    background-position: 0px -96px;
+}
+
+.sabdelkader {
+    background-position: 0px -112px;
+}
+
+.sabkhazia {
+    background-position: 0px -128px;
+}
+
+.sachaea {
+    background-position: 0px -144px;
+}
+
+.sachaemenid_empire {
+    background-position: 0px -160px;
+}
+
+.sachaemenid_section {
+    background-position: 0px -176px;
+}
+
+.spersian-satrapies {
+    background-position: 0px -192px;
+}
+
+.sachaia {
+    background-position: 0px -208px;
+}
+
+.sacqui_city {
+    background-position: 0px -224px;
+}
+
+.saegina_section {
+    background-position: 0px -240px;
+}
+
+.saeolis {
+    background-position: 0px -256px;
+}
+
+.saerican_empire {
+    background-position: 0px -272px;
+}
+
+.safars_and_issas_period {
+    background-position: 0px -288px;
+}
+
+.safghanistan {
+    background-position: 0px -304px;
+}
+
+.safghanistan_section {
+    background-position: 0px -320px;
+}
+
+.sagrianes_celts {
+    background-position: 0px -336px;
+}
+
+.sahlen_city {
+    background-position: 0px -352px;
+}
+
+.sprincipality_of_aigues_mortes {
+    background-position: 0px -368px;
+}
+
+.saitolia_section {
+    background-position: 0px -384px;
+}
+
+.sajman {
+    background-position: 0px -400px;
+}
+
+.sakarnania {
+    background-position: 0px -416px;
+}
+
+.saksum {
+    background-position: 0px -432px;
+}
+
+.salaiye {
+    background-position: 0px -448px;
+}
+
+.salamut_state {
+    background-position: 0px -464px;
+}
+
+.saland {
+    background-position: 0px -480px;
+}
+
+.salaska {
+    background-position: 0px -496px;
+}
+
+.salbania_section {
+    background-position: 0px -512px;
+}
+
+.salbania {
+    background-position: 0px -528px;
+}
+
+.salbera {
+    background-position: 0px -544px;
+}
+
+.salbi_viscounty {
+    background-position: 0px -560px;
+}
+
+.salcatraz_repubblica {
+    background-position: 0px -576px;
+}
+
+.salderney {
+    background-position: 0px -592px;
+}
+
+.saleppo_eyalet {
+    background-position: 0px -608px;
+}
+
+.spersian_alexandrine_section {
+    background-position: 0px -624px;
+}
+
+.salgeria_section {
+    background-position: 0px -640px;
+}
+
+.salgeria {
+    background-position: 0px -656px;
+}
+
+.salgerian_notgeld_section {
+    background-position: 0px -672px;
+}
+
+.salgiers_regency {
+    background-position: 0px -688px;
+}
+
+.salmohad_caliphate {
+    background-position: 0px -704px;
+}
+
+.salmoravid_dynasty {
+    background-position: 0px -720px;
+}
+
+.salwar {
+    background-position: 0px -736px;
+}
+
+.samberg_city {
+    background-position: 0px -752px;
+}
+
+.samerican_samoa {
+    background-position: 0px -768px;
+}
+
+.sandorra {
+    background-position: 0px -784px;
+}
+
+.sanduze_and_sauve {
+    background-position: 0px -800px;
+}
+
+.sangola {
+    background-position: 0px -816px;
+}
+
+.sangouleme_county {
+    background-position: 0px -832px;
+}
+
+.sanguilla {
+    background-position: 0px -848px;
+}
+
+.sanhalt_bernburg {
+    background-position: 0px -864px;
+}
+
+.sanhalt_dessau {
+    background-position: 0px -880px;
+}
+
+.sanhalt_harzgerode {
+    background-position: 0px -896px;
+}
+
+.sanhalt_koethen {
+    background-position: 0px -912px;
+}
+
+.sanhalt_zerbst {
+    background-position: 0px -928px;
+}
+
+.sanhalt_principality {
+    background-position: 0px -944px;
+}
+
+.sanjou {
+    background-position: 0px -960px;
+}
+
+.sanjouan {
+    background-position: 0px -976px;
+}
+
+.sanklam_city {
+    background-position: 0px -992px;
+}
+
+.sanonymous_chachian_principality_i {
+    background-position: 0px -1008px;
+}
+
+.sanonymous_chachian_principality_ii {
+    background-position: 0px -1024px;
+}
+
+.sanonymous_chachian_principality_iii {
+    background-position: 0px -1040px;
+}
+
+.sanonymous_chachian_principality_iv {
+    background-position: 0px -1056px;
+}
+
+.santarctica {
+    background-position: 0px -1072px;
+}
+
+.santigua_and_barbuda {
+    background-position: 0px -1088px;
+}
+
+.santigua_and_barbuda_section {
+    background-position: 0px -1104px;
+}
+
+.santioch {
+    background-position: 0px -1120px;
+}
+
+.santivari {
+    background-position: 0px -1136px;
+}
+
+.sappenzell_section {
+    background-position: 0px -1152px;
+}
+
+.sappenzell_ausserrhoden {
+    background-position: 0px -1168px;
+}
+
+.sappenzell_innerrhoden {
+    background-position: 0px -1184px;
+}
+
+.sapulia_section {
+    background-position: 0px -1200px;
+}
+
+.saq_qoyunlu {
+    background-position: 0px -1216px;
+}
+
+.saquileia {
+    background-position: 0px -1232px;
+}
+
+.saquitaine {
+    background-position: 0px -1248px;
+}
+
+.sarabshahid_dynasty {
+    background-position: 0px -1264px;
+}
+
+.saragon {
+    background-position: 0px -1280px;
+}
+
+.srepublic_of_ararat {
+    background-position: 0px -1296px;
+}
+
+.saraucanie_et_patagonie {
+    background-position: 0px -1312px;
+}
+
+.sarches_charleville {
+    background-position: 0px -1328px;
+}
+
+.sarenberg {
+    background-position: 0px -1344px;
+}
+
+.sargentina_section {
+    background-position: 0px -1360px;
+}
+
+.sargentina {
+    background-position: 0px -1376px;
+}
+
+.sargentine_antarctica {
+    background-position: 0px -1392px;
+}
+
+.sargentine_confederation {
+    background-position: 0px -1408px;
+}
+
+.sargolis_section {
+    background-position: 0px -1424px;
+}
+
+.sarkadia_section {
+    background-position: 0px -1440px;
+}
+
+.sarles {
+    background-position: 0px -1456px;
+}
+
+.sarmenia {
+    background-position: 0px -1472px;
+}
+
+.sarmenia_kingdom_ancient {
+    background-position: 0px -1488px;
+}
+
+.sarslanid_dynasty {
+    background-position: 0px -1504px;
+}
+
+.sartois {
+    background-position: 0px -1520px;
+}
+
+.sartsakh {
+    background-position: 0px -1536px;
+}
+
+.saruba {
+    background-position: 0px -1552px;
+}
+
+.sascension_island {
+    background-position: 0px -1568px;
+}
+
+.sasti {
+    background-position: 0px -1584px;
+}
+
+.sathens {
+    background-position: 0px -1600px;
+}
+
+.satlantis_kingdom {
+    background-position: 0px -1616px;
+}
+
+.satlantium {
+    background-position: 0px -1632px;
+}
+
+.skingdom_of_atooi {
+    background-position: 0px -1648px;
+}
+
+.sattica_section {
+    background-position: 0px -1664px;
+}
+
+.sauersperg {
+    background-position: 0px -1680px;
+}
+
+.saugsburg_bishopric {
+    background-position: 0px -1696px;
+}
+
+.saugsburg_free_city {
+    background-position: 0px -1712px;
+}
+
+.sausona {
+    background-position: 0px -1728px;
+}
+
+.saustralia_section {
+    background-position: 0px -1744px;
+}
+
+.saustralia {
+    background-position: 0px -1760px;
+}
+
+.saustralian_states_section {
+    background-position: 0px -1776px;
+}
+
+.saustria_section {
+    background-position: 0px -1792px;
+}
+
+.saustria {
+    background-position: 0px -1808px;
+}
+
+.saustria_duchy {
+    background-position: 0px -1824px;
+}
+
+.saustrian_empire {
+    background-position: 0px -1840px;
+}
+
+.saustrian_netherlands {
+    background-position: 0px -1856px;
+}
+
+.saustrian_notgeld_section {
+    background-position: 0px -1872px;
+}
+
+.saustrian_partition_of_poland {
+    background-position: 0px -1888px;
+}
+
+.saustrian_states_section {
+    background-position: 0px -1904px;
+}
+
+.sauxerre_county {
+    background-position: 0px -1920px;
+}
+
+.savar_khaganate {
+    background-position: 0px -1936px;
+}
+
+.savram {
+    background-position: 0px -1952px;
+}
+
+.sawadh {
+    background-position: 0px -1968px;
+}
+
+.sawadh {
+    background-position: 0px -1984px;
+}
+
+.saydin {
+    background-position: 0px -2000px;
+}
+
+.sprincedom_of_aysellant {
+    background-position: 0px -2016px;
+}
+
+.sayyubid_sultanate_section {
+    background-position: 0px -2032px;
+}
+
+.sazawad {
+    background-position: 0px -2048px;
+}
+
+.sazerbaijan {
+    background-position: 0px -2064px;
+}
+
+.sazerbaijan_section {
+    background-position: 0px -2080px;
+}
+
+.sazerbaijan_people_government {
+    background-position: 0px -2096px;
+}
+
+.sazores {
+    background-position: 0px -2112px;
+}
+
+.sbaden_german_states {
+    background-position: 0px -2128px;
+}
+
+.sbaghdad_eyalet {
+    background-position: 0px -2144px;
+}
+
+.sbahamas {
+    background-position: 0px -2160px;
+}
+
+.sbahawalpur {
+    background-position: 0px -2176px;
+}
+
+.sbahrain {
+    background-position: 0px -2192px;
+}
+
+.sbaktria_section {
+    background-position: 0px -2208px;
+}
+
+.sbamberg_bishopric {
+    background-position: 0px -2224px;
+}
+
+.sbamberg_city {
+    background-position: 0px -2240px;
+}
+
+.sbangladesh {
+    background-position: 0px -2256px;
+}
+
+.sbani_khalid_emirate {
+    background-position: 0px -2272px;
+}
+
+.sbanswara {
+    background-position: 0px -2288px;
+}
+
+.sbanu_ifran_dynasty {
+    background-position: 0px -2304px;
+}
+
+.sbarbados {
+    background-position: 0px -2320px;
+}
+
+.sbarcelona_county {
+    background-position: 0px -2336px;
+}
+
+.sbarinas {
+    background-position: 0px -2352px;
+}
+
+.sbaroda {
+    background-position: 0px -2368px;
+}
+
+.sbasel_section {
+    background-position: 0px -2384px;
+}
+
+.sbasel {
+    background-position: 0px -2400px;
+}
+
+.sbasel_canton {
+    background-position: 0px -2416px;
+}
+
+.sbasel_city {
+    background-position: 0px -2432px;
+}
+
+.sbasra_eyalet {
+    background-position: 0px -2448px;
+}
+
+.sbatavian_republic {
+    background-position: 0px -2464px;
+}
+
+.sbatthyany {
+    background-position: 0px -2480px;
+}
+
+.sbavaria_ingolstadt {
+    background-position: 0px -2496px;
+}
+
+.sbavaria_landshut {
+    background-position: 0px -2512px;
+}
+
+.sbavaria_duchy {
+    background-position: 0px -2528px;
+}
+
+.sbavaria_electorate {
+    background-position: 0px -2544px;
+}
+
+.sbavaria_kingdom {
+    background-position: 0px -2560px;
+}
+
+.sbayreuth_city {
+    background-position: 0px -2576px;
+}
+
+.sbearn {
+    background-position: 0px -2592px;
+}
+
+.sbeckum_city {
+    background-position: 0px -2608px;
+}
+
+.sbeirut {
+    background-position: 0px -2624px;
+}
+
+.sbelarus {
+    background-position: 0px -2640px;
+}
+
+.sbelgian_congo_period {
+    background-position: 0px -2656px;
+}
+
+.sbelgian_congo_section {
+    background-position: 0px -2672px;
+}
+
+.sbelgian_congo_and_ruanda_urundi {
+    background-position: 0px -2688px;
+}
+
+.sbelgian_congo_rwanda_and_urundi_section {
+    background-position: 0px -2704px;
+}
+
+.sbelgian_states_section {
+    background-position: 0px -2720px;
+}
+
+.sbelgium {
+    background-position: 0px -2736px;
+}
+
+.sbelgium_section {
+    background-position: 0px -2752px;
+}
+
+.sbelize_period {
+    background-position: 0px -2768px;
+}
+
+.sbelize_section {
+    background-position: 0px -2784px;
+}
+
+.sbelmonte {
+    background-position: 0px -2800px;
+}
+
+.sbenelux {
+    background-position: 0px -2816px;
+}
+
+.sbengal_presidency {
+    background-position: 0px -2832px;
+}
+
+.sbenin_period {
+    background-position: 0px -2848px;
+}
+
+.sbenin_section {
+    background-position: 0px -2864px;
+}
+
+.sberg {
+    background-position: 0px -2880px;
+}
+
+.sberg_grand_duchy {
+    background-position: 0px -2896px;
+}
+
+.sberlin_city {
+    background-position: 0px -2912px;
+}
+
+.sbermuda {
+    background-position: 0px -2928px;
+}
+
+.sbern_section {
+    background-position: 0px -2944px;
+}
+
+.sbern {
+    background-position: 0px -2960px;
+}
+
+.sbern_city {
+    background-position: 0px -2976px;
+}
+
+.sbes_islands {
+    background-position: 0px -2992px;
+}
+
+.sbesalu_county {
+    background-position: 0px -3008px;
+}
+
+.sbesancon_archbishopric {
+    background-position: 0px -3024px;
+}
+
+.sbesancon_free_imperial_city {
+    background-position: 0px -3040px;
+}
+
+.sbeziers_viscounty {
+    background-position: 0px -3056px;
+}
+
+.sbharatpur {
+    background-position: 0px -3072px;
+}
+
+.sbhavnagar {
+    background-position: 0px -3088px;
+}
+
+.sbhopal {
+    background-position: 0px -3104px;
+}
+
+.sbhutan {
+    background-position: 0px -3120px;
+}
+
+.sbiafra {
+    background-position: 0px -3136px;
+}
+
+.sbiberach {
+    background-position: 0px -3152px;
+}
+
+.sbielefeld_city {
+    background-position: 0px -3168px;
+}
+
+.sbiffeche {
+    background-position: 0px -3184px;
+}
+
+.sbijawar {
+    background-position: 0px -3200px;
+}
+
+.sbikanir {
+    background-position: 0px -3216px;
+}
+
+.sbithynia_section {
+    background-position: 0px -3232px;
+}
+
+.sbocholt_city {
+    background-position: 0px -3248px;
+}
+
+.sboeotia_section {
+    background-position: 0px -3264px;
+}
+
+.sbohemia_section {
+    background-position: 0px -3280px;
+}
+
+.sboheme_moravie_fantasy {
+    background-position: 0px -3296px;
+}
+
+.sbohemia_and_moravia {
+    background-position: 0px -3312px;
+}
+
+.sbohemia_kingdom_section {
+    background-position: 0px -3328px;
+}
+
+.sbohemia {
+    background-position: 0px -3344px;
+}
+
+.sboii_celts_section {
+    background-position: 0px -3360px;
+}
+
+.sboisbelle_henrichemont {
+    background-position: 0px -3376px;
+}
+
+.sbolivia {
+    background-position: 0px -3392px;
+}
+
+.sbonaire {
+    background-position: 0px -3408px;
+}
+
+.sbophuthatswana {
+    background-position: 0px -3424px;
+}
+
+.sbosnia_and_herzegovina_section {
+    background-position: 0px -3440px;
+}
+
+.sbosnia_and_herzegovina {
+    background-position: 0px -3456px;
+}
+
+.sbosnia {
+    background-position: 0px -3472px;
+}
+
+.sbosporos_section {
+    background-position: 0px -3488px;
+}
+
+.sbotswana {
+    background-position: 0px -3504px;
+}
+
+.sbouillon {
+    background-position: 0px -3520px;
+}
+
+.sboulogne {
+    background-position: 0px -3536px;
+}
+
+.sbouvet_island {
+    background-position: 0px -3552px;
+}
+
+.sbozzolo {
+    background-position: 0px -3568px;
+}
+
+.sbrabant {
+    background-position: 0px -3584px;
+}
+
+.sbrandenburg_margravate {
+    background-position: 0px -3600px;
+}
+
+.sbrankovic {
+    background-position: 0px -3616px;
+}
+
+.sbrazil_section {
+    background-position: 0px -3632px;
+}
+
+.sbrazil {
+    background-position: 0px -3648px;
+}
+
+.sbreisach_city {
+    background-position: 0px -3664px;
+}
+
+.sbremen_verden {
+    background-position: 0px -3680px;
+}
+
+.sbremen_archbishopric {
+    background-position: 0px -3696px;
+}
+
+.sbremen_city {
+    background-position: 0px -3712px;
+}
+
+.sbreslau {
+    background-position: 0px -3728px;
+}
+
+.sbreslau_city {
+    background-position: 0px -3744px;
+}
+
+.sbreslau_prussian_bishopric {
+    background-position: 0px -3760px;
+}
+
+.sbritish_antarctic_territory {
+    background-position: 0px -3776px;
+}
+
+.sbritish_east_indies_section {
+    background-position: 0px -3792px;
+}
+
+.sbritish_guiana_and_west_indies {
+    background-position: 0px -3808px;
+}
+
+.sbritish_honduras_period {
+    background-position: 0px -3824px;
+}
+
+.sbritish_indian_ocean_territory {
+    background-position: 0px -3840px;
+}
+
+.sbritish_palestine {
+    background-position: 0px -3856px;
+}
+
+.sbritish_settlements_on_the_bay_of_honduras_period {
+    background-position: 0px -3872px;
+}
+
+.sbritish_virgin_islands_section {
+    background-position: 0px -3888px;
+}
+
+.sbritish_virgin_islands {
+    background-position: 0px -3904px;
+}
+
+.sbritish_west_africa {
+    background-position: 0px -3920px;
+}
+
+.sbritish_west_florida {
+    background-position: 0px -3936px;
+}
+
+.sbritish_west_indies {
+    background-position: 0px -3952px;
+}
+
+.sbretagne_fantasy {
+    background-position: 0px -3968px;
+}
+
+.sbrixen {
+    background-position: 0px -3984px;
+}
+
+.sbrno {
+    background-position: 0px -4000px;
+}
+
+.sbrno_duchy {
+    background-position: 0px -4016px;
+}
+
+.sbrunei {
+    background-position: 0px -4032px;
+}
+
+.sbrunswick_lueneburg_calenberg_hannover {
+    background-position: 0px -4048px;
+}
+
+.sbrunswick_city {
+    background-position: 0px -4064px;
+}
+
+.sbrussels {
+    background-position: 0px -4080px;
+}
+
+.sbruttium_section {
+    background-position: 0px -4096px;
+}
+
+.sbuda {
+    background-position: 0px -4112px;
+}
+
+.sbuenos_aires {
+    background-position: 0px -4128px;
+}
+
+.sbukhar_khudat_dynasty {
+    background-position: 0px -4144px;
+}
+
+.sbukhara_sogd {
+    background-position: 0px -4160px;
+}
+
+.sbukhara_sogd_section {
+    background-position: 0px -4176px;
+}
+
+.sbukhara {
+    background-position: 0px -4192px;
+}
+
+.sbulgaria_section {
+    background-position: 0px -4208px;
+}
+
+.sbulgaria {
+    background-position: 0px -4224px;
+}
+
+.sbundi {
+    background-position: 0px -4240px;
+}
+
+.sburgau {
+    background-position: 0px -4256px;
+}
+
+.sburgundian_kingdom {
+    background-position: 0px -4272px;
+}
+
+.sburgundy {
+    background-position: 0px -4288px;
+}
+
+.sburgundy_duchy {
+    background-position: 0px -4304px;
+}
+
+.sburkina_faso {
+    background-position: 0px -4320px;
+}
+
+.sburundi {
+    background-position: 0px -4336px;
+}
+
+.sbuyid_dynasty_section {
+    background-position: 0px -4352px;
+}
+
+.sbytom {
+    background-position: 0px -4368px;
+}
+
+.sbyzantine_empire {
+    background-position: 0px -4384px;
+}
+
+.sbyzantine_states_section {
+    background-position: 0px -4400px;
+}
+
+.scabinda {
+    background-position: 0px -4416px;
+}
+
+.scahors_bishopric_and_city_of {
+    background-position: 0px -4432px;
+}
+
+.scalabria_section {
+    background-position: 0px -4448px;
+}
+
+.scalais {
+    background-position: 0px -4464px;
+}
+
+.scambay {
+    background-position: 0px -4480px;
+}
+
+.scambodia {
+    background-position: 0px -4496px;
+}
+
+.scambodia_section {
+    background-position: 0px -4512px;
+}
+
+.scambrai_bishopric {
+    background-position: 0px -4528px;
+}
+
+.scameroon_section {
+    background-position: 0px -4544px;
+}
+
+.scameroon_period {
+    background-position: 0px -4560px;
+}
+
+.scammin_bishopric {
+    background-position: 0px -4576px;
+}
+
+.scampania_section {
+    background-position: 0px -4592px;
+}
+
+.scanada {
+    background-position: 0px -4608px;
+}
+
+.scanada_section {
+    background-position: 0px -4624px;
+}
+
+.scanada_united_province {
+    background-position: 0px -4640px;
+}
+
+.scanary_islands {
+    background-position: 0px -4656px;
+}
+
+.scape_of_good_hope {
+    background-position: 0px -4672px;
+}
+
+.scape_verde {
+    background-position: 0px -4688px;
+}
+
+.scappadokia_section {
+    background-position: 0px -4704px;
+}
+
+.scaracas {
+    background-position: 0px -4720px;
+}
+
+.scaria_section {
+    background-position: 0px -4736px;
+}
+
+.scarian_islands_section {
+    background-position: 0px -4752px;
+}
+
+.scarinthia_duchy {
+    background-position: 0px -4768px;
+}
+
+.scarnatic {
+    background-position: 0px -4784px;
+}
+
+.scarolingian_empire_section {
+    background-position: 0px -4800px;
+}
+
+.scarthage {
+    background-position: 0px -4816px;
+}
+
+.scarthaginian_empire {
+    background-position: 0px -4832px;
+}
+
+.scastiglione_delle_stiviere {
+    background-position: 0px -4848px;
+}
+
+.scastile_and_leon {
+    background-position: 0px -4864px;
+}
+
+.scastile {
+    background-position: 0px -4880px;
+}
+
+.scastro {
+    background-position: 0px -4896px;
+}
+
+.scatalonia_principality {
+    background-position: 0px -4912px;
+}
+
+.scattaro {
+    background-position: 0px -4928px;
+}
+
+.scaucasia_section {
+    background-position: 0px -4944px;
+}
+
+.scaux {
+    background-position: 0px -4960px;
+}
+
+.scayman_islands {
+    background-position: 0px -4976px;
+}
+
+.sceltic-britain {
+    background-position: 0px -4992px;
+}
+
+.scentral_african_republic {
+    background-position: 0px -5008px;
+}
+
+.scentral_america {
+    background-position: 0px -5024px;
+}
+
+.scentral_america_greater_republic {
+    background-position: 0px -5040px;
+}
+
+.sodeca {
+    background-position: 0px -5056px;
+}
+
+.sceltics {
+    background-position: 0px -5072px;
+}
+
+.sdanube-celtics {
+    background-position: 0px -5088px;
+}
+
+.scentral_asia_section {
+    background-position: 0px -5104px;
+}
+
+.sceylon_period {
+    background-position: 0px -5120px;
+}
+
+.schach {
+    background-position: 0px -5136px;
+}
+
+.schach_section {
+    background-position: 0px -5152px;
+}
+
+.schad {
+    background-position: 0px -5168px;
+}
+
+.schagatai_khanate {
+    background-position: 0px -5184px;
+}
+
+.schamba {
+    background-position: 0px -5200px;
+}
+
+.schampagne_and_brie {
+    background-position: 0px -5216px;
+}
+
+.schampasak {
+    background-position: 0px -5232px;
+}
+
+.schartres {
+    background-position: 0px -5248px;
+}
+
+.schateau_regnault {
+    background-position: 0px -5264px;
+}
+
+.schateaudun {
+    background-position: 0px -5280px;
+}
+
+.scheb {
+    background-position: 0px -5296px;
+}
+
+.schechnya {
+    background-position: 0px -5312px;
+}
+
+.schhatarpur {
+    background-position: 0px -5328px;
+}
+
+.schhota_udaipur {
+    background-position: 0px -5344px;
+}
+
+.schile_section {
+    background-position: 0px -5360px;
+}
+
+.schile {
+    background-position: 0px -5376px;
+}
+
+.schina_section {
+    background-position: 0px -5392px;
+}
+
+.sancient-china {
+    background-position: 0px -5408px;
+}
+
+.schina_ancient_section {
+    background-position: 0px -5424px;
+}
+
+.schina {
+    background-position: 0px -5440px;
+}
+
+.schina_japanese_puppet_states_in_section {
+    background-position: 0px -5456px;
+}
+
+.schina_people_republic {
+    background-position: 0px -5472px;
+}
+
+.schina_provisional_government_of_the_republic {
+    background-position: 0px -5488px;
+}
+
+.schina_reformed_government_of_the_republic {
+    background-position: 0px -5504px;
+}
+
+.schina_republic {
+    background-position: 0px -5520px;
+}
+
+.schinese_soviet_republic_section {
+    background-position: 0px -5536px;
+}
+
+.schios {
+    background-position: 0px -5552px;
+}
+
+.schola_dynasty {
+    background-position: 0px -5568px;
+}
+
+.schristiania {
+    background-position: 0px -5584px;
+}
+
+.schur {
+    background-position: 0px -5600px;
+}
+
+.schur_city {
+    background-position: 0px -5616px;
+}
+
+.scieszyn {
+    background-position: 0px -5632px;
+}
+
+.scilician_armenia {
+    background-position: 0px -5648px;
+}
+
+.scisalpine_republic {
+    background-position: 0px -5664px;
+}
+
+.sclermont {
+    background-position: 0px -5680px;
+}
+
+.scleves {
+    background-position: 0px -5696px;
+}
+
+.sclipperton_island {
+    background-position: 0px -5712px;
+}
+
+.scocconato {
+    background-position: 0px -5728px;
+}
+
+.scochin {
+    background-position: 0px -5744px;
+}
+
+.scocos_keeling_islands {
+    background-position: 0px -5760px;
+}
+
+.scologne_archbishopric {
+    background-position: 0px -5776px;
+}
+
+.scologne_city {
+    background-position: 0px -5792px;
+}
+
+.scolombia_section {
+    background-position: 0px -5808px;
+}
+
+.scolombia {
+    background-position: 0px -5824px;
+}
+
+.scomoro_islands {
+    background-position: 0px -5840px;
+}
+
+.scomoro_islands_section {
+    background-position: 0px -5856px;
+}
+
+.scomoro_islands_notgeld_section {
+    background-position: 0px -5872px;
+}
+
+.scomtat_venaissin {
+    background-position: 0px -5888px;
+}
+
+.sconch_republic {
+    background-position: 0px -5904px;
+}
+
+.sconfederate_states {
+    background-position: 0px -5920px;
+}
+
+.scongo_free_state_period {
+    background-position: 0px -5936px;
+}
+
+.scongo_section {
+    background-position: 0px -5952px;
+}
+
+.scongo_child_section {
+    background-position: 0px -5968px;
+}
+
+.scongo {
+    background-position: 0px -5984px;
+}
+
+.sconnecticut {
+    background-position: 0px -6000px;
+}
+
+.sconstance {
+    background-position: 0px -6016px;
+}
+
+.scooch_behar {
+    background-position: 0px -6032px;
+}
+
+.scook_islands {
+    background-position: 0px -6048px;
+}
+
+.scordoba_province {
+    background-position: 0px -6064px;
+}
+
+.scordoba_umayyad_caliphate {
+    background-position: 0px -6080px;
+}
+
+.scordoba_taifa {
+    background-position: 0px -6096px;
+}
+
+.scorreggio {
+    background-position: 0px -6112px;
+}
+
+.scorsica {
+    background-position: 0px -6128px;
+}
+
+.scorterra_republic {
+    background-position: 0px -6144px;
+}
+
+.scorvey {
+    background-position: 0px -6160px;
+}
+
+.scosta_rica {
+    background-position: 0px -6176px;
+}
+
+.scostoboci_celts {
+    background-position: 0px -6192px;
+}
+
+.scotini_celts {
+    background-position: 0px -6208px;
+}
+
+.scottbus_city {
+    background-position: 0px -6224px;
+}
+
+.scourland_and_semigallia {
+    background-position: 0px -6240px;
+}
+
+.scourland {
+    background-position: 0px -6256px;
+}
+
+.screte {
+    background-position: 0px -6272px;
+}
+
+.scrimea_republic_fantasy {
+    background-position: 0px -6288px;
+}
+
+.scrimea {
+    background-position: 0px -6304px;
+}
+
+.scrimean_goths_section {
+    background-position: 0px -6320px;
+}
+
+.scroatia_section {
+    background-position: 0px -6336px;
+}
+
+.scroatia {
+    background-position: 0px -6352px;
+}
+
+.scroatia_independent_state {
+    background-position: 0px -6368px;
+}
+
+.scroatia_kingdom {
+    background-position: 0px -6384px;
+}
+
+.scrusader_and_christian_states_in_the_eastern_mediterranean_section {
+    background-position: 0px -6400px;
+}
+
+.scuba {
+    background-position: 0px -6416px;
+}
+
+.scuracao {
+    background-position: 0px -6432px;
+}
+
+.scyprus_cyprus {
+    background-position: 0px -6448px;
+}
+
+.scyprus_section {
+    background-position: 0px -6464px;
+}
+
+.scyprus {
+    background-position: 0px -6480px;
+}
+
+.sczech_republic_section {
+    background-position: 0px -6496px;
+}
+
+.sczech_republic {
+    background-position: 0px -6512px;
+}
+
+.sczechoslovakia {
+    background-position: 0px -6528px;
+}
+
+.sczechoslovakia_section {
+    background-position: 0px -6544px;
+}
+
+.sczechoslovakian_notgeld_section {
+    background-position: 0px -6560px;
+}
+
+.sgeto_dacian_tribes {
+    background-position: 0px -6576px;
+}
+
+.sdahomey_period {
+    background-position: 0px -6592px;
+}
+
+.sdalmatia_albania {
+    background-position: 0px -6608px;
+}
+
+.sdamanhur {
+    background-position: 0px -6624px;
+}
+
+.sdamascus_eyalet {
+    background-position: 0px -6640px;
+}
+
+.sdanish_west_indies_period {
+    background-position: 0px -6656px;
+}
+
+.sdanzig_city {
+    background-position: 0px -6672px;
+}
+
+.sdarfur {
+    background-position: 0px -6688px;
+}
+
+.sdatia {
+    background-position: 0px -6704px;
+}
+
+.sdeli {
+    background-position: 0px -6720px;
+}
+
+.sdemerara_and_essequibo {
+    background-position: 0px -6736px;
+}
+
+.sdemmin_city {
+    background-position: 0px -6752px;
+}
+
+.sdemocratic_republic_of_the_congo_period {
+    background-position: 0px -6768px;
+}
+
+.sdenmark {
+    background-position: 0px -6784px;
+}
+
+.sdenmark_section {
+    background-position: 0px -6800px;
+}
+
+.sdeols {
+    background-position: 0px -6816px;
+}
+
+.sdesana {
+    background-position: 0px -6832px;
+}
+
+.sdewas {
+    background-position: 0px -6848px;
+}
+
+.sdhar {
+    background-position: 0px -6864px;
+}
+
+.sdholpur {
+    background-position: 0px -6880px;
+}
+
+.sdiessenhofen {
+    background-position: 0px -6896px;
+}
+
+.sdietrichstein {
+    background-position: 0px -6912px;
+}
+
+.sdisentis {
+    background-position: 0px -6928px;
+}
+
+.sdjibouti_child_section {
+    background-position: 0px -6944px;
+}
+
+.sdjibouti_period {
+    background-position: 0px -6960px;
+}
+
+.sdjibouti_section {
+    background-position: 0px -6976px;
+}
+
+.sfrench_somaliland_notgeld {
+    background-position: 0px -6992px;
+}
+
+.sdmitrov {
+    background-position: 0px -7008px;
+}
+
+.sdombes {
+    background-position: 0px -7024px;
+}
+
+.sdominica {
+    background-position: 0px -7040px;
+}
+
+.sdominican_republic_section {
+    background-position: 0px -7056px;
+}
+
+.sdominican_republic_period {
+    background-position: 0px -7072px;
+}
+
+.sdoemitz_city {
+    background-position: 0px -7088px;
+}
+
+.sdonauwoerth_free_imperial_city {
+    background-position: 0px -7104px;
+}
+
+.sdonetsk_republic {
+    background-position: 0px -7120px;
+}
+
+.sdorpat {
+    background-position: 0px -7136px;
+}
+
+.sdortmund_city {
+    background-position: 0px -7152px;
+}
+
+.sdreux {
+    background-position: 0px -7168px;
+}
+
+.shiberno_norse_dublin {
+    background-position: 0px -7184px;
+}
+
+.sduelmen_city {
+    background-position: 0px -7200px;
+}
+
+.sdungarpur {
+    background-position: 0px -7216px;
+}
+
+.sdutch_caribbean_section {
+    background-position: 0px -7232px;
+}
+
+.sdutch_new_guinea {
+    background-position: 0px -7248px;
+}
+
+.sdutch_republic_section {
+    background-position: 0px -7264px;
+}
+
+.sdutch_republic {
+    background-position: 0px -7280px;
+}
+
+.seast_africa {
+    background-position: 0px -7296px;
+}
+
+.seast_frisia {
+    background-position: 0px -7312px;
+}
+
+.seast_hebei {
+    background-position: 0px -7328px;
+}
+
+.seaster_island {
+    background-position: 0px -7344px;
+}
+
+.seastern_prussia {
+    background-position: 0px -7360px;
+}
+
+.secuador {
+    background-position: 0px -7376px;
+}
+
+.sedessa {
+    background-position: 0px -7392px;
+}
+
+.sedristan {
+    background-position: 0px -7408px;
+}
+
+.segypt {
+    background-position: 0px -7424px;
+}
+
+.segypt-ancient {
+    background-position: 0px -7440px;
+}
+
+.seichstaett_bishopric {
+    background-position: 0px -7456px;
+}
+
+.seinbeck_city {
+    background-position: 0px -7472px;
+}
+
+.seinsiedeln {
+    background-position: 0px -7488px;
+}
+
+.seisenach {
+    background-position: 0px -7504px;
+}
+
+.sel_salvador {
+    background-position: 0px -7520px;
+}
+
+.selbing {
+    background-position: 0px -7536px;
+}
+
+.selleore {
+    background-position: 0px -7552px;
+}
+
+.sellwangen_prince_provostry {
+    background-position: 0px -7568px;
+}
+
+.semden_city {
+    background-position: 0px -7584px;
+}
+
+.sempuries {
+    background-position: 0px -7600px;
+}
+
+.sengland {
+    background-position: 0px -7616px;
+}
+
+.sentre_rios {
+    background-position: 0px -7632px;
+}
+
+.sepi_island {
+    background-position: 0px -7648px;
+}
+
+.sepirus {
+    background-position: 0px -7664px;
+}
+
+.sequatorial_guinea {
+    background-position: 0px -7680px;
+}
+
+.seravisci_celts {
+    background-position: 0px -7696px;
+}
+
+.serfurt_city {
+    background-position: 0px -7712px;
+}
+
+.serfurt_state {
+    background-position: 0px -7728px;
+}
+
+.seritrea_section {
+    background-position: 0px -7744px;
+}
+
+.seritrea {
+    background-position: 0px -7760px;
+}
+
+.serivan_khanate {
+    background-position: 0px -7776px;
+}
+
+.sesperantujo {
+    background-position: 0px -7792px;
+}
+
+.sesslingen_city {
+    background-position: 0px -7808px;
+}
+
+.sesterhazy {
+    background-position: 0px -7824px;
+}
+
+.sestonia_section {
+    background-position: 0px -7840px;
+}
+
+.sestonia {
+    background-position: 0px -7856px;
+}
+
+.sestonia_danish_possession {
+    background-position: 0px -7872px;
+}
+
+.sestonia_danish_possession_section {
+    background-position: 0px -7888px;
+}
+
+.sestonia_swedish_possession_section {
+    background-position: 0px -7904px;
+}
+
+.seswatini_section {
+    background-position: 0px -7920px;
+}
+
+.sswaziland_eswatini_section {
+    background-position: 0px -7936px;
+}
+
+.seswatini_period {
+    background-position: 0px -7952px;
+}
+
+.sethiopia_section {
+    background-position: 0px -7968px;
+}
+
+.sethiopia {
+    background-position: 0px -7984px;
+}
+
+.setrurie {
+    background-position: 0px -8000px;
+}
+
+.seurozone {
+    background-position: 0px -8016px;
+}
+
+.sfalkland_islands {
+    background-position: 0px -8032px;
+}
+
+.sfansar {
+    background-position: 0px -8048px;
+}
+
+.sfarankat {
+    background-position: 0px -8064px;
+}
+
+.sfaridkot {
+    background-position: 0px -8080px;
+}
+
+.sfaroe_islands {
+    background-position: 0px -8096px;
+}
+
+.sfatimid_caliphate {
+    background-position: 0px -8112px;
+}
+
+.sferghana_khaganate {
+    background-position: 0px -8128px;
+}
+
+.sferrara {
+    background-position: 0px -8144px;
+}
+
+.sfezzan {
+    background-position: 0px -8160px;
+}
+
+.sfiji {
+    background-position: 0px -8176px;
+}
+
+.sfiknan {
+    background-position: 0px -8192px;
+}
+
+.sfinland {
+    background-position: 0px -8208px;
+}
+
+.sfischingen {
+    background-position: 0px -8224px;
+}
+
+.sfiume {
+    background-position: 0px -8240px;
+}
+
+.sflanders {
+    background-position: 0px -8256px;
+}
+
+.sgrand_duchy_of_flandrensis {
+    background-position: 0px -8272px;
+}
+
+.sflensburg_city {
+    background-position: 0px -8288px;
+}
+
+.sflorence {
+    background-position: 0px -8304px;
+}
+
+.sforcalquier {
+    background-position: 0px -8320px;
+}
+
+.sfosdinovo {
+    background-position: 0px -8336px;
+}
+
+.sfuta_djallon {
+    background-position: 0px -8352px;
+}
+
+.sfrance {
+    background-position: 0px -8368px;
+}
+
+.sfrance_section {
+    background-position: 0px -8384px;
+}
+
+.sfrance_and_bonaparte_section {
+    background-position: 0px -8400px;
+}
+
+.sfranconian_circle {
+    background-position: 0px -8416px;
+}
+
+.sfrankenthal {
+    background-position: 0px -8432px;
+}
+
+.sfrankfurt_an_der_oder_city {
+    background-position: 0px -8448px;
+}
+
+.sfrankfurt {
+    background-position: 0px -8464px;
+}
+
+.sfrankish_kingdoms_section {
+    background-position: 0px -8480px;
+}
+
+.sfranquemont {
+    background-position: 0px -8496px;
+}
+
+.sfreiburg {
+    background-position: 0px -8512px;
+}
+
+.sfrench_cameroon_period {
+    background-position: 0px -8528px;
+}
+
+.sfrench_cochinchina {
+    background-position: 0px -8544px;
+}
+
+.sfrench_equatorial_africa {
+    background-position: 0px -8560px;
+}
+
+.sfrench_guiana {
+    background-position: 0px -8576px;
+}
+
+.sfrench_indochina {
+    background-position: 0px -8592px;
+}
+
+.sfrench_notgeld_section {
+    background-position: 0px -8608px;
+}
+
+.sfrench-oceania {
+    background-position: 0px -8624px;
+}
+
+.sfrench_pacific_territories {
+    background-position: 0px -8640px;
+}
+
+.sfrance_french_polynesia_section {
+    background-position: 0px -8656px;
+}
+
+.sfrench_polynesia_period {
+    background-position: 0px -8672px;
+}
+
+.sfrench_polynesia_child_section {
+    background-position: 0px -8688px;
+}
+
+.sfrench_settlements_of_oceania_period {
+    background-position: 0px -8704px;
+}
+
+.sfrench_somaliland_period {
+    background-position: 0px -8720px;
+}
+
+.sfrench_southern_and_antarctic_lands {
+    background-position: 0px -8736px;
+}
+
+.sfrench_southern_and_antarctic_lands_section {
+    background-position: 0px -8752px;
+}
+
+.sfrench_states_section {
+    background-position: 0px -8768px;
+}
+
+.sfrench_sudan_period {
+    background-position: 0px -8784px;
+}
+
+.sfrench_west_africa {
+    background-position: 0px -8800px;
+}
+
+.sfrench_west_indies {
+    background-position: 0px -8816px;
+}
+
+.sfribourg_section {
+    background-position: 0px -8832px;
+}
+
+.sfribourg {
+    background-position: 0px -8848px;
+}
+
+.sfribourg_city {
+    background-position: 0px -8864px;
+}
+
+.sfriedland {
+    background-position: 0px -8880px;
+}
+
+.sfrinco {
+    background-position: 0px -8896px;
+}
+
+.sfrisia {
+    background-position: 0px -8912px;
+}
+
+.sfritzlar_city {
+    background-position: 0px -8928px;
+}
+
+.sfriuli {
+    background-position: 0px -8944px;
+}
+
+.sfujairah {
+    background-position: 0px -8960px;
+}
+
+.sfulda_abbey {
+    background-position: 0px -8976px;
+}
+
+.sfurther_austria {
+    background-position: 0px -8992px;
+}
+
+.sgabon {
+    background-position: 0px -9008px;
+}
+
+.sgaugazia {
+    background-position: 0px -9024px;
+}
+
+.sgalapagos {
+    background-position: 0px -9040px;
+}
+
+.sgambia {
+    background-position: 0px -9056px;
+}
+
+.sganja_khanate {
+    background-position: 0px -9072px;
+}
+
+.sgarhwal {
+    background-position: 0px -9088px;
+}
+
+.sgaule {
+    background-position: 0px -9104px;
+}
+
+.sgeneva_section {
+    background-position: 0px -9120px;
+}
+
+.sgeneva {
+    background-position: 0px -9136px;
+}
+
+.sgeneva_canton {
+    background-position: 0px -9152px;
+}
+
+.sgeneva_city {
+    background-position: 0px -9168px;
+}
+
+.sgeniusz_kingdom {
+    background-position: 0px -9184px;
+}
+
+.sgenoa_section {
+    background-position: 0px -9200px;
+}
+
+.sgenoa_period {
+    background-position: 0px -9216px;
+}
+
+.sgeorgia_section {
+    background-position: 0px -9232px;
+}
+
+.sgeorgia_period {
+    background-position: 0px -9248px;
+}
+
+.sgeorgia_democratic_republic_period {
+    background-position: 0px -9264px;
+}
+
+.sgeorgia_kingdom_period {
+    background-position: 0px -9280px;
+}
+
+.sgepids {
+    background-position: 0px -9296px;
+}
+
+.sgerman_cameroon_period {
+    background-position: 0px -9312px;
+}
+
+.sgerman_democratic_republic {
+    background-position: 0px -9328px;
+}
+
+.sgerman_east_africa {
+    background-position: 0px -9344px;
+}
+
+.sgerman_new_guinea {
+    background-position: 0px -9360px;
+}
+
+.sgerman_notgeld_section {
+    background-position: 0px -9376px;
+}
+
+.sgerman_states_section {
+    background-position: 0px -9392px;
+}
+
+.sgermany_section {
+    background-position: 0px -9408px;
+}
+
+.sgermany_1871_1948 {
+    background-position: 0px -9424px;
+}
+
+.sgermany {
+    background-position: 0px -9440px;
+}
+
+.sthraco_getae_tribes {
+    background-position: 0px -9456px;
+}
+
+.sghana_period {
+    background-position: 0px -9472px;
+}
+
+.sghana_section {
+    background-position: 0px -9488px;
+}
+
+.sghaznavid_dynasty {
+    background-position: 0px -9504px;
+}
+
+.sghurid_dynasty {
+    background-position: 0px -9520px;
+}
+
+.sgibraltar {
+    background-position: 0px -9536px;
+}
+
+.sgien {
+    background-position: 0px -9552px;
+}
+
+.sgilbert_and_ellice_islands {
+    background-position: 0px -9568px;
+}
+
+.sgirona_county {
+    background-position: 0px -9584px;
+}
+
+.sglarus_section {
+    background-position: 0px -9600px;
+}
+
+.sglarus {
+    background-position: 0px -9616px;
+}
+
+.sglarus_city {
+    background-position: 0px -9632px;
+}
+
+.sglatz {
+    background-position: 0px -9648px;
+}
+
+.sglogau {
+    background-position: 0px -9664px;
+}
+
+.sgold_coast_period {
+    background-position: 0px -9680px;
+}
+
+.sgoldberg {
+    background-position: 0px -9696px;
+}
+
+.sgolden_horde {
+    background-position: 0px -9712px;
+}
+
+.sgorizia {
+    background-position: 0px -9728px;
+}
+
+.sgoerlitz {
+    background-position: 0px -9744px;
+}
+
+.sgoryeo_period {
+    background-position: 0px -9760px;
+}
+
+.sgoerz {
+    background-position: 0px -9776px;
+}
+
+.sgoslar_city {
+    background-position: 0px -9792px;
+}
+
+.sgotha_city {
+    background-position: 0px -9808px;
+}
+
+.sgotland {
+    background-position: 0px -9824px;
+}
+
+.sgoettingen_city {
+    background-position: 0px -9840px;
+}
+
+.sgranada {
+    background-position: 0px -9856px;
+}
+
+.sgrande_comore {
+    background-position: 0px -9872px;
+}
+
+.sgreat_mongol {
+    background-position: 0px -9888px;
+}
+
+.sgreece {
+    background-position: 0px -9904px;
+}
+
+.sgreece_section {
+    background-position: 0px -9920px;
+}
+
+.sgrece_antique {
+    background-position: 0px -9936px;
+}
+
+.sgreenland {
+    background-position: 0px -9952px;
+}
+
+.sgreifenberg {
+    background-position: 0px -9968px;
+}
+
+.sgreifswald_city {
+    background-position: 0px -9984px;
+}
+
+.sgrenada {
+    background-position: 0px -10000px;
+}
+
+.sgrisons_section {
+    background-position: 0px -10016px;
+}
+
+.sgrisons {
+    background-position: 0px -10032px;
+}
+
+.sgruyeres {
+    background-position: 0px -10048px;
+}
+
+.sguadeloupe {
+    background-position: 0px -10064px;
+}
+
+.sguastalla {
+    background-position: 0px -10080px;
+}
+
+.sguatemala {
+    background-position: 0px -10096px;
+}
+
+.sguatemala_section {
+    background-position: 0px -10112px;
+}
+
+.sguayana {
+    background-position: 0px -10128px;
+}
+
+.sguben {
+    background-position: 0px -10144px;
+}
+
+.sguelders {
+    background-position: 0px -10160px;
+}
+
+.sguernsey {
+    background-position: 0px -10176px;
+}
+
+.sguernsey_section {
+    background-position: 0px -10192px;
+}
+
+.sguinea {
+    background-position: 0px -10208px;
+}
+
+.sguinea_bissau_section {
+    background-position: 0px -10224px;
+}
+
+.sguinea_bissau_period {
+    background-position: 0px -10240px;
+}
+
+.sgujarat {
+    background-position: 0px -10256px;
+}
+
+.sgurk {
+    background-position: 0px -10272px;
+}
+
+.sguyana {
+    background-position: 0px -10288px;
+}
+
+.sguyana_section {
+    background-position: 0px -10304px;
+}
+
+.sgwalior {
+    background-position: 0px -10320px;
+}
+
+.shafsid_dynasty {
+    background-position: 0px -10336px;
+}
+
+.shagenau {
+    background-position: 0px -10352px;
+}
+
+.shainaut {
+    background-position: 0px -10368px;
+}
+
+.shaiti_period {
+    background-position: 0px -10384px;
+}
+
+.shaiti_section {
+    background-position: 0px -10400px;
+}
+
+.shalberstadt_bishopric {
+    background-position: 0px -10416px;
+}
+
+.shaldenstein {
+    background-position: 0px -10432px;
+}
+
+.shalle_an_der_saale_city {
+    background-position: 0px -10448px;
+}
+
+.shamburg_free_hanseatic_city {
+    background-position: 0px -10464px;
+}
+
+.shamm_city {
+    background-position: 0px -10480px;
+}
+
+.shannover {
+    background-position: 0px -10496px;
+}
+
+.shannover_kingdom {
+    background-position: 0px -10512px;
+}
+
+.shawaii {
+    background-position: 0px -10528px;
+}
+
+.shejaz_and_nejd_period {
+    background-position: 0px -10544px;
+}
+
+.shejaz {
+    background-position: 0px -10560px;
+}
+
+.shelgoland_fantasy {
+    background-position: 0px -10576px;
+}
+
+.shelvetic_republic_period {
+    background-position: 0px -10592px;
+}
+
+.shercuniates_celts {
+    background-position: 0px -10608px;
+}
+
+.sherford_city {
+    background-position: 0px -10624px;
+}
+
+.sherm {
+    background-position: 0px -10640px;
+}
+
+.shermannstadt {
+    background-position: 0px -10656px;
+}
+
+.shesse_cassel_section {
+    background-position: 0px -10672px;
+}
+
+.shesse_darmstadt {
+    background-position: 0px -10688px;
+}
+
+.shessen_homburg {
+    background-position: 0px -10704px;
+}
+
+.shildesheim_bishopric {
+    background-position: 0px -10720px;
+}
+
+.shimyarite_kingdom {
+    background-position: 0px -10736px;
+}
+
+.shispania-ancient {
+    background-position: 0px -10752px;
+}
+
+.shohenzollern_hechingen {
+    background-position: 0px -10768px;
+}
+
+.shohenzollern_prussia {
+    background-position: 0px -10784px;
+}
+
+.shohenzollern_sigmaringen {
+    background-position: 0px -10800px;
+}
+
+.shohenzollern {
+    background-position: 0px -10816px;
+}
+
+.sholland_county {
+    background-position: 0px -10832px;
+}
+
+.sholland_kingdom {
+    background-position: 0px -10848px;
+}
+
+.sholy_roman_empire {
+    background-position: 0px -10864px;
+}
+
+.shonduras {
+    background-position: 0px -10880px;
+}
+
+.shong_kong {
+    background-position: 0px -10896px;
+}
+
+.shotak_dynasty {
+    background-position: 0px -10912px;
+}
+
+.shungarian_states_section {
+    background-position: 0px -10928px;
+}
+
+.shungary {
+    background-position: 0px -10944px;
+}
+
+.shungary_section {
+    background-position: 0px -10960px;
+}
+
+.shunnic-empire {
+    background-position: 0px -10976px;
+}
+
+.sprincipality-of-hutt-river {
+    background-position: 0px -10992px;
+}
+
+.shyderabad_elichpur_feudatory {
+    background-position: 0px -11008px;
+}
+
+.shyderabad {
+    background-position: 0px -11024px;
+}
+
+.siceland {
+    background-position: 0px -11040px;
+}
+
+.sidrisid_dynasty {
+    background-position: 0px -11056px;
+}
+
+.sikhshidid_dynasty {
+    background-position: 0px -11072px;
+}
+
+.silkhanate {
+    background-position: 0px -11088px;
+}
+
+.sindia {
+    background-position: 0px -11104px;
+}
+
+.sindia_section {
+    background-position: 0px -11120px;
+}
+
+.sindia_british {
+    background-position: 0px -11136px;
+}
+
+.sindia-ancient {
+    background-position: 0px -11152px;
+}
+
+.sindia_british_possession_section {
+    background-position: 0px -11168px;
+}
+
+.sindia_danish_possession {
+    background-position: 0px -11184px;
+}
+
+.sindia_dutch {
+    background-position: 0px -11200px;
+}
+
+.sindia_french_possession_section {
+    background-position: 0px -11216px;
+}
+
+.sindia_portuguese_possession {
+    background-position: 0px -11232px;
+}
+
+.sindian_princely_states_section {
+    background-position: 0px -11248px;
+}
+
+.sindo-parthian-kingdom {
+    background-position: 0px -11264px;
+}
+
+.sindo-sasanians-kingdom {
+    background-position: 0px -11280px;
+}
+
+.sindonesia_section {
+    background-position: 0px -11296px;
+}
+
+.sindonesia_section {
+    background-position: 0px -11312px;
+}
+
+.sindonesia {
+    background-position: 0px -11328px;
+}
+
+.sindore_mehidpur_feudatory {
+    background-position: 0px -11344px;
+}
+
+.sindore_sironj_feudatory {
+    background-position: 0px -11360px;
+}
+
+.sindore {
+    background-position: 0px -11376px;
+}
+
+.singolstadt_siege {
+    background-position: 0px -11392px;
+}
+
+.sinjuid_dynasty {
+    background-position: 0px -11408px;
+}
+
+.sionian_islands_section {
+    background-position: 0px -11424px;
+}
+
+.sionian_islands_united_states_period {
+    background-position: 0px -11440px;
+}
+
+.sionian_islands_venetian_rule_period {
+    background-position: 0px -11456px;
+}
+
+.siran {
+    background-position: 0px -11472px;
+}
+
+.siran_section {
+    background-position: 0px -11488px;
+}
+
+.siraq {
+    background-position: 0px -11504px;
+}
+
+.siraq_section {
+    background-position: 0px -11520px;
+}
+
+.sireland {
+    background-position: 0px -11536px;
+}
+
+.sirian_jaya {
+    background-position: 0px -11552px;
+}
+
+.sisfendiyar {
+    background-position: 0px -11568px;
+}
+
+.sisfijab {
+    background-position: 0px -11584px;
+}
+
+.sisla_de_la_juventud {
+    background-position: 0px -11600px;
+}
+
+.sisis {
+    background-position: 0px -11616px;
+}
+
+.sislamic_states_section {
+    background-position: 0px -11632px;
+}
+
+.sisle_of_man {
+    background-position: 0px -11648px;
+}
+
+.sisles_de_france_and_de_bonaparte_period {
+    background-position: 0px -11664px;
+}
+
+.sisles_de_france_and_de_bourbon_period {
+    background-position: 0px -11680px;
+}
+
+.sisny {
+    background-position: 0px -11696px;
+}
+
+.sisrael {
+    background-position: 0px -11712px;
+}
+
+.sisrael_section {
+    background-position: 0px -11728px;
+}
+
+.sissoudun {
+    background-position: 0px -11744px;
+}
+
+.sitalian_east_africa {
+    background-position: 0px -11760px;
+}
+
+.sitalian_eritrea {
+    background-position: 0px -11776px;
+}
+
+.sitalian_somaliland {
+    background-position: 0px -11792px;
+}
+
+.sitaly_italy {
+    background-position: 0px -11808px;
+}
+
+.sitaly_section {
+    background-position: 0px -11824px;
+}
+
+.sitaly_ancient {
+    background-position: 0px -11840px;
+}
+
+.sherulian_kingdom {
+    background-position: 0px -11856px;
+}
+
+.sitaly_napoleonic_kingdom {
+    background-position: 0px -11872px;
+}
+
+.sitaly_napoleonic_republic {
+    background-position: 0px -11888px;
+}
+
+.sitzehoe_city {
+    background-position: 0px -11904px;
+}
+
+.sivory_coast {
+    background-position: 0px -11920px;
+}
+
+.sivrea {
+    background-position: 0px -11936px;
+}
+
+.sjaegerndorf {
+    background-position: 0px -11952px;
+}
+
+.sjaipur {
+    background-position: 0px -11968px;
+}
+
+.sjaisalmer {
+    background-position: 0px -11984px;
+}
+
+.sjamaica {
+    background-position: 0px -12000px;
+}
+
+.sjammu_and_kashmir {
+    background-position: 0px -12016px;
+}
+
+.sjanid_dynasty {
+    background-position: 0px -12032px;
+}
+
+.sjanjira {
+    background-position: 0px -12048px;
+}
+
+.sjaora {
+    background-position: 0px -12064px;
+}
+
+.sjapan_section {
+    background-position: 0px -12080px;
+}
+
+.sjapan {
+    background-position: 0px -12096px;
+}
+
+.sjava {
+    background-position: 0px -12112px;
+}
+
+.sjena {
+    background-position: 0px -12128px;
+}
+
+.sjersey {
+    background-position: 0px -12144px;
+}
+
+.sjerusalem {
+    background-position: 0px -12160px;
+}
+
+.sjhabua {
+    background-position: 0px -12176px;
+}
+
+.sjhalawar {
+    background-position: 0px -12192px;
+}
+
+.sjihlava {
+    background-position: 0px -12208px;
+}
+
+.sjind {
+    background-position: 0px -12224px;
+}
+
+.sjodhpur {
+    background-position: 0px -12240px;
+}
+
+.sjohor {
+    background-position: 0px -12256px;
+}
+
+.sjordan {
+    background-position: 0px -12272px;
+}
+
+.sjoseon_period {
+    background-position: 0px -12288px;
+}
+
+.sjudee {
+    background-position: 0px -12304px;
+}
+
+.sjuelich_city_under_siege {
+    background-position: 0px -12320px;
+}
+
+.sjunagadh {
+    background-position: 0px -12336px;
+}
+
+.skabarna {
+    background-position: 0px -12352px;
+}
+
+.skalat_khanate {
+    background-position: 0px -12368px;
+}
+
+.skamenz_city {
+    background-position: 0px -12384px;
+}
+
+.skandy {
+    background-position: 0px -12400px;
+}
+
+.skangju_kingdom {
+    background-position: 0px -12416px;
+}
+
+.skanka {
+    background-position: 0px -12432px;
+}
+
+.skarabakh_khanate {
+    background-position: 0px -12448px;
+}
+
+.skaraman {
+    background-position: 0px -12464px;
+}
+
+.skarauli {
+    background-position: 0px -12480px;
+}
+
+.skartli_kakheti_period {
+    background-position: 0px -12496px;
+}
+
+.skashin {
+    background-position: 0px -12512px;
+}
+
+.skatanga {
+    background-position: 0px -12528px;
+}
+
+.skathiri_sultanate {
+    background-position: 0px -12544px;
+}
+
+.skaufbeuren_city {
+    background-position: 0px -12560px;
+}
+
+.skazakhstan {
+    background-position: 0px -12576px;
+}
+
+.skeder {
+    background-position: 0px -12592px;
+}
+
+.skempten_free_city {
+    background-position: 0px -12608px;
+}
+
+.skenya {
+    background-position: 0px -12624px;
+}
+
+.skenya_section {
+    background-position: 0px -12640px;
+}
+
+.skesh {
+    background-position: 0px -12656px;
+}
+
+.skhevenhueller_metsch {
+    background-position: 0px -12672px;
+}
+
+.skhiva {
+    background-position: 0px -12688px;
+}
+
+.skhmer_empire {
+    background-position: 0px -12704px;
+}
+
+.skhoqand_khanate {
+    background-position: 0px -12720px;
+}
+
+.skhorezm_people_soviet_republic {
+    background-position: 0px -12736px;
+}
+
+.skhwarazmian_empire {
+    background-position: 0px -12752px;
+}
+
+.skiau_chau {
+    background-position: 0px -12768px;
+}
+
+.skiel_city {
+    background-position: 0px -12784px;
+}
+
+.skinsky {
+    background-position: 0px -12800px;
+}
+
+.skiribati {
+    background-position: 0px -12816px;
+}
+
+.skishangarh {
+    background-position: 0px -12832px;
+}
+
+.skolberg_city {
+    background-position: 0px -12848px;
+}
+
+.skolhapur {
+    background-position: 0px -12864px;
+}
+
+.skoenigsegg_rothenfels {
+    background-position: 0px -12880px;
+}
+
+.skonstanz_city {
+    background-position: 0px -12896px;
+}
+
+.skorea_section {
+    background-position: 0px -12912px;
+}
+
+.skorea_under_japanese_rule_period {
+    background-position: 0px -12928px;
+}
+
+.skorean_empire_period {
+    background-position: 0px -12944px;
+}
+
+.skoronis {
+    background-position: 0px -12960px;
+}
+
+.skosel {
+    background-position: 0px -12976px;
+}
+
+.skosovo {
+    background-position: 0px -12992px;
+}
+
+.skoszalin {
+    background-position: 0px -13008px;
+}
+
+.skotah {
+    background-position: 0px -13024px;
+}
+
+.skotte {
+    background-position: 0px -13040px;
+}
+
+.skrakow_free_city {
+    background-position: 0px -13056px;
+}
+
+.skronstadt {
+    background-position: 0px -13072px;
+}
+
+.skrosno {
+    background-position: 0px -13088px;
+}
+
+.skrummau {
+    background-position: 0px -13104px;
+}
+
+.skumaon {
+    background-position: 0px -13120px;
+}
+
+.skurdistan {
+    background-position: 0px -13136px;
+}
+
+.skutch {
+    background-position: 0px -13152px;
+}
+
+.skuwait {
+    background-position: 0px -13168px;
+}
+
+.skyiv {
+    background-position: 0px -13184px;
+}
+
+.skyivan_rus {
+    background-position: 0px -13200px;
+}
+
+.skyivan_rus_section {
+    background-position: 0px -13216px;
+}
+
+.skyrgyzstan {
+    background-position: 0px -13232px;
+}
+
+.sla_marche {
+    background-position: 0px -13248px;
+}
+
+.sla_rioja {
+    background-position: 0px -13264px;
+}
+
+.slahej {
+    background-position: 0px -13280px;
+}
+
+.slan_xang {
+    background-position: 0px -13296px;
+}
+
+.slandau {
+    background-position: 0px -13312px;
+}
+
+.slangres {
+    background-position: 0px -13328px;
+}
+
+.slaos {
+    background-position: 0px -13344px;
+}
+
+.slaos_section {
+    background-position: 0px -13360px;
+}
+
+.slatvia {
+    background-position: 0px -13376px;
+}
+
+.slatvia_section {
+    background-position: 0px -13392px;
+}
+
+.slaufenburg {
+    background-position: 0px -13408px;
+}
+
+.slauingen_city {
+    background-position: 0px -13424px;
+}
+
+.slausanne {
+    background-position: 0px -13440px;
+}
+
+.sleague_of_god_house {
+    background-position: 0px -13456px;
+}
+
+.slebanon {
+    background-position: 0px -13472px;
+}
+
+.sleeuwarden {
+    background-position: 0px -13488px;
+}
+
+.sleeward_islands {
+    background-position: 0px -13504px;
+}
+
+.sleiden {
+    background-position: 0px -13520px;
+}
+
+.sleiningen_dagsburg_hartenburg {
+    background-position: 0px -13536px;
+}
+
+.sleiningen_westerburg {
+    background-position: 0px -13552px;
+}
+
+.sleiningen {
+    background-position: 0px -13568px;
+}
+
+.sleon_kingdom {
+    background-position: 0px -13584px;
+}
+
+.slesotho {
+    background-position: 0px -13600px;
+}
+
+.sliberated_areas_section {
+    background-position: 0px -13616px;
+}
+
+.sliberia {
+    background-position: 0px -13632px;
+}
+
+.sliberland {
+    background-position: 0px -13648px;
+}
+
+.slibya_section {
+    background-position: 0px -13664px;
+}
+
+.slibya {
+    background-position: 0px -13680px;
+}
+
+.slicchavi_kingdom {
+    background-position: 0px -13696px;
+}
+
+.sliechtenstein {
+    background-position: 0px -13712px;
+}
+
+.sliege {
+    background-position: 0px -13728px;
+}
+
+.sliegnitz_brieg {
+    background-position: 0px -13744px;
+}
+
+.sliegnitz {
+    background-position: 0px -13760px;
+}
+
+.sligurian_republic_period {
+    background-position: 0px -13776px;
+}
+
+.slille_city_under_siege {
+    background-position: 0px -13792px;
+}
+
+.slimoges_viscounty {
+    background-position: 0px -13808px;
+}
+
+.slithuania_section {
+    background-position: 0px -13824px;
+}
+
+.slithuania {
+    background-position: 0px -13840px;
+}
+
+.slithuania_grand_duchy {
+    background-position: 0px -13856px;
+}
+
+.slivonia_section {
+    background-position: 0px -13872px;
+}
+
+.slivonia_and_estonia {
+    background-position: 0px -13888px;
+}
+
+.slivonia {
+    background-position: 0px -13904px;
+}
+
+.slivonia_swedish_possession {
+    background-position: 0px -13920px;
+}
+
+.slivonia_swedish_possession_section {
+    background-position: 0px -13936px;
+}
+
+.slivonian_confederation_section {
+    background-position: 0px -13952px;
+}
+
+.slivonian_order {
+    background-position: 0px -13968px;
+}
+
+.slobkowicz {
+    background-position: 0px -13984px;
+}
+
+.sregency_of_lomar {
+    background-position: 0px -14000px;
+}
+
+.slombardy_kingdom_section {
+    background-position: 0px -14016px;
+}
+
+.slombardy_venetia {
+    background-position: 0px -14032px;
+}
+
+.slombardy {
+    background-position: 0px -14048px;
+}
+
+.slorca {
+    background-position: 0px -14064px;
+}
+
+.slorraine {
+    background-position: 0px -14080px;
+}
+
+.slostisland {
+    background-position: 0px -14096px;
+}
+
+.sloewenberg {
+    background-position: 0px -14112px;
+}
+
+.slower_canada {
+    background-position: 0px -14128px;
+}
+
+.sluang_prabang {
+    background-position: 0px -14144px;
+}
+
+.sluebeck_free_hanseatic_city {
+    background-position: 0px -14160px;
+}
+
+.slucca {
+    background-position: 0px -14176px;
+}
+
+.slucerne_section {
+    background-position: 0px -14192px;
+}
+
+.slucerne {
+    background-position: 0px -14208px;
+}
+
+.slucerne_city {
+    background-position: 0px -14224px;
+}
+
+.slunavada {
+    background-position: 0px -14240px;
+}
+
+.slundy {
+    background-position: 0px -14256px;
+}
+
+.slueneburg_city {
+    background-position: 0px -14272px;
+}
+
+.sluxembourg {
+    background-position: 0px -14288px;
+}
+
+.sluxembourg_section {
+    background-position: 0px -14304px;
+}
+
+.slyon_archbishopric {
+    background-position: 0px -14320px;
+}
+
+.smacau {
+    background-position: 0px -14336px;
+}
+
+.smaccagno {
+    background-position: 0px -14352px;
+}
+
+.skingdom_of_macedonia {
+    background-position: 0px -14368px;
+}
+
+.smadagascar_madagascar {
+    background-position: 0px -14384px;
+}
+
+.smadagascar_section {
+    background-position: 0px -14400px;
+}
+
+.smadeira_islands {
+    background-position: 0px -14416px;
+}
+
+.smadurai {
+    background-position: 0px -14432px;
+}
+
+.smagdeburg_archbishopric {
+    background-position: 0px -14448px;
+}
+
+.smaine {
+    background-position: 0px -14464px;
+}
+
+.smainz_archbishopric {
+    background-position: 0px -14480px;
+}
+
+.smainz_city {
+    background-position: 0px -14496px;
+}
+
+.smajorca_kingdom {
+    background-position: 0px -14512px;
+}
+
+.smajorca {
+    background-position: 0px -14528px;
+}
+
+.smalacca {
+    background-position: 0px -14544px;
+}
+
+.smalawi {
+    background-position: 0px -14560px;
+}
+
+.smalay_peninsula {
+    background-position: 0px -14576px;
+}
+
+.smalaya {
+    background-position: 0px -14592px;
+}
+
+.smalaysia {
+    background-position: 0px -14608px;
+}
+
+.smalaysia_section {
+    background-position: 0px -14624px;
+}
+
+.smaldives {
+    background-position: 0px -14640px;
+}
+
+.smalerkotla {
+    background-position: 0px -14656px;
+}
+
+.smali_section {
+    background-position: 0px -14672px;
+}
+
+.smali_period {
+    background-position: 0px -14688px;
+}
+
+.smalla_dynasty {
+    background-position: 0px -14704px;
+}
+
+.smalta {
+    background-position: 0px -14720px;
+}
+
+.sordre_de_malte {
+    background-position: 0px -14736px;
+}
+
+.smamluk_sultanate {
+    background-position: 0px -14752px;
+}
+
+.smanchukuo {
+    background-position: 0px -14768px;
+}
+
+.smantua {
+    background-position: 0px -14784px;
+}
+
+.smaracaibo {
+    background-position: 0px -14800px;
+}
+
+.smaratha_empire {
+    background-position: 0px -14816px;
+}
+
+.smardin_artuqids {
+    background-position: 0px -14832px;
+}
+
+.smargarita {
+    background-position: 0px -14848px;
+}
+
+.smarinid_dynasty {
+    background-position: 0px -14864px;
+}
+
+.smarshall_islands {
+    background-position: 0px -14880px;
+}
+
+.smartinique {
+    background-position: 0px -14896px;
+}
+
+.smaryland {
+    background-position: 0px -14912px;
+}
+
+.smasovia {
+    background-position: 0px -14928px;
+}
+
+.smassa_carrara {
+    background-position: 0px -14944px;
+}
+
+.smassachusetts_bay_colony {
+    background-position: 0px -14960px;
+}
+
+.smassachusetts_bay_province {
+    background-position: 0px -14976px;
+}
+
+.smasserano {
+    background-position: 0px -14992px;
+}
+
+.smauretanie-antique {
+    background-position: 0px -15008px;
+}
+
+.smauritania {
+    background-position: 0px -15024px;
+}
+
+.smauritius {
+    background-position: 0px -15040px;
+}
+
+.smeaux {
+    background-position: 0px -15056px;
+}
+
+.smecca {
+    background-position: 0px -15072px;
+}
+
+.smecklenburg_schwerin_german_states {
+    background-position: 0px -15088px;
+}
+
+.smecklenburg_strelitz {
+    background-position: 0px -15104px;
+}
+
+.smecklenburg {
+    background-position: 0px -15120px;
+}
+
+.smeissen_margravate {
+    background-position: 0px -15136px;
+}
+
+.smelgueil {
+    background-position: 0px -15152px;
+}
+
+.smemel_territory {
+    background-position: 0px -15168px;
+}
+
+.smemmingen_city {
+    background-position: 0px -15184px;
+}
+
+.smendoza {
+    background-position: 0px -15200px;
+}
+
+.smeng_chiang {
+    background-position: 0px -15216px;
+}
+
+.smerania {
+    background-position: 0px -15232px;
+}
+
+.smesocco {
+    background-position: 0px -15248px;
+}
+
+.smesopotamia-ancient {
+    background-position: 0px -15264px;
+}
+
+.smetz_bishopric {
+    background-position: 0px -15280px;
+}
+
+.smewar {
+    background-position: 0px -15296px;
+}
+
+.smexican_states_section {
+    background-position: 0px -15312px;
+}
+
+.smexico_section {
+    background-position: 0px -15328px;
+}
+
+.smexico_mexico {
+    background-position: 0px -15344px;
+}
+
+.smicronesia {
+    background-position: 0px -15360px;
+}
+
+.smikulin {
+    background-position: 0px -15376px;
+}
+
+.smilan {
+    background-position: 0px -15392px;
+}
+
+.sminden_bishopric {
+    background-position: 0px -15408px;
+}
+
+.sminden_city_under_siege {
+    background-position: 0px -15424px;
+}
+
+.sminerva {
+    background-position: 0px -15440px;
+}
+
+.smirandola {
+    background-position: 0px -15456px;
+}
+
+.smodena_and_reggio {
+    background-position: 0px -15472px;
+}
+
+.smogadishu {
+    background-position: 0px -15488px;
+}
+
+.smoheli {
+    background-position: 0px -15504px;
+}
+
+.smoheli {
+    background-position: 0px -15520px;
+}
+
+.smoldavia {
+    background-position: 0px -15536px;
+}
+
+.smoldova {
+    background-position: 0px -15552px;
+}
+
+.smolossia {
+    background-position: 0px -15568px;
+}
+
+.smombasa {
+    background-position: 0px -15584px;
+}
+
+.smonaco_notgeld {
+    background-position: 0px -15600px;
+}
+
+.smonaco {
+    background-position: 0px -15616px;
+}
+
+.smonaco_section {
+    background-position: 0px -15632px;
+}
+
+.smongol_states_section {
+    background-position: 0px -15648px;
+}
+
+.smongolia {
+    background-position: 0px -15664px;
+}
+
+.smontenegro {
+    background-position: 0px -15680px;
+}
+
+.smontenegro_section {
+    background-position: 0px -15696px;
+}
+
+.smontferrat {
+    background-position: 0px -15712px;
+}
+
+.smontlucon {
+    background-position: 0px -15728px;
+}
+
+.smontserrat {
+    background-position: 0px -15744px;
+}
+
+.smoravia_section {
+    background-position: 0px -15760px;
+}
+
+.smordovia {
+    background-position: 0px -15776px;
+}
+
+.smorea {
+    background-position: 0px -15792px;
+}
+
+.smorocco {
+    background-position: 0px -15808px;
+}
+
+.smorocco_section {
+    background-position: 0px -15824px;
+}
+
+.smoscow {
+    background-position: 0px -15840px;
+}
+
+.smosul_eyalet {
+    background-position: 0px -15856px;
+}
+
+.smozambique {
+    background-position: 0px -15872px;
+}
+
+.smozhaysk {
+    background-position: 0px -15888px;
+}
+
+.smughal_empire {
+    background-position: 0px -15904px;
+}
+
+.smulhouse_free_imperial_city {
+    background-position: 0px -15920px;
+}
+
+.smuenster_bishopric {
+    background-position: 0px -15936px;
+}
+
+.smuenster_city {
+    background-position: 0px -15952px;
+}
+
+.smuensterberg_oels {
+    background-position: 0px -15968px;
+}
+
+.smuensterberg {
+    background-position: 0px -15984px;
+}
+
+.smurcia {
+    background-position: 0px -16000px;
+}
+
+.smuri {
+    background-position: 0px -16016px;
+}
+
+.smuscat_and_oman {
+    background-position: 0px -16032px;
+}
+
+.smyanmar {
+    background-position: 0px -16048px;
+}
+
+.smyanmar_section {
+    background-position: 0px -16064px;
+}
+
+.smysore {
+    background-position: 0px -16080px;
+}
+
+.snabataean-kingdom {
+    background-position: 0px -16096px;
+}
+
+.snagybanya {
+    background-position: 0px -16112px;
+}
+
+.snakhjevan_khanate {
+    background-position: 0px -16128px;
+}
+
+.snakhshab {
+    background-position: 0px -16144px;
+}
+
+.snamibia_period {
+    background-position: 0px -16160px;
+}
+
+.snamibia_section {
+    background-position: 0px -16176px;
+}
+
+.snamur_county {
+    background-position: 0px -16192px;
+}
+
+.snantes_county {
+    background-position: 0px -16208px;
+}
+
+.snaples {
+    background-position: 0px -16224px;
+}
+
+.snaples_kingdom {
+    background-position: 0px -16240px;
+}
+
+.snarva {
+    background-position: 0px -16256px;
+}
+
+.snassau_weilburg {
+    background-position: 0px -16272px;
+}
+
+.snassau {
+    background-position: 0px -16288px;
+}
+
+.snaumburg {
+    background-position: 0px -16304px;
+}
+
+.snauru {
+    background-position: 0px -16320px;
+}
+
+.snavarre_france {
+    background-position: 0px -16336px;
+}
+
+.snavarre_spain {
+    background-position: 0px -16352px;
+}
+
+.snavarre {
+    background-position: 0px -16368px;
+}
+
+.snawanagar {
+    background-position: 0px -16384px;
+}
+
+.sneopatras {
+    background-position: 0px -16400px;
+}
+
+.snepal {
+    background-position: 0px -16416px;
+}
+
+.snepal_section {
+    background-position: 0px -16432px;
+}
+
+.snepal_medieval {
+    background-position: 0px -16448px;
+}
+
+.snetherlands_section {
+    background-position: 0px -16464px;
+}
+
+.snetherlands {
+    background-position: 0px -16480px;
+}
+
+.snetherlands_antilles {
+    background-position: 0px -16496px;
+}
+
+.snetherlands_east_indies_period {
+    background-position: 0px -16512px;
+}
+
+.snetherlands_west_indies {
+    background-position: 0px -16528px;
+}
+
+.sneubrandenburg_city {
+    background-position: 0px -16544px;
+}
+
+.sneuchatel_section {
+    background-position: 0px -16560px;
+}
+
+.sneuchatel {
+    background-position: 0px -16576px;
+}
+
+.sneuchatel_county {
+    background-position: 0px -16592px;
+}
+
+.sneuchatel_duchy {
+    background-position: 0px -16608px;
+}
+
+.sneuchatel_principality {
+    background-position: 0px -16624px;
+}
+
+.sneuss_city {
+    background-position: 0px -16640px;
+}
+
+.sneutral_moresnet {
+    background-position: 0px -16656px;
+}
+
+.snevers_county {
+    background-position: 0px -16672px;
+}
+
+.snevis {
+    background-position: 0px -16688px;
+}
+
+.snew_caledonia_section {
+    background-position: 0px -16704px;
+}
+
+.snew_france {
+    background-position: 0px -16720px;
+}
+
+.snew_guinea {
+    background-position: 0px -16736px;
+}
+
+.snew_hebrides_period {
+    background-position: 0px -16752px;
+}
+
+.snew_holland {
+    background-position: 0px -16768px;
+}
+
+.snew_jersey {
+    background-position: 0px -16784px;
+}
+
+.snew_south_wales {
+    background-position: 0px -16800px;
+}
+
+.snew_utopia {
+    background-position: 0px -16816px;
+}
+
+.snew_york {
+    background-position: 0px -16832px;
+}
+
+.snew_zealand_section {
+    background-position: 0px -16848px;
+}
+
+.snew_zealand {
+    background-position: 0px -16864px;
+}
+
+.snewfoundland {
+    background-position: 0px -16880px;
+}
+
+.snicaea {
+    background-position: 0px -16896px;
+}
+
+.snicaragua {
+    background-position: 0px -16912px;
+}
+
+.snicaragua_section {
+    background-position: 0px -16928px;
+}
+
+.snicaraguan_cities_section {
+    background-position: 0px -16944px;
+}
+
+.snidwalden {
+    background-position: 0px -16960px;
+}
+
+.sniger {
+    background-position: 0px -16976px;
+}
+
+.snigeria {
+    background-position: 0px -16992px;
+}
+
+.snigeria_section {
+    background-position: 0px -17008px;
+}
+
+.sniue {
+    background-position: 0px -17024px;
+}
+
+.snizhny_novgorod_suzdal {
+    background-position: 0px -17040px;
+}
+
+.snordhausen_city {
+    background-position: 0px -17056px;
+}
+
+.snoricum_section {
+    background-position: 0px -17072px;
+}
+
+.snorth_barchant {
+    background-position: 0px -17088px;
+}
+
+.snorth_borneo {
+    background-position: 0px -17104px;
+}
+
+.snorth_korea {
+    background-position: 0px -17120px;
+}
+
+.snorth_macedonia {
+    background-position: 0px -17136px;
+}
+
+.snorth_macedonia_section {
+    background-position: 0px -17152px;
+}
+
+.snorth_peru {
+    background-position: 0px -17168px;
+}
+
+.snorth_yemen {
+    background-position: 0px -17184px;
+}
+
+.srepubblica_del_nord {
+    background-position: 0px -17200px;
+}
+
+.snorthern_cyprus {
+    background-position: 0px -17216px;
+}
+
+.snorthern_ireland {
+    background-position: 0px -17232px;
+}
+
+.snorway {
+    background-position: 0px -17248px;
+}
+
+.snorway_section {
+    background-position: 0px -17264px;
+}
+
+.snostitz_rieneck {
+    background-position: 0px -17280px;
+}
+
+.snova_roma {
+    background-position: 0px -17296px;
+}
+
+.snova_scotia {
+    background-position: 0px -17312px;
+}
+
+.snovgorod_republic {
+    background-position: 0px -17328px;
+}
+
+.snovorossiya {
+    background-position: 0px -17344px;
+}
+
+.snumidie {
+    background-position: 0px -17360px;
+}
+
+.snuremberg_free_imperial_city {
+    background-position: 0px -17376px;
+}
+
+.snysa {
+    background-position: 0px -17392px;
+}
+
+.sober_ost {
+    background-position: 0px -17408px;
+}
+
+.sobock_territory_period {
+    background-position: 0px -17424px;
+}
+
+.sobwalden {
+    background-position: 0px -17440px;
+}
+
+.sobwalden_republic {
+    background-position: 0px -17456px;
+}
+
+.soceania {
+    background-position: 0px -17472px;
+}
+
+.soels {
+    background-position: 0px -17488px;
+}
+
+.soldenburg_county {
+    background-position: 0px -17504px;
+}
+
+.soldenburg_grand_duchy {
+    background-position: 0px -17520px;
+}
+
+.solomouc {
+    background-position: 0px -17536px;
+}
+
+.solomouc_duchy {
+    background-position: 0px -17552px;
+}
+
+.soman {
+    background-position: 0px -17568px;
+}
+
+.soman_section {
+    background-position: 0px -17584px;
+}
+
+.soppeln_ratibor {
+    background-position: 0px -17600px;
+}
+
+.soppeln {
+    background-position: 0px -17616px;
+}
+
+.soran_spanish_possession {
+    background-position: 0px -17632px;
+}
+
+.sorange_free_state {
+    background-position: 0px -17648px;
+}
+
+.sorange {
+    background-position: 0px -17664px;
+}
+
+.sorchha {
+    background-position: 0px -17680px;
+}
+
+.sorsini_rosenberg {
+    background-position: 0px -17696px;
+}
+
+.sortenburg {
+    background-position: 0px -17712px;
+}
+
+.soesel_wiek {
+    background-position: 0px -17728px;
+}
+
+.sosnabrueck_bishopric {
+    background-position: 0px -17744px;
+}
+
+.sosnabrueck_city {
+    background-position: 0px -17760px;
+}
+
+.soestergoetland {
+    background-position: 0px -17776px;
+}
+
+.sostrogothic_kigdom {
+    background-position: 0px -17792px;
+}
+
+.sostrogothic_kingdom_section {
+    background-position: 0px -17808px;
+}
+
+.sother_world_kingdom {
+    background-position: 0px -17824px;
+}
+
+.sotrar_oasis {
+    background-position: 0px -17840px;
+}
+
+.sottoman_empire {
+    background-position: 0px -17856px;
+}
+
+.spaar {
+    background-position: 0px -17872px;
+}
+
+.spadania {
+    background-position: 0px -17888px;
+}
+
+.spaderborn_bishopric {
+    background-position: 0px -17904px;
+}
+
+.spadova {
+    background-position: 0px -17920px;
+}
+
+.spaikend {
+    background-position: 0px -17936px;
+}
+
+.spakistan {
+    background-position: 0px -17952px;
+}
+
+.spalatinate_german_states {
+    background-position: 0px -17968px;
+}
+
+.spalau {
+    background-position: 0px -17984px;
+}
+
+.spalestine_fantasy {
+    background-position: 0px -18000px;
+}
+
+.spallars_sobira {
+    background-position: 0px -18016px;
+}
+
+.spamplona_and_aragon {
+    background-position: 0px -18032px;
+}
+
+.spanama {
+    background-position: 0px -18048px;
+}
+
+.spanch {
+    background-position: 0px -18064px;
+}
+
+.spanna {
+    background-position: 0px -18080px;
+}
+
+.spapal_states {
+    background-position: 0px -18096px;
+}
+
+.spapal_states_section {
+    background-position: 0px -18112px;
+}
+
+.spapua_new_guinea {
+    background-position: 0px -18128px;
+}
+
+.spapua_new_guinea_section {
+    background-position: 0px -18144px;
+}
+
+.spapua {
+    background-position: 0px -18160px;
+}
+
+.sparaguay {
+    background-position: 0px -18176px;
+}
+
+.sparaguay_section {
+    background-position: 0px -18192px;
+}
+
+.spargar {
+    background-position: 0px -18208px;
+}
+
+.sparis_bishopric {
+    background-position: 0px -18224px;
+}
+
+.sparma_and_piacenza {
+    background-position: 0px -18240px;
+}
+
+.sparthian_empire {
+    background-position: 0px -18256px;
+}
+
+.sparva_domus {
+    background-position: 0px -18272px;
+}
+
+.spassau_bishopric {
+    background-position: 0px -18288px;
+}
+
+.spatiala {
+    background-position: 0px -18304px;
+}
+
+.spavia {
+    background-position: 0px -18320px;
+}
+
+.spenang {
+    background-position: 0px -18336px;
+}
+
+.sperche {
+    background-position: 0px -18352px;
+}
+
+.spersia {
+    background-position: 0px -18368px;
+}
+
+.speru {
+    background-position: 0px -18384px;
+}
+
+.speru_section {
+    background-position: 0px -18400px;
+}
+
+.sperugia {
+    background-position: 0px -18416px;
+}
+
+.spesaro {
+    background-position: 0px -18432px;
+}
+
+.sphilippines {
+    background-position: 0px -18448px;
+}
+
+.sphilippines_section {
+    background-position: 0px -18464px;
+}
+
+.sphenicie {
+    background-position: 0px -18480px;
+}
+
+.spiacenza {
+    background-position: 0px -18496px;
+}
+
+.spiedmont_sardinia {
+    background-position: 0px -18512px;
+}
+
+.spiedmont_republic {
+    background-position: 0px -18528px;
+}
+
+.spiombino {
+    background-position: 0px -18544px;
+}
+
+.spisa {
+    background-position: 0px -18560px;
+}
+
+.spitcairn_islands {
+    background-position: 0px -18576px;
+}
+
+.spoitou {
+    background-position: 0px -18592px;
+}
+
+.spoland_section {
+    background-position: 0px -18608px;
+}
+
+.spoland_child_section {
+    background-position: 0px -18624px;
+}
+
+.spoland_congress_kingdom {
+    background-position: 0px -18640px;
+}
+
+.spoland {
+    background-position: 0px -18656px;
+}
+
+.spolishlithuanian_commonwealth {
+    background-position: 0px -18672px;
+}
+
+.spomerania_stettin {
+    background-position: 0px -18688px;
+}
+
+.spomerania_duchy {
+    background-position: 0px -18704px;
+}
+
+.spomerania_swedish_dominion {
+    background-position: 0px -18720px;
+}
+
+.sporbandar {
+    background-position: 0px -18736px;
+}
+
+.sporcia {
+    background-position: 0px -18752px;
+}
+
+.sportugal {
+    background-position: 0px -18768px;
+}
+
+.sportugal_section {
+    background-position: 0px -18784px;
+}
+
+.sportuguese_guinea_period {
+    background-position: 0px -18800px;
+}
+
+.sportuguese_malacca {
+    background-position: 0px -18816px;
+}
+
+.sportuguese_notgeld_section {
+    background-position: 0px -18832px;
+}
+
+.sportuguese_timor_period {
+    background-position: 0px -18848px;
+}
+
+.spratabgarh {
+    background-position: 0px -18864px;
+}
+
+.sprilep {
+    background-position: 0px -18880px;
+}
+
+.sprince_edward_island {
+    background-position: 0px -18896px;
+}
+
+.spronsk {
+    background-position: 0px -18912px;
+}
+
+.sprovence {
+    background-position: 0px -18928px;
+}
+
+.sprovence_marquisatee {
+    background-position: 0px -18944px;
+}
+
+.sprussia {
+    background-position: 0px -18960px;
+}
+
+.sprussia_kingdom {
+    background-position: 0px -18976px;
+}
+
+.sprussia_section {
+    background-position: 0px -18992px;
+}
+
+.spskov_republic {
+    background-position: 0px -19008px;
+}
+
+.spudukkottai {
+    background-position: 0px -19024px;
+}
+
+.spuerto_rico {
+    background-position: 0px -19040px;
+}
+
+.spuerto_rico_section {
+    background-position: 0px -19056px;
+}
+
+.spuy {
+    background-position: 0px -19072px;
+}
+
+.sqara_qoyunlu {
+    background-position: 0px -19088px;
+}
+
+.sqarakhanid_dynasty_section {
+    background-position: 0px -19104px;
+}
+
+.sqarluq_khanate {
+    background-position: 0px -19120px;
+}
+
+.sqatar {
+    background-position: 0px -19136px;
+}
+
+.squaiti_sultanate {
+    background-position: 0px -19152px;
+}
+
+.squeensland {
+    background-position: 0px -19168px;
+}
+
+.sradhanpur {
+    background-position: 0px -19184px;
+}
+
+.sragusa {
+    background-position: 0px -19200px;
+}
+
+.sindependent_state_of_rainbow_creek {
+    background-position: 0px -19216px;
+}
+
+.srampur {
+    background-position: 0px -19232px;
+}
+
+.sras_al_khaimah {
+    background-position: 0px -19248px;
+}
+
+.sratlam {
+    background-position: 0px -19264px;
+}
+
+.sratzeburg_bishopric {
+    background-position: 0px -19280px;
+}
+
+.srauraci_celts {
+    background-position: 0px -19296px;
+}
+
+.sravensburg_city {
+    background-position: 0px -19312px;
+}
+
+.sredonda_island {
+    background-position: 0px -19328px;
+}
+
+.sredonda {
+    background-position: 0px -19344px;
+}
+
+.sregensburg_bishopric {
+    background-position: 0px -19360px;
+}
+
+.sregensburg_free_city {
+    background-position: 0px -19376px;
+}
+
+.sreichenau_lordship {
+    background-position: 0px -19392px;
+}
+
+.sreims {
+    background-position: 0px -19408px;
+}
+
+.smirage_islands {
+    background-position: 0px -19424px;
+}
+
+.srepublic_of_the_congo_leopoldville_period {
+    background-position: 0px -19440px;
+}
+
+.sretegno {
+    background-position: 0px -19456px;
+}
+
+.sreunion_section {
+    background-position: 0px -19472px;
+}
+
+.sreunion_period {
+    background-position: 0px -19488px;
+}
+
+.sholy_empire_of_reunion {
+    background-position: 0px -19504px;
+}
+
+.sreuss_ebersdorf {
+    background-position: 0px -19520px;
+}
+
+.sreuss_gera {
+    background-position: 0px -19536px;
+}
+
+.sreuss_greiz {
+    background-position: 0px -19552px;
+}
+
+.sreuss_lobenstein {
+    background-position: 0px -19568px;
+}
+
+.sreuss_lobenstein_ebersdorf {
+    background-position: 0px -19584px;
+}
+
+.sreuss_schleiz {
+    background-position: 0px -19600px;
+}
+
+.sreuss_untergreiz {
+    background-position: 0px -19616px;
+}
+
+.sreval {
+    background-position: 0px -19632px;
+}
+
+.srewa {
+    background-position: 0px -19648px;
+}
+
+.srheinau {
+    background-position: 0px -19664px;
+}
+
+.srheine_city {
+    background-position: 0px -19680px;
+}
+
+.srhine_confederation {
+    background-position: 0px -19696px;
+}
+
+.srhodes {
+    background-position: 0px -19712px;
+}
+
+.srhodesia_period {
+    background-position: 0px -19728px;
+}
+
+.srhodesia_and_nyasaland {
+    background-position: 0px -19744px;
+}
+
+.sriau {
+    background-position: 0px -19760px;
+}
+
+.srif {
+    background-position: 0px -19776px;
+}
+
+.sriga_archbishopric {
+    background-position: 0px -19792px;
+}
+
+.sriga {
+    background-position: 0px -19808px;
+}
+
+.sriga_free_city {
+    background-position: 0px -19824px;
+}
+
+.srimini {
+    background-position: 0px -19840px;
+}
+
+.sriom {
+    background-position: 0px -19856px;
+}
+
+.sriviera_principality {
+    background-position: 0px -19872px;
+}
+
+.srobland {
+    background-position: 0px -19888px;
+}
+
+.srodez {
+    background-position: 0px -19904px;
+}
+
+.srohilkhand {
+    background-position: 0px -19920px;
+}
+
+.srome {
+    background-position: 0px -19936px;
+}
+
+.sroman-provinces {
+    background-position: 0px -19952px;
+}
+
+.sroman_republic {
+    background-position: 0px -19968px;
+}
+
+.sroman_sister_republic {
+    background-position: 0px -19984px;
+}
+
+.sromania_section {
+    background-position: 0px -20000px;
+}
+
+.sromania {
+    background-position: 0px -20016px;
+}
+
+.sromanian_notgeld_section {
+    background-position: 0px -20032px;
+}
+
+.srome_section {
+    background-position: 0px -20048px;
+}
+
+.srome_subsection {
+    background-position: 0px -20064px;
+}
+
+.srosenberg_dominion {
+    background-position: 0px -20080px;
+}
+
+.sross_dependency {
+    background-position: 0px -20096px;
+}
+
+.srostock_city {
+    background-position: 0px -20112px;
+}
+
+.srostov {
+    background-position: 0px -20128px;
+}
+
+.sroussillon {
+    background-position: 0px -20144px;
+}
+
+.srum_sultanate {
+    background-position: 0px -20160px;
+}
+
+.srummen {
+    background-position: 0px -20176px;
+}
+
+.sruritania {
+    background-position: 0px -20192px;
+}
+
+.srus_principalities_section {
+    background-position: 0px -20208px;
+}
+
+.srussia_section {
+    background-position: 0px -20224px;
+}
+
+.srussian_empire_period {
+    background-position: 0px -20240px;
+}
+
+.srussian_federation_period {
+    background-position: 0px -20256px;
+}
+
+.srussian_republic_period {
+    background-position: 0px -20272px;
+}
+
+.srwanda {
+    background-position: 0px -20288px;
+}
+
+.srwanda_burundi {
+    background-position: 0px -20304px;
+}
+
+.sryazan {
+    background-position: 0px -20320px;
+}
+
+.sryukyu {
+    background-position: 0px -20336px;
+}
+
+.ssaadi_dynasty_marrakesh_branch {
+    background-position: 0px -20352px;
+}
+
+.ssaar {
+    background-position: 0px -20368px;
+}
+
+.ssaba {
+    background-position: 0px -20384px;
+}
+
+.ssabbioneta {
+    background-position: 0px -20400px;
+}
+
+.ssaffarid_dynasty {
+    background-position: 0px -20416px;
+}
+
+.ssagan {
+    background-position: 0px -20432px;
+}
+
+.ssailana {
+    background-position: 0px -20448px;
+}
+
+.ssaint_barthelemy {
+    background-position: 0px -20464px;
+}
+
+.ssaint_eustatius {
+    background-position: 0px -20480px;
+}
+
+.ssaint_gall {
+    background-position: 0px -20496px;
+}
+
+.ssaint_helena {
+    background-position: 0px -20512px;
+}
+
+.ssaint_helena_and_ascension {
+    background-position: 0px -20528px;
+}
+
+.ssaint_helena_ascension_and_tristan_da_cunha_section {
+    background-position: 0px -20544px;
+}
+
+.ssaint_kitts {
+    background-position: 0px -20560px;
+}
+
+.ssaint_kitts_and_nevis_section {
+    background-position: 0px -20576px;
+}
+
+.ssaint_kitts_and_nevis {
+    background-position: 0px -20592px;
+}
+
+.ssaint_lucia {
+    background-position: 0px -20608px;
+}
+
+.ssaint_martial {
+    background-position: 0px -20624px;
+}
+
+.ssaint_vincent_and_the_grenadines {
+    background-position: 0px -20640px;
+}
+
+.ssaint_aignan {
+    background-position: 0px -20656px;
+}
+
+.ssaint_domingue_period {
+    background-position: 0px -20672px;
+}
+
+.ssaint_pierre_and_miquelon {
+    background-position: 0px -20688px;
+}
+
+.ssaluzzo {
+    background-position: 0px -20704px;
+}
+
+.ssalzburg_archbishopric {
+    background-position: 0px -20720px;
+}
+
+.ssalzwedel_city {
+    background-position: 0px -20736px;
+}
+
+.ssamanid_dynasty {
+    background-position: 0px -20752px;
+}
+
+.ssamarqand_sogd_section {
+    background-position: 0px -20768px;
+}
+
+.ssamarqand_ikhshids {
+    background-position: 0px -20784px;
+}
+
+.ssamitan {
+    background-position: 0px -20800px;
+}
+
+.ssamoa {
+    background-position: 0px -20816px;
+}
+
+.ssapsc {
+    background-position: 0px -20832px;
+}
+
+.ssan_marino {
+    background-position: 0px -20848px;
+}
+
+.ssancerre {
+    background-position: 0px -20864px;
+}
+
+.ssantiago_del_estero {
+    background-position: 0px -20880px;
+}
+
+.ssanto_domingo_period {
+    background-position: 0px -20896px;
+}
+
+.ssao_tome_and_principe {
+    background-position: 0px -20912px;
+}
+
+.ssarawak {
+    background-position: 0px -20928px;
+}
+
+.ssardinia {
+    background-position: 0px -20944px;
+}
+
+.ssarine_et_broye {
+    background-position: 0px -20960px;
+}
+
+.ssark {
+    background-position: 0px -20976px;
+}
+
+.ssasanian_empire {
+    background-position: 0px -20992px;
+}
+
+.ssasanian_section {
+    background-position: 0px -21008px;
+}
+
+.ssaudi_arabia_section {
+    background-position: 0px -21024px;
+}
+
+.ssaudi_arabia_period {
+    background-position: 0px -21040px;
+}
+
+.ssaudi_arabia_child_section {
+    background-position: 0px -21056px;
+}
+
+.sfree_republic_of_saugeais {
+    background-position: 0px -21072px;
+}
+
+.ssavona {
+    background-position: 0px -21088px;
+}
+
+.ssavoy_france {
+    background-position: 0px -21104px;
+}
+
+.ssavoy {
+    background-position: 0px -21120px;
+}
+
+.ssaxe_altenburg {
+    background-position: 0px -21136px;
+}
+
+.ssaxe_coburg_and_gotha_duchy {
+    background-position: 0px -21152px;
+}
+
+.ssaxe_eisenach {
+    background-position: 0px -21168px;
+}
+
+.ssaxe_gotha_altenburg {
+    background-position: 0px -21184px;
+}
+
+.ssaxe_hildburghausen {
+    background-position: 0px -21200px;
+}
+
+.ssaxe_lauenburg {
+    background-position: 0px -21216px;
+}
+
+.ssaxe_meiningen {
+    background-position: 0px -21232px;
+}
+
+.ssaxe_weimar_eisenach {
+    background-position: 0px -21248px;
+}
+
+.ssaxe_weimar {
+    background-position: 0px -21264px;
+}
+
+.ssaxe_weissenfels {
+    background-position: 0px -21280px;
+}
+
+.ssaxony_albertinian_line {
+    background-position: 0px -21296px;
+}
+
+.ssaxony_albertinian_line_kingdom {
+    background-position: 0px -21312px;
+}
+
+.sscattered_islands_in_the_indian_ocean_section {
+    background-position: 0px -21328px;
+}
+
+.sscattered_islands_in_the_indian_ocean {
+    background-position: 0px -21344px;
+}
+
+.sschaffhausen_section {
+    background-position: 0px -21360px;
+}
+
+.sschaffhausen {
+    background-position: 0px -21376px;
+}
+
+.sschaffhausen_city {
+    background-position: 0px -21392px;
+}
+
+.sschaumburg_hessen {
+    background-position: 0px -21408px;
+}
+
+.sschaumburg_lippe {
+    background-position: 0px -21424px;
+}
+
+.sschlick {
+    background-position: 0px -21440px;
+}
+
+.sschwarzburg_blankenburg {
+    background-position: 0px -21456px;
+}
+
+.sschwarzburg_rudolstadt {
+    background-position: 0px -21472px;
+}
+
+.sschwarzburg_sondershausen_german_states {
+    background-position: 0px -21488px;
+}
+
+.sschweidnitz {
+    background-position: 0px -21504px;
+}
+
+.sschweinfurt_city {
+    background-position: 0px -21520px;
+}
+
+.sschwerin_bishopric {
+    background-position: 0px -21536px;
+}
+
+.sschwyz_section {
+    background-position: 0px -21552px;
+}
+
+.sschwyz {
+    background-position: 0px -21568px;
+}
+
+.sschwyz_city {
+    background-position: 0px -21584px;
+}
+
+.sscordisci_celts {
+    background-position: 0px -21600px;
+}
+
+.sscotland {
+    background-position: 0px -21616px;
+}
+
+.ssealand {
+    background-position: 0px -21632px;
+}
+
+.sseborga {
+    background-position: 0px -21648px;
+}
+
+.ssecond_bulgarian_empire {
+    background-position: 0px -21664px;
+}
+
+.ssedan_principality {
+    background-position: 0px -21680px;
+}
+
+.sseleucid_section {
+    background-position: 0px -21696px;
+}
+
+.sselmecbanya {
+    background-position: 0px -21712px;
+}
+
+.ssenegal {
+    background-position: 0px -21728px;
+}
+
+.ssenegal_section {
+    background-position: 0px -21744px;
+}
+
+.ssenegal_notgeld_section {
+    background-position: 0px -21760px;
+}
+
+.sseptinsular_republic_period {
+    background-position: 0px -21776px;
+}
+
+.sserbia_section {
+    background-position: 0px -21792px;
+}
+
+.sserbia_serbia {
+    background-position: 0px -21808px;
+}
+
+.sserbia_medieval {
+    background-position: 0px -21824px;
+}
+
+.sserbia {
+    background-position: 0px -21840px;
+}
+
+.sserbian_empire {
+    background-position: 0px -21856px;
+}
+
+.sserbian_krajina {
+    background-position: 0px -21872px;
+}
+
+.sserdi_celts {
+    background-position: 0px -21888px;
+}
+
+.sserpukhov_borovsk {
+    background-position: 0px -21904px;
+}
+
+.sseverin {
+    background-position: 0px -21920px;
+}
+
+.sseychelles {
+    background-position: 0px -21936px;
+}
+
+.ssharjah {
+    background-position: 0px -21952px;
+}
+
+.sshaybanid_dynasty {
+    background-position: 0px -21968px;
+}
+
+.ssheki_khanate {
+    background-position: 0px -21984px;
+}
+
+.sshirvan_khanate {
+    background-position: 0px -22000px;
+}
+
+.sshirvanshah_dynasty {
+    background-position: 0px -22016px;
+}
+
+.sshkoder_city {
+    background-position: 0px -22032px;
+}
+
+.ssiberia_russia {
+    background-position: 0px -22048px;
+}
+
+.ssicily_kingdom {
+    background-position: 0px -22064px;
+}
+
+.ssidon {
+    background-position: 0px -22080px;
+}
+
+.ssiena_republic {
+    background-position: 0px -22096px;
+}
+
+.ssierra_leone {
+    background-position: 0px -22112px;
+}
+
+.ssilesia_section {
+    background-position: 0px -22128px;
+}
+
+.ssilesia_royal_mint {
+    background-position: 0px -22144px;
+}
+
+.ssingapore {
+    background-position: 0px -22160px;
+}
+
+.ssint_maarten {
+    background-position: 0px -22176px;
+}
+
+.ssinzendorf {
+    background-position: 0px -22192px;
+}
+
+.ssion {
+    background-position: 0px -22208px;
+}
+
+.ssitamau {
+    background-position: 0px -22224px;
+}
+
+.sslavonia {
+    background-position: 0px -22240px;
+}
+
+.sslovakia {
+    background-position: 0px -22256px;
+}
+
+.sslovenia {
+    background-position: 0px -22272px;
+}
+
+.ssoedermanland {
+    background-position: 0px -22288px;
+}
+
+.ssoest_city {
+    background-position: 0px -22304px;
+}
+
+.ssolomon_islands {
+    background-position: 0px -22320px;
+}
+
+.ssolothurn_section {
+    background-position: 0px -22336px;
+}
+
+.ssolothurn {
+    background-position: 0px -22352px;
+}
+
+.ssolothurn_city {
+    background-position: 0px -22368px;
+}
+
+.ssomalia_section {
+    background-position: 0px -22384px;
+}
+
+.ssomalia {
+    background-position: 0px -22400px;
+}
+
+.ssomaliland {
+    background-position: 0px -22416px;
+}
+
+.ssorau {
+    background-position: 0px -22432px;
+}
+
+.ssouth_africa_section {
+    background-position: 0px -22448px;
+}
+
+.ssouth_africa {
+    background-position: 0px -22464px;
+}
+
+.ssouth_african_republic {
+    background-position: 0px -22480px;
+}
+
+.ssouth_arabia {
+    background-position: 0px -22496px;
+}
+
+.ssouth_australia {
+    background-position: 0px -22512px;
+}
+
+.ssouth_georgia_and_the_south_sandwich_islands {
+    background-position: 0px -22528px;
+}
+
+.ssouth_korea {
+    background-position: 0px -22544px;
+}
+
+.ssouth_ossetia {
+    background-position: 0px -22560px;
+}
+
+.ssouth_peru {
+    background-position: 0px -22576px;
+}
+
+.ssouth_prussia {
+    background-position: 0px -22592px;
+}
+
+.ssouth_sudan {
+    background-position: 0px -22608px;
+}
+
+.ssouth_vietnam {
+    background-position: 0px -22624px;
+}
+
+.ssouth_west_africa_period {
+    background-position: 0px -22640px;
+}
+
+.ssouthern_rhodesia_period {
+    background-position: 0px -22656px;
+}
+
+.ssouvigny {
+    background-position: 0px -22672px;
+}
+
+.ssoviet_base_areas_section {
+    background-position: 0px -22688px;
+}
+
+.ssoviet_union {
+    background-position: 0px -22704px;
+}
+
+.sspain_section {
+    background-position: 0px -22720px;
+}
+
+.sspain {
+    background-position: 0px -22736px;
+}
+
+.sspalato {
+    background-position: 0px -22752px;
+}
+
+.sspanish_netherlands {
+    background-position: 0px -22768px;
+}
+
+.sspanish_notgeld {
+    background-position: 0px -22784px;
+}
+
+.sspanish_notgeld_section {
+    background-position: 0px -22800px;
+}
+
+.sspanish_states_section {
+    background-position: 0px -22816px;
+}
+
+.sspeyer_bishopric {
+    background-position: 0px -22832px;
+}
+
+.sspeyer_city {
+    background-position: 0px -22848px;
+}
+
+.sspitsbergen {
+    background-position: 0px -22864px;
+}
+
+.ssprinzenstein {
+    background-position: 0px -22880px;
+}
+
+.ssri_lanka_section {
+    background-position: 0px -22896px;
+}
+
+.ssri_lanka_period {
+    background-position: 0px -22912px;
+}
+
+.ssri_lanka_child_section {
+    background-position: 0px -22928px;
+}
+
+.ssrpska {
+    background-position: 0px -22944px;
+}
+
+.sst_gallen_section {
+    background-position: 0px -22960px;
+}
+
+.sst_gallen {
+    background-position: 0px -22976px;
+}
+
+.sst_gallen_city {
+    background-position: 0px -22992px;
+}
+
+.sstargard {
+    background-position: 0px -23008px;
+}
+
+.sstarodub {
+    background-position: 0px -23024px;
+}
+
+.sstate_of_the_presidi {
+    background-position: 0px -23040px;
+}
+
+.sstavelot_malmedy {
+    background-position: 0px -23056px;
+}
+
+.sstein_am_rhein {
+    background-position: 0px -23072px;
+}
+
+.sstettin_city {
+    background-position: 0px -23088px;
+}
+
+.sstraits_settlements {
+    background-position: 0px -23104px;
+}
+
+.sstralsund_city {
+    background-position: 0px -23120px;
+}
+
+.sstrasbourg_bishopric {
+    background-position: 0px -23136px;
+}
+
+.sstrasbourg_city {
+    background-position: 0px -23152px;
+}
+
+.sstriegau {
+    background-position: 0px -23168px;
+}
+
+.sstuttgart_city {
+    background-position: 0px -23184px;
+}
+
+.sstyria_duchy {
+    background-position: 0px -23200px;
+}
+
+.ssudan {
+    background-position: 0px -23216px;
+}
+
+.ssudan_section {
+    background-position: 0px -23232px;
+}
+
+.ssuebi_kigdom {
+    background-position: 0px -23248px;
+}
+
+.ssulawesi {
+    background-position: 0px -23264px;
+}
+
+.ssulayhid_dynasty {
+    background-position: 0px -23280px;
+}
+
+.ssulu_sultanate {
+    background-position: 0px -23296px;
+}
+
+.ssumatra {
+    background-position: 0px -23312px;
+}
+
+.ssuriname {
+    background-position: 0px -23328px;
+}
+
+.ssuyab {
+    background-position: 0px -23344px;
+}
+
+.ssvac {
+    background-position: 0px -23360px;
+}
+
+.sswaziland_period {
+    background-position: 0px -23376px;
+}
+
+.ssweden {
+    background-position: 0px -23392px;
+}
+
+.ssweden_section {
+    background-position: 0px -23408px;
+}
+
+.sswitzerland_period {
+    background-position: 0px -23424px;
+}
+
+.sswitzerland_section {
+    background-position: 0px -23440px;
+}
+
+.sswitzerland_child_section {
+    background-position: 0px -23456px;
+}
+
+.ssyria_section {
+    background-position: 0px -23472px;
+}
+
+.ssyria_syria {
+    background-position: 0px -23488px;
+}
+
+.stachira {
+    background-position: 0px -23504px;
+}
+
+.stahiti {
+    background-position: 0px -23520px;
+}
+
+.staiwan {
+    background-position: 0px -23536px;
+}
+
+.stajikistan {
+    background-position: 0px -23552px;
+}
+
+.staman_goths {
+    background-position: 0px -23568px;
+}
+
+.stangier {
+    background-position: 0px -23584px;
+}
+
+.stannu_tuva {
+    background-position: 0px -23600px;
+}
+
+.stanzania_section {
+    background-position: 0px -23616px;
+}
+
+.stanzania {
+    background-position: 0px -23632px;
+}
+
+.stashir_dzoraget {
+    background-position: 0px -23648px;
+}
+
+.stasmania {
+    background-position: 0px -23664px;
+}
+
+.stassarolo {
+    background-position: 0px -23680px;
+}
+
+.statarstan {
+    background-position: 0px -23696px;
+}
+
+.staurida_governorate {
+    background-position: 0px -23712px;
+}
+
+.staurisci_celts {
+    background-position: 0px -23728px;
+}
+
+.skingdom_of_tavolara {
+    background-position: 0px -23744px;
+}
+
+.stelgte {
+    background-position: 0px -23760px;
+}
+
+.stermez {
+    background-position: 0px -23776px;
+}
+
+.steschen {
+    background-position: 0px -23792px;
+}
+
+.steutonic_order {
+    background-position: 0px -23808px;
+}
+
+.stexas_united_states {
+    background-position: 0px -23824px;
+}
+
+.sthailand {
+    background-position: 0px -23840px;
+}
+
+.sthann_city {
+    background-position: 0px -23856px;
+}
+
+.sthessalonica_kingdom {
+    background-position: 0px -23872px;
+}
+
+.sthurgau_section {
+    background-position: 0px -23888px;
+}
+
+.sthurgau {
+    background-position: 0px -23904px;
+}
+
+.stibet {
+    background-position: 0px -23920px;
+}
+
+.sticino_section {
+    background-position: 0px -23936px;
+}
+
+.sticino {
+    background-position: 0px -23952px;
+}
+
+.stierra_del_fuego {
+    background-position: 0px -23968px;
+}
+
+.stimor_leste_section {
+    background-position: 0px -23984px;
+}
+
+.stimor_leste_period {
+    background-position: 0px -24000px;
+}
+
+.stimurid_empire {
+    background-position: 0px -24016px;
+}
+
+.stmutarakan {
+    background-position: 0px -24032px;
+}
+
+.stobago {
+    background-position: 0px -24048px;
+}
+
+.stogo {
+    background-position: 0px -24064px;
+}
+
+.stokelau {
+    background-position: 0px -24080px;
+}
+
+.stokhara_yabghus {
+    background-position: 0px -24096px;
+}
+
+.stonga {
+    background-position: 0px -24112px;
+}
+
+.stonk {
+    background-position: 0px -24128px;
+}
+
+.stonkin {
+    background-position: 0px -24144px;
+}
+
+.stortola {
+    background-position: 0px -24160px;
+}
+
+.storzhok {
+    background-position: 0px -24176px;
+}
+
+.stoszek {
+    background-position: 0px -24192px;
+}
+
+.stoulouse_county {
+    background-position: 0px -24208px;
+}
+
+.stournus {
+    background-position: 0px -24224px;
+}
+
+.stransnistrie {
+    background-position: 0px -24240px;
+}
+
+.stransnistria_governorate {
+    background-position: 0px -24256px;
+}
+
+.stransylvania {
+    background-position: 0px -24272px;
+}
+
+.strautson {
+    background-position: 0px -24288px;
+}
+
+.stravancore {
+    background-position: 0px -24304px;
+}
+
+.strebizond {
+    background-position: 0px -24320px;
+}
+
+.strento {
+    background-position: 0px -24336px;
+}
+
+.strier_archbishopric {
+    background-position: 0px -24352px;
+}
+
+.strieste {
+    background-position: 0px -24368px;
+}
+
+.strinidad {
+    background-position: 0px -24384px;
+}
+
+.strinidad_and_tobago {
+    background-position: 0px -24400px;
+}
+
+.strinidad_and_tobago_section {
+    background-position: 0px -24416px;
+}
+
+.stripoli {
+    background-position: 0px -24432px;
+}
+
+.stripoli_regency {
+    background-position: 0px -24448px;
+}
+
+.stripolitania {
+    background-position: 0px -24464px;
+}
+
+.stripura {
+    background-position: 0px -24480px;
+}
+
+.stristan_da_cunha {
+    background-position: 0px -24496px;
+}
+
+.stroppau {
+    background-position: 0px -24512px;
+}
+
+.stroppau_duchy {
+    background-position: 0px -24528px;
+}
+
+.stucuman {
+    background-position: 0px -24544px;
+}
+
+.stukhus_tribe {
+    background-position: 0px -24560px;
+}
+
+.stulunid_dynasty {
+    background-position: 0px -24576px;
+}
+
+.stunisia {
+    background-position: 0px -24592px;
+}
+
+.sturenne {
+    background-position: 0px -24608px;
+}
+
+.stuergesh_khaganate {
+    background-position: 0px -24624px;
+}
+
+.sturkey {
+    background-position: 0px -24640px;
+}
+
+.sturkmenistan {
+    background-position: 0px -24656px;
+}
+
+.sturks_and_caicos_islands {
+    background-position: 0px -24672px;
+}
+
+.stuscany {
+    background-position: 0px -24688px;
+}
+
+.stuvalu {
+    background-position: 0px -24704px;
+}
+
+.stver {
+    background-position: 0px -24720px;
+}
+
+.stwo_sicilies {
+    background-position: 0px -24736px;
+}
+
+.styrol_county {
+    background-position: 0px -24752px;
+}
+
+.suganda {
+    background-position: 0px -24768px;
+}
+
+.suglich {
+    background-position: 0px -24784px;
+}
+
+.sukraine {
+    background-position: 0px -24800px;
+}
+
+.sukraine_section {
+    background-position: 0px -24816px;
+}
+
+.sulm_city {
+    background-position: 0px -24832px;
+}
+
+.sumayyad_caliphate {
+    background-position: 0px -24848px;
+}
+
+.summ_al_qaiwain {
+    background-position: 0px -24864px;
+}
+
+.suncertain_germanic_tribes {
+    background-position: 0px -24880px;
+}
+
+.suncertain_spanish_notgeld {
+    background-position: 0px -24896px;
+}
+
+.scarolingian_empire {
+    background-position: 0px -24912px;
+}
+
+.sunified_moravia_and_margraviate {
+    background-position: 0px -24928px;
+}
+
+.sunited_arab_emirates_section {
+    background-position: 0px -24944px;
+}
+
+.sunited_arab_emirates {
+    background-position: 0px -24960px;
+}
+
+.sunited_kingdom {
+    background-position: 0px -24976px;
+}
+
+.sunited_kingdom_section {
+    background-position: 0px -24992px;
+}
+
+.sunited_provinces_of_central_italy {
+    background-position: 0px -25008px;
+}
+
+.sunited_states_section {
+    background-position: 0px -25024px;
+}
+
+.sunited_states {
+    background-position: 0px -25040px;
+}
+
+.sunited_states_pre_federal_and_private_territorial_section {
+    background-position: 0px -25056px;
+}
+
+.sunited_states_virgin_islands_period {
+    background-position: 0px -25072px;
+}
+
+.sunited_states_virgin_islands_section {
+    background-position: 0px -25088px;
+}
+
+.sunterwalden_section {
+    background-position: 0px -25104px;
+}
+
+.supper_alsace {
+    background-position: 0px -25120px;
+}
+
+.supper_canada {
+    background-position: 0px -25136px;
+}
+
+.supper_hesse {
+    background-position: 0px -25152px;
+}
+
+.supper_palatinate {
+    background-position: 0px -25168px;
+}
+
+.supper_senegal_and_niger_period {
+    background-position: 0px -25184px;
+}
+
+.supper_volta {
+    background-position: 0px -25200px;
+}
+
+.surbino {
+    background-position: 0px -25216px;
+}
+
+.surgell {
+    background-position: 0px -25232px;
+}
+
+.suri_section {
+    background-position: 0px -25248px;
+}
+
+.suri {
+    background-position: 0px -25264px;
+}
+
+.suri_talschaft {
+    background-position: 0px -25280px;
+}
+
+.suruguay {
+    background-position: 0px -25296px;
+}
+
+.sustrushana {
+    background-position: 0px -25312px;
+}
+
+.sutrecht_bishopric {
+    background-position: 0px -25328px;
+}
+
+.suzbekistan_section {
+    background-position: 0px -25344px;
+}
+
+.suzbekistan {
+    background-position: 0px -25360px;
+}
+
+.suzupis {
+    background-position: 0px -25376px;
+}
+
+.svakhsh_valley {
+    background-position: 0px -25392px;
+}
+
+.svalais_section {
+    background-position: 0px -25408px;
+}
+
+.svalais {
+    background-position: 0px -25424px;
+}
+
+.svalais_republic {
+    background-position: 0px -25440px;
+}
+
+.svalence_and_die {
+    background-position: 0px -25456px;
+}
+
+.svalencia_kingdom {
+    background-position: 0px -25472px;
+}
+
+.svalencia {
+    background-position: 0px -25488px;
+}
+
+.skingdom_vandal_section {
+    background-position: 0px -25504px;
+}
+
+.svangiones_celts {
+    background-position: 0px -25520px;
+}
+
+.svanuatu_child_section {
+    background-position: 0px -25536px;
+}
+
+.svanuatu_period {
+    background-position: 0px -25552px;
+}
+
+.svanuatu_section {
+    background-position: 0px -25568px;
+}
+
+.svarakhsha {
+    background-position: 0px -25584px;
+}
+
+.svardanzi {
+    background-position: 0px -25600px;
+}
+
+.svatican_city_section {
+    background-position: 0px -25616px;
+}
+
+.svatican_city {
+    background-position: 0px -25632px;
+}
+
+.svaud_section {
+    background-position: 0px -25648px;
+}
+
+.svaud {
+    background-position: 0px -25664px;
+}
+
+.svaud_canton {
+    background-position: 0px -25680px;
+}
+
+.svenezuela {
+    background-position: 0px -25696px;
+}
+
+.svenezuela_section {
+    background-position: 0px -25712px;
+}
+
+.svenezuelan_provinces_section {
+    background-position: 0px -25728px;
+}
+
+.svenice {
+    background-position: 0px -25744px;
+}
+
+.sverdun_bishopric {
+    background-position: 0px -25760px;
+}
+
+.svereya {
+    background-position: 0px -25776px;
+}
+
+.svermont {
+    background-position: 0px -25792px;
+}
+
+.sverona {
+    background-position: 0px -25808px;
+}
+
+.svevcani_republic {
+    background-position: 0px -25824px;
+}
+
+.svictoria {
+    background-position: 0px -25840px;
+}
+
+.svienna_archbishopric {
+    background-position: 0px -25856px;
+}
+
+.svienne_dauphine {
+    background-position: 0px -25872px;
+}
+
+.svienne_france {
+    background-position: 0px -25888px;
+}
+
+.svientiane {
+    background-position: 0px -25904px;
+}
+
+.svieques_island {
+    background-position: 0px -25920px;
+}
+
+.svierzon {
+    background-position: 0px -25936px;
+}
+
+.svietnam_section {
+    background-position: 0px -25952px;
+}
+
+.svietnam {
+    background-position: 0px -25968px;
+}
+
+.svietnam_empire {
+    background-position: 0px -25984px;
+}
+
+.svijayanagara {
+    background-position: 0px -26000px;
+}
+
+.svikesland {
+    background-position: 0px -26016px;
+}
+
+.svindelici_section {
+    background-position: 0px -26032px;
+}
+
+.svirginia {
+    background-position: 0px -26048px;
+}
+
+.svisigothic_kingdom {
+    background-position: 0px -26064px;
+}
+
+.sviviers {
+    background-position: 0px -26080px;
+}
+
+.swaldeck_pyrmont {
+    background-position: 0px -26096px;
+}
+
+.swales {
+    background-position: 0px -26112px;
+}
+
+.swallachia {
+    background-position: 0px -26128px;
+}
+
+.swallis_and_futuna {
+    background-position: 0px -26144px;
+}
+
+.swarsaw {
+    background-position: 0px -26160px;
+}
+
+.swattasid_dynasty {
+    background-position: 0px -26176px;
+}
+
+.sweihaiwei {
+    background-position: 0px -26192px;
+}
+
+.swejherowo {
+    background-position: 0px -26208px;
+}
+
+.swest_slavs_section {
+    background-position: 0px -26224px;
+}
+
+.swestarctica {
+    background-position: 0px -26240px;
+}
+
+.swestern_australia {
+    background-position: 0px -26256px;
+}
+
+.swestern_liao_dynasty {
+    background-position: 0px -26272px;
+}
+
+.ssahara_occidental {
+    background-position: 0px -26288px;
+}
+
+.swestern_turk_shahis {
+    background-position: 0px -26304px;
+}
+
+.swestphalia_kingdom {
+    background-position: 0px -26320px;
+}
+
+.swiedenbrueck_city {
+    background-position: 0px -26336px;
+}
+
+.swindisch_graetz {
+    background-position: 0px -26352px;
+}
+
+.swindward_islands {
+    background-position: 0px -26368px;
+}
+
+.swismar_city {
+    background-position: 0px -26384px;
+}
+
+.swohlau {
+    background-position: 0px -26400px;
+}
+
+.sworms_bishopric {
+    background-position: 0px -26416px;
+}
+
+.swuerttemberg_oels {
+    background-position: 0px -26432px;
+}
+
+.swuerzburg_bishopric {
+    background-position: 0px -26448px;
+}
+
+.swuerzburg_grand_duchy {
+    background-position: 0px -26464px;
+}
+
+.syaghlaqar_clan {
+    background-position: 0px -26480px;
+}
+
+.snation_of_yan {
+    background-position: 0px -26496px;
+}
+
+.syaroslavl {
+    background-position: 0px -26512px;
+}
+
+.syemen {
+    background-position: 0px -26528px;
+}
+
+.syemen_section {
+    background-position: 0px -26544px;
+}
+
+.syemen_eyalet {
+    background-position: 0px -26560px;
+}
+
+.syemen_people_democratic_republic {
+    background-position: 0px -26576px;
+}
+
+.syemenite_states_section {
+    background-position: 0px -26592px;
+}
+
+.syugoslavia {
+    background-position: 0px -26608px;
+}
+
+.syugoslavia_section {
+    background-position: 0px -26624px;
+}
+
+.syugoslavia_notgeld_section {
+    background-position: 0px -26640px;
+}
+
+.szagreb {
+    background-position: 0px -26656px;
+}
+
+.szaehringen {
+    background-position: 0px -26672px;
+}
+
+.szaire_period {
+    background-position: 0px -26688px;
+}
+
+.szambia {
+    background-position: 0px -26704px;
+}
+
+.szamosc {
+    background-position: 0px -26720px;
+}
+
+.szamunda {
+    background-position: 0px -26736px;
+}
+
+.szanzibar {
+    background-position: 0px -26752px;
+}
+
+.szayyanid_dynasty {
+    background-position: 0px -26768px;
+}
+
+.szimbabwe_period {
+    background-position: 0px -26784px;
+}
+
+.szimbabwe_section {
+    background-position: 0px -26800px;
+}
+
+.sznojmo {
+    background-position: 0px -26816px;
+}
+
+.sznojmo_duchy {
+    background-position: 0px -26832px;
+}
+
+.szofingen {
+    background-position: 0px -26848px;
+}
+
+.szug_section {
+    background-position: 0px -26864px;
+}
+
+.szug {
+    background-position: 0px -26880px;
+}
+
+.szug_canton {
+    background-position: 0px -26896px;
+}
+
+.szurich_section {
+    background-position: 0px -26912px;
+}
+
+.szuerich {
+    background-position: 0px -26928px;
+}
+
+.szuerich_city {
+    background-position: 0px -26944px;
+}
+
+.szvenygorod {
+    background-position: 0px -26960px;
+}
+
+/* Custom Override for British Crown Dependencies (14px) */
+.sbritish_crown_dependencies,
+.sbritish_crown_dependencies_section {
+    background-image: url('./assets/images/british_crown_dependencies.png') !important;
+    background-position: left center !important;
+    background-size: auto 14px !important;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 16px;
+}
+
+/* Custom Override for African States (Multi-Country, 14px) */
+.scentral_african_states_section,
+.swestern_african_states,
+.scentral_african_states {
+    background-image: url('./assets/images/multi_country_issuer.png') !important;
+    background-position: left center !important;
+    background-size: auto 14px !important;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 16px;
+}
+
+/* Custom Override for Qatar and Dubai (Multi-Country, 14px) */
+.sqatar_and_dubai {
+    background-image: url('./assets/images/multi_country_issuer.png') !important;
+    background-position: left center !important;
+    background-size: auto 14px !important;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 16px;
+}
+
+/* Custom Override for Eastern Caribbean States (14px) */
+.seastern_caribbean_states {
+    background-image: url('./assets/images/eastern_caribbean_states.png?v=3') !important;
+    background-position: left center !important;
+    background-size: contain !important;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 16px;
+}
+
+/* Custom Override for Maritime Southeast Asia (Position Fix) */
+.smaritime_southeast_asia {
+    background-position: 0px -5104px;
+}
+
+/* Custom Override for Moldavia and Wallachia (Position Fix) */
+.smoldavia_and_wallachia,
+.smoldavia_and_wallachia_section {
+    background-position: 0px -5104px;
+}

@@ -1,0 +1,57 @@
+<Window x:Class="Mintada.Navigator.Views.MarkAsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Mark Sample As" Height="480" Width="450" 
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Mark Sample(s) As" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Select a category for the selected sample(s) (only one can be selected at a time)" 
+                      TextWrapping="Wrap" Foreground="#666"/>
+        </StackPanel>
+        
+        <!-- Categories -->
+        <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="1" Padding="25">
+            <StackPanel>
+                <TextBlock Text="Categories:" FontWeight="Bold" Margin="0,0,0,10"/>
+                
+                <CheckBox x:Name="HolderCheckbox" Content="Holder" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <CheckBox x:Name="CounterstampedCheckbox" Content="Counterstamped" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <CheckBox x:Name="RollCheckbox" Content="Roll" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <CheckBox x:Name="ContainsHolderCheckbox" Content="Contains Holder" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <CheckBox x:Name="ContainsTextCheckbox" Content="Contains Text" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <CheckBox x:Name="MultiCoinCheckbox" Content="Multi-coin" Margin="0,0,0,8" 
+                         FontSize="14" Checked="Category_Checked" Unchecked="Category_Unchecked"/>
+                
+                <TextBlock x:Name="StatusText" Foreground="#666" FontStyle="Italic" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="Cancel" Click="Cancel_Click" Padding="20,8" Margin="0,0,10,0" Cursor="Hand"/>
+            <Button Content="Save" Click="Save_Click" Padding="20,8" Cursor="Hand" 
+                    Background="#4CAF50" Foreground="White" BorderBrush="#4CAF50"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="Core/Mintada.Domain/Mintada.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/Mintada.Data/Mintada.Data.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="Presentation/Mintada.Api/Mintada.Api.csproj" />
+  </Folder>
+  <Folder Name="/Tools/">
+    <Project Path="Tools/Mintada.Navigator/Mintada.Navigator.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+  <defs>
+    <!-- Circle path used for text layout -->
+    <path id="textCircle" d="M 180 40 A 160 160 0 1 1 179.9 40"></path>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f5d228"></rect>
+
+  <!-- SHIFT INNER ARTWORK 20px RIGHT TO CENTER IT -->
+  <g transform="translate(20,0)">
+
+    <!-- OUTER GREEN BORDER (slightly enlarged radius) -->
+    <circle cx="180" cy="200" r="190" fill="none" stroke="#005c3c" stroke-width="4"></circle>
+
+    <!-- Inner rings -->
+    <circle cx="180" cy="200" r="140" fill="none" stroke="#005c3c" stroke-width="12"></circle>
+    <circle cx="180" cy="200" r="110" fill="none" stroke="#005c3c" stroke-width="8"></circle>
+
+    <!-- Dots around circle -->
+    <circle cx="308.0" cy="200.0" r="7" fill="#005c3c"></circle>
+    <circle cx="290.9" cy="264.0" r="7" fill="#005c3c"></circle>
+    <circle cx="244.0" cy="310.9" r="7" fill="#005c3c"></circle>
+    <circle cx="180.0" cy="328.0" r="7" fill="#005c3c"></circle>
+    <circle cx="116.0" cy="310.9" r="7" fill="#005c3c"></circle>
+    <circle cx="69.1" cy="264.0" r="7" fill="#005c3c"></circle>
+    <circle cx="52.0" cy="200.0" r="7" fill="#005c3c"></circle>
+    <circle cx="69.1" cy="136.0" r="7" fill="#005c3c"></circle>
+    <circle cx="116.0" cy="89.1" r="7" fill="#005c3c"></circle>
+    <circle cx="180.0" cy="72.0" r="7" fill="#005c3c"></circle>
+    <circle cx="244.0" cy="89.1" r="7" fill="#005c3c"></circle>
+    <circle cx="290.9" cy="136.0" r="7" fill="#005c3c"></circle>
+
+    <!-- Center mark -->
+    <path d="M 136.0 262.6 L 136.0 118.6 L 168.0 198.6 L 180.0 170.6 L 192.0 198.6 L 224.0 118.6 L 224.0 262.6 Z" fill="#005c3c"></path>
+
+    <!-- Circular text -->
+    <text font-family="Montserrat, sans-serif" font-size="24" font-weight="600" fill="#005c3c" text-anchor="middle">
+      <textPath href="#textCircle" startOffset="10%">MINTADA</textPath>
+    </text>
+
+    <text font-family="Montserrat, sans-serif" font-size="24" font-weight="600" fill="#005c3c" text-anchor="middle">
+      <textPath href="#textCircle" startOffset="30%">MINTADA</textPath>
+    </text>
+
+    <text font-family="Montserrat, sans-serif" font-size="24" font-weight="600" fill="#005c3c" text-anchor="middle">
+      <textPath href="#textCircle" startOffset="50%">MINTADA</textPath>
+    </text>
+
+    <text font-family="Montserrat, sans-serif" font-size="24" font-weight="600" fill="#005c3c" text-anchor="middle">
+      <textPath href="#textCircle" startOffset="70%">MINTADA</textPath>
+    </text>
+
+    <text font-family="Montserrat, sans-serif" font-size="24" font-weight="600" fill="#005c3c" text-anchor="middle">
+      <textPath href="#textCircle" startOffset="90%">MINTADA</textPath>
+    </text>
+
+  </g>
+</svg>

@@ -1,0 +1,94 @@
+<Window x:Class="Mintada.Navigator.Views.TransferDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Mintada.Navigator.ViewModels"
+        xmlns:converters="clr-namespace:Mintada.Navigator.Converters"
+        Title="Transfer Sample" Height="550" Width="500" 
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Transfer Sample" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Click on a coin type in the main window to select the transfer target" TextWrapping="Wrap" Foreground="#666"/>
+        </StackPanel>
+        
+        <!-- Target Coin Preview -->
+        <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,0,15">
+            <StackPanel>
+                <!-- Show target info when selected -->
+                <StackPanel x:Name="TargetInfoPanel" Visibility="Collapsed">
+                    <!-- Coin title on same line as "Target Coin:" -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Target Coin: " FontWeight="Bold" FontSize="14"/>
+                        <TextBlock x:Name="TargetTitle" FontSize="14" Foreground="#333"/>
+                    </StackPanel>
+                    
+                    <!-- Both images side by side -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+                        <!-- Obverse Image -->
+                        <Border BorderBrush="#DDD" BorderThickness="1" Padding="3" Margin="0,0,5,0">
+                            <StackPanel>
+                                <TextBlock Text="Obverse" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                                <Image x:Name="TargetImage" Width="200" Height="200" Stretch="Uniform"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Reverse Image -->
+                        <Border BorderBrush="#DDD" BorderThickness="1" Padding="3" Margin="5,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Reverse" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                                <Image x:Name="TargetImageReverse" Width="200" Height="200" Stretch="Uniform"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    
+                    <TextBlock Text="✓ Target selected" Foreground="#4CAF50" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                </StackPanel>
+                
+                <!-- Show placeholder when not selected -->
+                <TextBlock x:Name="PlaceholderText" Text="(No target selected - click a coin in the main window)" 
+                          Foreground="#999" 
+                          FontStyle="Italic" 
+                          VerticalAlignment="Center"
+                          Margin="0,10,0,0"/>
+                
+                <!-- Hidden debug elements -->
+                <TextBlock x:Name="TargetSubtitle" Visibility="Collapsed"/>
+                <TextBlock x:Name="SamplesCount" Visibility="Collapsed"/>
+                <TextBlock x:Name="ImagePath" Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Click="Cancel_Click" Padding="20,8" Margin="0,0,10,0" Cursor="Hand"/>
+            <Button Content="Confirm Transfer" Click="Confirm_Click" Padding="20,8" Cursor="Hand" 
+                    Background="#4CAF50" Foreground="White" BorderBrush="#4CAF50">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TransferTargetCoin}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

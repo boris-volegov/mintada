@@ -1,0 +1,36 @@
+parent_id,top_parent_id,name,url_slug,parent_url_slug,alt_names,territory_type,is_historical_period,is_section,numista_name,numista_url_slug,numista_parent_url_slug,numista_territory_type,is_historical_period,tags
+82,80,Argentine Confederation,argentine_confederation,argentine_provinces_section,,,0,0,Argentine Confederation,confederacion_argentina,argentine-provinces,,FALSE,"90,7"
+82,80,Buenos Aires,buenos_aires,argentine_provinces_section,,Province,0,0,Buenos Aires,buenos_aires,argentine-provinces,,FALSE,"90,7"
+82,80,Catamarca,catamarca,argentine_provinces_section,,Province,0,0,Catamarca,catamarca,argentine-provinces,,FALSE,"90,7"
+82,80,Chaco,chaco,argentine_provinces_section,,Province,0,0,Chaco,chaco_province,argentine-provinces,,FALSE,"90,7"
+82,80,Córdoba,cordoba_province,argentine_provinces_section,,Province,0,0,Córdoba,cordoba,argentine-provinces,,FALSE,"90,7"
+82,80,Corrientes,corrientes,argentine_provinces_section,,Province,0,0,Corrientes,corrientes,argentine-provinces,,FALSE,"90,7"
+82,80,Entre Ríos,entre_rios,argentine_provinces_section,,Province,0,0,Entre Ríos,entre_rios,argentine-provinces,,FALSE,"90,7"
+82,80,Jujuy,jujuy,argentine_provinces_section,,Province,0,0,Jujuy,jujuy,argentine-provinces,,FALSE,"90,7"
+82,80,La Rioja,la_rioja,argentine_provinces_section,,Province,0,0,La Rioja,la_rioja,argentine-provinces,,FALSE,"90,7"
+82,80,Mendoza,mendoza,argentine_provinces_section,,Province,0,0,Mendoza,mendoza,argentine-provinces,,FALSE,"90,7"
+82,80,Río Negro,rio_negro,argentine_provinces_section,,Province,0,0,Río Negro,rio_negro_province,argentine-provinces,,FALSE,"90,7"
+82,80,Salta,salta,argentine_provinces_section,,Province,0,0,Salta,salta,argentine-provinces,,FALSE,"90,7"
+82,80,San Juan,san_juan,argentine_provinces_section,,Province,0,0,San Juan,san_juan,argentine-provinces,,FALSE,"90,7"
+82,80,Santa Fe,santa_fe,argentine_provinces_section,,Province,0,0,Santa Fe,santa_fe_province,argentine-provinces,,FALSE,"90,7"
+82,80,Santiago del Estero,santiago_del_estero,argentine_provinces_section,,Province,0,0,Santiago del Estero,santiago_del_estero_province,argentine-provinces,,FALSE,"90,7"
+82,80,Tierra del Fuego,tierra_del_fuego,argentine_provinces_section,,Province,0,0,Tierra del Fuego,tierra_del_fuego,argentine-provinces,,FALSE,"90,7"
+82,80,Tucuman,tucuman,argentine_provinces_section,,Province,0,0,Tucuman,tucuman,argentine-provinces,,FALSE,"90,7"
+1604,1602,Aussig,aussig,czechoslovakian_notgeld_section,Usti nad Labem,City,0,0,Aussig,aussig_notgeld,tchecoslovaquie_notgeld,City of,FALSE,
+1604,1602,Chomutov,chomutov,czechoslovakian_notgeld_section,Komotau,City,0,0,Chomutov,chomutov_notgeld,tchecoslovaquie_notgeld,City of,FALSE,
+1604,1602,Kraslice,kraslice,czechoslovakian_notgeld_section,Graslitz,City,0,0,Kraslice,kraslice_notgeld,tchecoslovaquie_notgeld,City of,FALSE,
+1604,1602,Podmokly,podmokly,czechoslovakian_notgeld_section,Tetschen-Bodenbach,City,0,0,Podmokly,podmokly_notgeld,tchecoslovaquie_notgeld,City of,FALSE,
+3260,2262,Tanna,tanna_reuss_schleiz,reuss_schleiz_section,,City,0,0,Tanna (Reuss-Schleiz),tanna_reuss-schleiz_notgeld,reuss-schleiz_section_notgeld,City of,FALSE,
+4871,4871,Berbice,berbice,guyana_section,,Colony,0,0,Berbice,berbice_colony,guyana_section,Colony of,FALSE,"7,83,466"
+4915,4896,Sambuvaraya Dynasty,sambuvaraya_dynasty,indian_hindu_dynasties_section,,,0,0,Sambuvaraya Dynasty,sambuvaraya_dynasty,india_hindu_dynasties,,FALSE,
+4989,4896,Hyderabad-Aurangabad Feudatory,hyderabad_aurangabad_feudatory,hyderabad_section,,,0,0,Hyderabad-Aurangabad Feudatory,hyderabad_aurangabad_feudatory,hyderabad_section,,FALSE,
+4989,4896,Hyderabad-Kankurti Feudatory,hyderabad_kankurti_feudatory,hyderabad_section,,,0,0,Hyderabad-Kankurti Feudatory,hyderabad_kankurti_feudatory,hyderabad_section,,FALSE,
+5601,5599,Valenza,valenza,italian_states_section,,,0,0,Valenza,valenza,italie_etats,,FALSE,
+5980,5980,Myanmar,myanmar,myanmar_section,,,0,0,Myanmar,myanmar,myanmar_section,,FALSE,1
+6092,6092,Norwegian notgeld,norwegian_notgeld,norway_section,,,0,0,Norwegian notgeld,norwegian_notgeld,norway,,FALSE,
+8510,8499,Kansas,kansas,united_states_pre_federal_and_private_territorial_section,Kansas,Territory,0,0,Kansas,kansas_territory,united-states-pre-federal,Territory of,FALSE,"81,7,8"
+8510,8499,Massachusetts Bay,massachusetts_bay_province,united_states_pre_federal_and_private_territorial_section,,Province,0,0,Massachusetts Bay,massachusetts_colony,united-states-pre-federal,Province of,FALSE,"81,7,8"
+8510,8499,Michigan - British,michigan_british,united_states_pre_federal_and_private_territorial_section,Michigan (British rule),British Possession,0,0,Michigan (British),michigan_british,united-states-pre-federal,,FALSE,"81,7,8"
+8510,8499,Michigan,michigan,united_states_pre_federal_and_private_territorial_section,Michigan,Territory,0,0,Michigan,michigan_territory,united-states-pre-federal,Territory of,FALSE,"81,7,8"
+8510,8499,Minnesota,minessota,united_states_pre_federal_and_private_territorial_section,Minnesota,Territory,0,0,Minnesota,minessota_territory,united-states-pre-federal,Territory of,FALSE,"81,7,8"
+8510,8499,Nebraska,nebraska,united_states_pre_federal_and_private_territorial_section,Nebraska,Territory,0,0,Nebraska,nebraska_territory,united-states-pre-federal,Territory of,FALSE,"81,7,8"

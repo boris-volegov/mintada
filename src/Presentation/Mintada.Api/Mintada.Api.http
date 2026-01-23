@@ -1,0 +1,6 @@
+@Mintada.Api_HostAddress = http://localhost:5216
+
+GET {{Mintada.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

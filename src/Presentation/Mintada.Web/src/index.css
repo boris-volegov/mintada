@@ -1,0 +1,99 @@
+:root {
+  /* 
+     REFERENCE DESIGN PALETTE
+     Header: Bright Logo Yellow (#ffd600)
+     Body: Dark Charcoal/Black (#1a1a1a)
+     Buttons: Green (#075e54) & Gold (#c5a059)
+  */
+
+  /* Backgrounds */
+  --bg-app: #121212;
+  /* Deep charcoal/black */
+  --bg-header: #f5d228;
+  /* Mintada Logo Yellow */
+  --bg-footer: #222222;
+
+  /* Accents */
+  --primary: #f5d228;
+  --accent-green: #005c3c;
+  /* Deep Emerald Green (Catalog) */
+  --accent-gold: #b08d55;
+  /* Metallic Gold/Bronze (Collection) */
+
+  /* Text */
+  --text-on-header: #005c3c;
+  /* Green from logo text */
+  --text-main: #f0f0f0;
+  --text-muted: #a0a0a0;
+  --text-dark: #121212;
+  /* For use on yellow header */
+
+  /* Dimensions */
+  --header-height: 80px;
+
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-header: 'Outfit', sans-serif;
+  height: 100%;
+  overflow: hidden;
+  /* Prevent body scroll, MainLayout handles scrolling */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  /* Prevent body scroll */
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+}
+
+/* Common Utilities */
+.glass-panel {
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f5d228;
+  border-radius: 4px;
+}

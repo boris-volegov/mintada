@@ -1,0 +1,145 @@
+.landing-page-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.landing-headline-section {
+    text-align: center;
+    margin-bottom: 40px;
+    max-width: 800px;
+    z-index: 1;
+}
+
+.landing-title {
+    color: #005c3c;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.landing-subtitle {
+    color: #666;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.landing-buttons-container {
+    display: flex;
+    gap: 72px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.landing-card-link {
+    text-decoration: none;
+}
+
+.landing-card {
+    width: 400px;
+    height: 500px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.landing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.card-stripe-gradient-yellow {
+    height: 8px;
+    background-color: #f5d228;
+}
+
+.card-stripe-gradient-green {
+    height: 8px;
+    background-color: #005c3c;
+}
+
+.card-image-container-catalog {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fffaf0;
+    /* Removed borderBottom */
+    padding: 20px;
+}
+
+.card-image-container-collection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f7f4;
+    /* Removed borderBottom */
+    padding: 20px;
+}
+
+.card-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.card-stripe-middle-yellow {
+    height: 4px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, #f5d228 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.card-stripe-middle-green {
+    height: 4px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, #005c3c 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.card-text-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+    background-color: #fff;
+}
+
+.card-title-yellow {
+    font-size: 2rem;
+    color: #f5d228;
+    /* Strict Logo Yellow */
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.card-title-green {
+    font-size: 2rem;
+    color: #005c3c;
+    /* Logo Green */
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    text-align: center;
+    font-weight: 700;
+}
