@@ -20,6 +20,10 @@ namespace Mintada.Navigator.ViewModels
         private readonly FileService _fileService;
         private readonly Services.AnalysisService _analysisService;
         private readonly Services.ImageAnalysisService _imageAnalysisService;
+        private readonly CoinParserService _coinParserService;
+
+        [ObservableProperty]
+        private ParsedCoinData? _parsedData;
         
         private List<Issuer> _allIssuers = new();
         private List<Issuer> _rootIssuers = new(); 
@@ -83,6 +87,11 @@ namespace Mintada.Navigator.ViewModels
         [ObservableProperty]
         private ObservableCollection<RulerPeriodGroup> _rulers = new();
 
+        [ObservableProperty]
+        private ObservableCollection<LeafIssuerViewModel> _leafIssuers = new();
+        
+        private List<LeafIssuerViewModel> _allLeafIssuers = new();
+
 
         public ObservableCollection<CoinSample> SelectedSamples { get; } = new();
 
@@ -96,8 +105,9 @@ namespace Mintada.Navigator.ViewModels
 
             _fileService = new FileService(rootPath);
             _databaseService = new DatabaseService(dbPath);
-            _analysisService = new AnalysisService(scriptPath, pythonPath);
+            _analysisService = new Services.AnalysisService(pythonPath, scriptPath);
             _imageAnalysisService = new Services.ImageAnalysisService();
+            _coinParserService = new CoinParserService();
 
             LoadIssuersCommand = new RelayCommand(async () => await LoadData(false));
             
@@ -205,6 +215,8 @@ namespace Mintada.Navigator.ViewModels
                 }
 
                 BuildHierarchy();
+                BuildHierarchy();
+                await BuildLeafIssuers();
                 await FilterIssuers();
                 StatusMessage = "Ready.";
             }
@@ -339,6 +351,62 @@ namespace Mintada.Navigator.ViewModels
                 if (IO.File.Exists(path))
                 {
                     HtmlSource = new Uri(path);
+
+                    // Parse Data
+                    try
+                    {
+                        var content = IO.File.ReadAllText(path);
+                        var data = _coinParserService.Parse(content);
+                        ParsedData = data;
+                        
+                        // Fire and forget verification
+                        _ = Task.Run(async () => 
+                        {
+                            try 
+                            {
+                                // Verify Ruler
+                                if (ParsedData.RulerId.HasValue && ParsedData.RulerId.Value != 0 && SelectedIssuer != null)
+                                {
+                                    var info = await _databaseService.GetRulerInfoAsync(SelectedIssuer.Id, ParsedData.RulerId.Value);
+                                    if (info != null)
+                                    {
+                                        ParsedData.DbRulerName = info.Value.Name;
+                                        ParsedData.DbRulerYears = info.Value.YearsText;
+                                        ParsedData.IsRulerVerified = true;
+                                        ParsedData.NeedsInspection = false;
+                                    }
+                                    else
+                                    {
+                                        ParsedData.NeedsInspection = true;
+                                        ParsedData.IsRulerVerified = false;
+                                    }
+                                }
+
+                                // Verify Shape
+                                if (!string.IsNullOrWhiteSpace(ParsedData.Shape))
+                                {
+                                    var shapeId = await _databaseService.GetShapeIdByNameAsync(ParsedData.Shape);
+                                    if (shapeId.HasValue)
+                                    {
+                                        ParsedData.DbShapeId = shapeId.Value;
+                                    }
+                                }
+                                
+                                OnPropertyChanged(nameof(ParsedData));
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error verifying data: {ex.Message}");
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                         System.Diagnostics.Debug.WriteLine($"Error parsing coin data: {ex.Message}");
+                         StatusMessage = $"PARSING ERROR: {ex.Message}";
+                         ParsedData = null;
+                         System.Windows.MessageBox.Show($"Error parsing coin HTML: {ex.Message}", "Parsing Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
@@ -499,7 +567,13 @@ namespace Mintada.Navigator.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    StatusMessage = $"Error splitting sample: {ex.Message}";
+                    System.Diagnostics.Debug.WriteLine($"Error parsing coin data: {ex.Message}");
+                    StatusMessage = $"PARSING ERROR: {ex.Message}";
+                    // Assuming ParsedData is a property of this ViewModel
+                    // ParsedData = null; 
+                    
+                    // Show visible alert
+                    System.Windows.MessageBox.Show($"Error parsing coin HTML: {ex.Message}", "Parsing Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
             
@@ -1401,6 +1475,19 @@ namespace Mintada.Navigator.ViewModels
                 }
             }
             Issuers = new ObservableCollection<Issuer>(filtered);
+
+            // Filter Leaf Issuers
+            if (string.IsNullOrWhiteSpace(FilterText))
+            {
+                LeafIssuers = new ObservableCollection<LeafIssuerViewModel>(_allLeafIssuers);
+            }
+            else
+            {
+                var filteredLeaves = _allLeafIssuers
+                    .Where(l => l.FullPath.Contains(FilterText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                LeafIssuers = new ObservableCollection<LeafIssuerViewModel>(filteredLeaves);
+            }
         }
 
         private Issuer? FilterIssuerRecursive(Issuer issuer, HashSet<long>? validIssuerIds)
@@ -1441,6 +1528,67 @@ namespace Mintada.Navigator.ViewModels
                  return viewIssuer;
             }
             return null;
+        }
+        private async Task BuildLeafIssuers()
+        {
+            var validIssuerIds = await _databaseService.GetIssuerIdsWithRulersFromNewTableAsync();
+            var leaves = new List<LeafIssuerViewModel>();
+            foreach (var root in _rootIssuers)
+            {
+                TraverseForLeaves(root, root.Name, leaves, validIssuerIds);
+            }
+            _allLeafIssuers = leaves.OrderBy(l => l.FullPath).ToList();
+        }
+
+        private void TraverseForLeaves(Issuer node, string path, List<LeafIssuerViewModel> leaves, HashSet<long> validIssuerIds)
+        {
+            if (node.Children == null || node.Children.Count == 0)
+            {
+                // Leaf - only add if it has rulers
+                if (validIssuerIds.Contains(node.Id))
+                {
+                    leaves.Add(new LeafIssuerViewModel(node.Id, path, LoadRulersForLeafCallback));
+                }
+            }
+            else
+            {
+                foreach (var child in node.Children)
+                {
+                    TraverseForLeaves(child, path + " -> " + child.Name, leaves, validIssuerIds);
+                }
+            }
+        }
+
+        private async Task<List<RulerPeriodGroup>> LoadRulersForLeafCallback(long issuerId)
+        {
+            var rulers = await _databaseService.GetRulersForIssuerFromNewTableAsync(issuerId);
+            
+            // Group logic (simplified from LoadRulersForIssuer)
+            var grouped = new List<RulerPeriodGroup>();
+            var rulersWithPeriod = rulers.Where(r => !string.IsNullOrWhiteSpace(r.Period));
+            var periodGroups = rulersWithPeriod
+                .GroupBy(r => new { r.Period, r.PeriodOrder }) 
+                .Select(g => new RulerPeriodGroup
+                {
+                    Period = g.Key.Period,
+                    Rulers = g.ToList(),
+                    IsAssociated = true, 
+                    IsPartiallyAssociated = false
+                });
+            grouped.AddRange(periodGroups);
+
+            var rulersWithoutPeriod = rulers.Where(r => string.IsNullOrWhiteSpace(r.Period));
+            foreach (var ruler in rulersWithoutPeriod)
+            {
+                grouped.Add(new RulerPeriodGroup
+                {
+                    Period = "", 
+                    Rulers = new List<Ruler> { ruler },
+                    IsAssociated = true
+                });
+            }
+            
+            return grouped;
         }
     }
 }

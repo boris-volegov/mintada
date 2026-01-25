@@ -596,7 +596,72 @@ namespace Mintada.Navigator.Services
             }
         }
 
+
+        public async Task<List<Ruler>> GetRulersForIssuerFromNewTableAsync(long issuerId)
+        {
+            var rulers = new List<Ruler>();
+            
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT id, ruler_id, ruling_authority, period_years, extra, period, is_primary
+                    FROM issuers_rulers_rel_new
+                    WHERE issuer_id = @issuerId";
+                
+                command.Parameters.AddWithValue("@issuerId", issuerId);
+                
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        bool isPrimary = !reader.IsDBNull(6) && (reader.GetBoolean(6) || reader.GetInt32(6) == 1);
+                        
+                        rulers.Add(new Ruler
+                        {
+                            RowId = reader.GetInt64(0), 
+                            Id = reader.GetInt64(1),
+                            Name = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                            YearsText = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                            Period = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                            IsPrimary = isPrimary
+                        });
+                    }
+                }
+            }
+            
+            return rulers
+                .OrderBy(r => r.StartYear)
+                .ThenByDescending(r => r.IsPrimary)
+                .ThenBy(r => r.Name)
+                .ToList();
+        }
+
+        public async Task<HashSet<long>> GetIssuerIdsWithRulersFromNewTableAsync()
+        {
+            var ids = new HashSet<long>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT DISTINCT issuer_id FROM issuers_rulers_rel_new WHERE issuer_id IS NOT NULL";
+                
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        ids.Add(reader.GetInt64(0));
+                    }
+                }
+            }
+            return ids;
+        }
+
         public async Task TogglePeriodGroupAssociationAsync(long issuerId, string periodName, int periodOrder, bool associate)
+
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
@@ -630,6 +695,56 @@ namespace Mintada.Navigator.Services
                 
                 await command.ExecuteNonQueryAsync();
             }
+        }
+
+        public async Task<(string Name, string YearsText)?> GetRulerInfoAsync(long issuerId, int rulerId)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT name, years_text 
+                    FROM issuers_rulers_rel 
+                    WHERE issuer_id = @issuerId AND ruler_id = @rulerId
+                    LIMIT 1";
+                
+                command.Parameters.AddWithValue("@issuerId", issuerId);
+                command.Parameters.AddWithValue("@rulerId", rulerId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        string name = reader.GetString(0);
+                        string years = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                        return (name, years);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public async Task<int?> GetShapeIdByNameAsync(string shapeName)
+        {
+            if (string.IsNullOrWhiteSpace(shapeName)) return null;
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT id FROM shapes WHERE name = @name COLLATE NOCASE LIMIT 1";
+                command.Parameters.AddWithValue("@name", shapeName.Trim());
+
+                var result = await command.ExecuteScalarAsync();
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt32(result);
+                }
+            }
+            return null;
         }
     }
 }

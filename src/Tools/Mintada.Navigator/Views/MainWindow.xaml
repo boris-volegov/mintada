@@ -27,7 +27,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="600" />
             <ColumnDefinition Width="337" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -179,18 +179,91 @@
                     </StackPanel>
                     
                     <!-- Issuers TreeView (same as Coin Types tab) -->
-                    <TreeView Grid.Row="1" ItemsSource="{Binding Issuers}" SelectedItemChanged="TreeView_SelectedItemChanged">
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate DataType="{x:Type models:Issuer}" ItemsSource="{Binding Children}">
-                                <TextBlock Text="{Binding Name}" />
-                            </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
-                        <TreeView.ItemContainerStyle>
-                            <Style TargetType="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="False" />
+                    <!-- Leaf Issuers List -->
+                    <ListBox Grid.Row="1" ItemsSource="{Binding LeafIssuers}" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             HorizontalContentAlignment="Stretch"
+                             BorderThickness="0" Background="Transparent"
+                             VirtualizingStackPanel.IsVirtualizing="True"
+                             VirtualizingStackPanel.VirtualizationMode="Recycling">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ContentPresenter />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#F5F5F5"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="#E3F2FD"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
-                        </TreeView.ItemContainerStyle>
-                    </TreeView>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:LeafIssuerViewModel}">
+                                <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}" Margin="0" Padding="5" 
+                                          Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="#EEE">
+                                    <Expander.Header>
+                                        <TextBlock Text="{Binding FullPath}" TextWrapping="Wrap" FontSize="13" FontWeight="Normal"/>
+                                    </Expander.Header>
+                                    <Expander.Content>
+                                        <StackPanel Margin="24,0,0,10">
+                                            <ProgressBar IsIndeterminate="True" Height="2" 
+                                                         Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                         Margin="0,0,0,5"/>
+                                            
+                                            <ItemsControl ItemsSource="{Binding Rulers}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Margin="0,5">
+                                                            <!-- Period Header -->
+                                                            <TextBlock Text="{Binding Period}" FontWeight="Bold" Foreground="#1976D2" FontSize="12"
+                                                                       Visibility="{Binding Period, Converter={StaticResource NullToVisibilityConverter}}"
+                                                                       Margin="0,0,0,2"/>
+                                                            
+                                                            <ItemsControl ItemsSource="{Binding Rulers}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Grid Margin="5,2">
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <TextBlock Text="•" Foreground="#999" Margin="0,0,5,0"/>
+                                                                            <TextBlock Grid.Column="1" TextWrapping="Wrap">
+                                                                                <Run Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                                                <Run Text="{Binding YearsText}" Foreground="Gray" FontSize="11"/>
+                                                                            </TextBlock>
+                                                                        </Grid>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Expander.Content>
+                                </Expander>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -518,48 +591,192 @@
 
         <!-- Right Panel: Split View -->
         <Grid Grid.Column="2" x:Name="RightPanel">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" /> <!-- Browser -->
+                <ColumnDefinition Width="1*" />  <!-- Parse Panel -->
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="5*" /> <!-- Top -->
-                <RowDefinition Height="*" />  <!-- Bottom -->
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/> <!-- Bottom list -->
             </Grid.RowDefinitions>
 
-            <!-- HTML View with top margin to accommodate the overlay bar -->
-            <wv2:WebView2 Grid.Row="0" Source="{Binding HtmlSource}" Margin="0,35,0,0" />
+            <!-- Browser Area (Column 0, Row 0) -->
+            <Grid Grid.Column="0" Grid.Row="0">
+                <wv2:WebView2 Source="{Binding HtmlSource}" Margin="0,35,0,0" />
             
-            <!-- Import Bar Overlay (at top of HTML view) -->
-            <!-- Using Panel.ZIndex to keep it above WebView2 while staying within app window -->
-            <Border Grid.Row="0" VerticalAlignment="Top" Background="#F5F5F5" BorderBrush="#CCCCCC" 
-                    BorderThickness="0,0,0,1" Padding="5" Height="35" Panel.ZIndex="1">
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding ImportFromUcoinCommand}" Padding="15,2" Margin="5,0,0,0" Cursor="Hand" ToolTip="Import data from ucoin system">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="Import from ucoin" Margin="0,0,5,0"/>
-                                <Viewbox Width="16" Height="16">
-                                    <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="#2196F3" />
-                                </Viewbox>
-                            </StackPanel>
-                        </Button.Content>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="White"/>
-                                <Setter Property="BorderBrush" Value="#AAAAAA"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Opacity" Value="0.5"/>
-                                    </Trigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#E3F2FD"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
-            </Border>
+                <!-- Import Bar Overlay (at top of HTML view) -->
+                <Border VerticalAlignment="Top" Background="#F5F5F5" BorderBrush="#CCCCCC" 
+                        BorderThickness="0,0,0,1" Padding="5" Height="35" Panel.ZIndex="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding ImportFromUcoinCommand}" Padding="15,2" Margin="5,0,0,0" Cursor="Hand" ToolTip="Import data from ucoin system">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Import from ucoin" Margin="0,0,5,0"/>
+                                    <Viewbox Width="16" Height="16">
+                                        <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="#2196F3" />
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="#AAAAAA"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#E3F2FD"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Parse Panel Content (Sidebar) -->
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,0" Visibility="{Binding ParsedData, Converter={StaticResource NullToVisibilityConverter}}">
+                 <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto"/>
+                     <RowDefinition Height="*"/>
+                 </Grid.RowDefinitions>
+
+                 <!-- Title & Subtitle -->
+                 <StackPanel Grid.Row="0" Margin="0,5,0,10">
+                     <TextBlock Text="{Binding ParsedData.Title}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,2"/>
+                     <TextBlock Text="{Binding ParsedData.Subtitle}" FontSize="11" Foreground="#555" TextWrapping="Wrap" FontStyle="Italic"/>
+                 </StackPanel>
+
+                 <!-- Content Stack (Vertical Scroll) -->
+                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                     <StackPanel>
+                         <!-- Raw Values -->
+                         <GroupBox Header="Raw Values" Margin="0,0,0,10">
+                             <Grid>
+                                 <Grid.Resources>
+                                     <Style TargetType="TextBlock">
+                                         <Setter Property="FontSize" Value="11"/>
+                                         <Setter Property="VerticalAlignment" Value="Center"/>
+                                         <Setter Property="Padding" Value="2"/>
+                                     </Style>
+                                     <Style TargetType="TextBlock" x:Key="RawLabel">
+                                         <Setter Property="Foreground" Value="#666666"/>
+                                         <Setter Property="Margin" Value="0,0,5,0"/>
+                                     </Style>
+                                     <Style TargetType="TextBlock" x:Key="RawValue">
+                                         <Setter Property="FontWeight" Value="SemiBold"/>
+                                         <Setter Property="TextWrapping" Value="Wrap"/>
+                                     </Style>
+                                 </Grid.Resources>
+                                 
+                                 <Grid.ColumnDefinitions>
+                                     <ColumnDefinition Width="Auto" SharedSizeGroup="RawLabels"/>
+                                     <ColumnDefinition Width="*"/>
+                                 </Grid.ColumnDefinitions>
+                                 
+                                 <Grid.RowDefinitions>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                 </Grid.RowDefinitions>
+
+                                 <!-- Rows -->
+                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Issuer:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ParsedData.Issuer}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Year:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ParsedData.YearText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Value:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ParsedData.ValueText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Currency:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ParsedData.CurrencyText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Composition:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ParsedData.Composition}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Weight:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ParsedData.WeightText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Diameter:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding ParsedData.DiameterText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Thickness:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding ParsedData.ThicknessText}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="8" Grid.Column="0" Text="Shape:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding ParsedData.Shape}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="9" Grid.Column="0" Text="Orientation:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ParsedData.Orientation}" Style="{StaticResource RawValue}"/>
+
+                                 <TextBlock Grid.Row="10" Grid.Column="0" Text="References:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding ParsedData.References}" Style="{StaticResource RawValue}"/>
+                                 
+                                 <TextBlock Grid.Row="11" Grid.Column="0" Text="Ruler ID:" Style="{StaticResource RawLabel}"/>
+                                 <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding ParsedData.RulerId}" Style="{StaticResource RawValue}"/>
+                             </Grid>
+                         </GroupBox>
+
+                         <!-- Cleaned Data -->
+                         <GroupBox Header="Cleaned Data">
+                             <StackPanel>
+                                 <!-- DB Verified Ruler -->
+                                 <StackPanel Visibility="{Binding ParsedData.IsRulerVerified, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                      <TextBlock Text="DB VERIFIED RULER:" FontWeight="Bold" FontSize="11" Foreground="Green" Margin="0,0,0,5"/>
+                                      <TextBlock Text="{Binding ParsedData.DbRulerName}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                      <TextBlock Text="{Binding ParsedData.DbRulerYears}" FontSize="11" Foreground="#666" Margin="0,2,0,10"/>
+                                 </StackPanel>
+
+                                 <!-- Inspection Warning -->
+                                 <StackPanel Visibility="{Binding ParsedData.NeedsInspection, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                     <TextBlock Text="⚠️ INSPECTION REQUIRED" Foreground="#D32F2F" FontWeight="Bold" Margin="0,0,0,5"/>
+                                     <TextBlock Text="Ruler ID found in HTML matches no ruler for this issuer in DB." TextWrapping="Wrap" FontSize="11"/>
+                                 </StackPanel>
+
+                                 <!-- Verified Dimensions -->
+                                 <StackPanel Margin="0,8,0,0">
+                                      <!-- DB Verified Shape -->
+                                      <StackPanel Orientation="Horizontal" Margin="0,0,0,5"
+                                                  Visibility="{Binding ParsedData.DbShapeId, Converter={StaticResource NullToVisibilityConverter}}">
+                                          <TextBlock Text="DB VERIFIED SHAPE:" FontWeight="Bold" FontSize="11" Foreground="Green" Margin="0,0,5,0"/>
+                                          <TextBlock Text="{Binding ParsedData.DbShapeId}" FontWeight="Bold" FontSize="11" Foreground="Green"/>
+                                      </StackPanel>
+
+                                      <!-- Alarm -->
+                                      <TextBlock Text="{Binding ParsedData.DimensionAlarmMessage}"
+                                                 Visibility="{Binding ParsedData.HasDimensionAlarm, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                 Foreground="#D32F2F" FontWeight="Bold" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                      
+                                      <!-- Header + Values Inline -->
+                                      <TextBlock FontSize="12">
+                                          <Run Text="Dimensions (mm/g) " FontSize="10" Foreground="#888888" BaselineAlignment="Center"/>
+                                          <LineBreak/>
+                                          <Run Text="W:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalWeight, TargetNullValue='-'}" FontWeight="SemiBold"/>
+                                          <Run Text=" D:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalDiameter, TargetNullValue='-'}" FontWeight="SemiBold"/>
+                                          <Run Text=" T:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalThickness, TargetNullValue='-'}" FontWeight="SemiBold"/>
+                                      </TextBlock>
+                                 </StackPanel>
+                             </StackPanel>
+                         </GroupBox>
+                     </StackPanel>
+                 </ScrollViewer>
+            </Grid>
 
             <!-- Non-Reference Samples List -->
-            <Grid Grid.Row="1" Background="#E0E0E0">
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="#E0E0E0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
