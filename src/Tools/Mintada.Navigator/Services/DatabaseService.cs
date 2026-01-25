@@ -56,6 +56,25 @@ namespace Mintada.Navigator.Services
             return issuers;
         }
 
+        public async Task<long?> GetIssuerIdByCoinTypeIdAsync(long coinTypeId)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT issuer_id FROM coin_types WHERE id = @id";
+                command.Parameters.AddWithValue("@id", coinTypeId);
+                
+                var result = await command.ExecuteScalarAsync();
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt64(result);
+                }
+            }
+            return null;
+        }
+
         public async Task<List<CoinType>> GetCoinTypesAsync(long issuerId, string issuerSlug)
         {
             var coins = new List<CoinType>();
@@ -68,7 +87,8 @@ namespace Mintada.Navigator.Services
                 command.CommandText = 
                     @"SELECT ct.id, ct.title, cts.obverse_image, cts.reverse_image, cts.sample_type, 
                              ct.subtitle, ct.coin_type_slug, ct.period, ct.fixed, cts.is_holder, 
-                             cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin 
+                             cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin,
+                             ct.shape_id, ct.shape_info
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -96,6 +116,8 @@ namespace Mintada.Navigator.Services
                                 CoinTypeSlug = reader.GetString(6),
                                 Period = reader.IsDBNull(7) ? null : reader.GetString(7),
                                 IsFixed = !reader.IsDBNull(8) && reader.GetBoolean(8),
+                                ShapeId = !reader.IsDBNull(15) ? reader.GetInt32(15) : (int?)null,
+                                ShapeInfo = !reader.IsDBNull(16) ? reader.GetString(16) : null,
                                 IssuerUrlSlug = issuerSlug
                             };
                             coinDict[coinId] = coin;
@@ -745,6 +767,65 @@ namespace Mintada.Navigator.Services
                 }
             }
             return null;
+        }
+
+        public async Task<List<CoinShape>> GetShapesAsync()
+        {
+            var shapes = new List<CoinShape>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT id, name, seq_number FROM shapes ORDER BY seq_number, name";
+                
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        shapes.Add(new CoinShape
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            SeqNumber = reader.IsDBNull(2) ? null : reader.GetInt32(2)
+                        });
+                    }
+                }
+            }
+            return shapes;
+        }
+
+        public async Task UpdateCoinShapeAsync(long coinTypeId, int? shapeId, string? shapeInfo)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "UPDATE coin_types SET shape_id = @shapeId, shape_info = @shapeInfo WHERE id = @id";
+                
+                command.Parameters.AddWithValue("@shapeId", shapeId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@shapeInfo", shapeInfo ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@id", coinTypeId);
+                
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task UpdateShapeExceptionFixedStatusAsync(long coinTypeId, bool isFixed)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                var command = connection.CreateCommand();
+                command.CommandText = "UPDATE shape_exceptions SET is_fixed = @isFixed WHERE coin_type_id = @coinTypeId";
+                
+                command.Parameters.AddWithValue("@isFixed", isFixed ? 1 : 0);
+                command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                
+                await command.ExecuteNonQueryAsync();
+            }
         }
     }
 }

@@ -53,8 +53,24 @@
                     </Grid.RowDefinitions>
                     
                     <StackPanel Grid.Row="0" Margin="5">
-                        <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" 
-                                 Padding="5" ToolTip="Filter Issuers..." Margin="0,0,0,5"/>
+                        <!-- Coin ID Filter with Label -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="Coin ID:" VerticalAlignment="Center" Width="60" Foreground="#555"/>
+                            <TextBox Text="{Binding SearchCoinIdText, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="120" Padding="5" ToolTip="Search by Coin ID (Enter)" VerticalContentAlignment="Center">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding SearchByCoinIdCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Command="{Binding SearchByCoinIdCommand}" Content="Go" Padding="10,0" Margin="5,0,0,0" Cursor="Hand"/>
+                        </StackPanel>
+
+                        <!-- Issuer Filter with Label -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="Issuer:" VerticalAlignment="Center" Width="60" Foreground="#555"/>
+                            <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="200" Padding="5" ToolTip="Filter Issuers..." />
+                        </StackPanel>
                         
                         <StackPanel Orientation="Horizontal">
                             <!-- Multiple Samples Filter -->
@@ -279,7 +295,9 @@
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="1"/>
                         <Setter Property="Margin" Value="0,1"/>
-                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="BorderBrush" Value="#AAAAAA"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                          <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
@@ -292,11 +310,13 @@
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#CCE8FF"/> 
-                            </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#F2F2F2"/>
+                                <Setter Property="BorderBrush" Value="#888888"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#CCE8FF"/> 
+                                <Setter Property="BorderBrush" Value="#2196F3"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -614,6 +634,30 @@
                                     <TextBlock Text="Import from ucoin" Margin="0,0,5,0"/>
                                     <Viewbox Width="16" Height="16">
                                         <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="#2196F3" />
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="#AAAAAA"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#E3F2FD"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Command="{Binding ChangeCoinShapeCommand}" Padding="15,2" Margin="5,0,0,0" Cursor="Hand" ToolTip="Change Shape info">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Change Shape" Margin="0,0,5,0"/>
+                                    <Viewbox Width="16" Height="16">
+                                        <Path Data="M17,17H7V7H17M21,7A2,2 0 0,0 19,5H5A2,2 0 0,0 3,7V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7Z" Fill="#2196F3" />
                                     </Viewbox>
                                 </StackPanel>
                             </Button.Content>

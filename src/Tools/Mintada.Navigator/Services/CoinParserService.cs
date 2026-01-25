@@ -91,7 +91,19 @@ namespace Mintada.Navigator.Services
                             data.ThicknessText = value;
                             break;
                         case "shape":
-                            data.Shape = value;
+                            var shapeMatch = Regex.Match(value, @"^([^\(]+)(?:\((.*)\))?");
+                            if (shapeMatch.Success) 
+                            {
+                                data.Shape = shapeMatch.Groups[1].Value.Trim();
+                                if (shapeMatch.Groups.Count > 2 && !string.IsNullOrWhiteSpace(shapeMatch.Groups[2].Value))
+                                {
+                                    data.ShapeInfo = shapeMatch.Groups[2].Value.Trim();
+                                }
+                            }
+                            else
+                            {
+                                data.Shape = value;
+                            }
                             break;
                         case "orientation":
                             data.Orientation = value;

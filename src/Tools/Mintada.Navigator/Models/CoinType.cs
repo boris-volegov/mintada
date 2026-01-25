@@ -10,6 +10,8 @@ namespace Mintada.Navigator.Models
         public string? Period { get; set; }
         public string IssuerUrlSlug { get; set; } = string.Empty;
         public bool IsFixed { get; set; }
+        public int? ShapeId { get; set; }
+        public string? ShapeInfo { get; set; }
         public System.Collections.ObjectModel.ObservableCollection<CoinSample> Samples { get; set; } = new();
         
         // Helper for view binding

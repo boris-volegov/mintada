@@ -25,6 +25,7 @@ namespace Mintada.Navigator.Models
         public bool IsRulerVerified { get; set; }
         public bool NeedsInspection { get; set; }
         public int? DbShapeId { get; set; }
+        public string? ShapeInfo { get; set; }
 
         // Dimensions Verification
         public decimal? DecimalWeight { get; set; }

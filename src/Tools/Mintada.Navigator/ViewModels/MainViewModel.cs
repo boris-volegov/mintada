@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using System.Text.Json;
+using Mintada.Navigator.Views;
 
 namespace Mintada.Navigator.ViewModels
 {
@@ -27,6 +28,7 @@ namespace Mintada.Navigator.ViewModels
         
         private List<Issuer> _allIssuers = new();
         private List<Issuer> _rootIssuers = new(); 
+        private long? _pendingCoinSelectionId = null;
         private readonly string _cacheFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "issuers_cache.json");
         private readonly string _settingsFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
         private CancellationTokenSource? _swapCts;        
@@ -56,6 +58,9 @@ namespace Mintada.Navigator.ViewModels
 
         [ObservableProperty]
         private string _filterText = string.Empty;
+
+        [ObservableProperty]
+        private string _searchCoinIdText = string.Empty;
 
         [ObservableProperty]
         private string _statusMessage = "Ready.";
@@ -265,7 +270,9 @@ namespace Mintada.Navigator.ViewModels
                 
                 if (SelectedTabIndex == 0) // Coin Types tab
                 {
-                    _ = LoadCoinsForIssuer(value);
+                     long? pendingId = _pendingCoinSelectionId;
+                     _pendingCoinSelectionId = null; // Clear it immediately
+                    _ = LoadCoinsForIssuer(value, pendingId);
                 }
                 else // Rulers tab
                 {
@@ -383,14 +390,26 @@ namespace Mintada.Navigator.ViewModels
                                 }
 
                                 // Verify Shape
-                                if (!string.IsNullOrWhiteSpace(ParsedData.Shape))
+                                int? verifiedShapeId = null;
+                                if (value.ShapeId.HasValue)
+                                {
+                                    verifiedShapeId = value.ShapeId.Value;
+                                }
+                                else if (!string.IsNullOrWhiteSpace(ParsedData.Shape))
                                 {
                                     var shapeId = await _databaseService.GetShapeIdByNameAsync(ParsedData.Shape);
                                     if (shapeId.HasValue)
                                     {
-                                        ParsedData.DbShapeId = shapeId.Value;
+                                        verifiedShapeId = shapeId.Value;
                                     }
                                 }
+
+                                if (verifiedShapeId.HasValue)
+                                {
+                                    ParsedData.DbShapeId = verifiedShapeId;
+                                    System.Windows.Application.Current.Dispatcher.Invoke(() => OnPropertyChanged(nameof(ParsedData)));
+                                }
+
                                 
                                 OnPropertyChanged(nameof(ParsedData));
                             }
@@ -1012,6 +1031,91 @@ namespace Mintada.Navigator.ViewModels
             );
         }
 
+        [RelayCommand(CanExecute = nameof(CanImportFromUcoin))]
+        private async Task ChangeShape()
+        {
+            if (SelectedCoin == null || SelectedIssuer == null) return;
+
+            try
+            {
+                StatusMessage = "Loading shape info...";
+                
+                // 1. Get Shapes from DB
+                var shapes = await _databaseService.GetShapesAsync();
+                
+                // 2. Determine current values or try to parse
+                int? currentShapeId = SelectedCoin.ShapeId;
+                string? currentShapeInfo = SelectedCoin.ShapeInfo;
+
+                if (currentShapeId == null && string.IsNullOrEmpty(currentShapeInfo))
+                {
+                    // Try to parse from HTML
+                    try 
+                    {
+                        string htmlPath = _fileService.GetCoinHtmlPath(SelectedIssuer.UrlSlug, SelectedCoin.CoinTypeSlug, SelectedCoin.Id);
+                        if (IO.File.Exists(htmlPath))
+                        {
+                            string html = await IO.File.ReadAllTextAsync(htmlPath);
+                            var parsedData = _coinParserService.Parse(html);
+                            
+                            currentShapeInfo = parsedData.ShapeInfo;
+                            
+                            if (!string.IsNullOrEmpty(parsedData.Shape))
+                            {
+                                // Find ID by name
+                                var shape = shapes.FirstOrDefault(s => s.Name.Equals(parsedData.Shape, StringComparison.OrdinalIgnoreCase));
+                                if (shape != null)
+                                {
+                                    currentShapeId = shape.Id;
+                                }
+                                else
+                                {
+                                    // Maybe put unrecognized shape name into info?
+                                    if (string.IsNullOrEmpty(currentShapeInfo)) currentShapeInfo = parsedData.Shape;
+                                    else currentShapeInfo = $"{parsedData.Shape} {currentShapeInfo}";
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                         System.Diagnostics.Debug.WriteLine($"Error parsing html for shape: {ex.Message}");
+                    }
+                }
+
+                // 3. Open Dialog
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () => 
+                {
+                    var dialog = new ChangeCoinShapeDialog();
+                    dialog.Owner = System.Windows.Application.Current.MainWindow;
+                    dialog.SetData(shapes, currentShapeId, currentShapeInfo);
+                    
+                    if (dialog.ShowDialog() == true)
+                    {
+                        var newShape = dialog.SelectedShape;
+                        var newInfo = dialog.ShapeInfo;
+                        
+                        // 4. Update DB
+                        await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShape?.Id, newInfo);
+                        
+                        // 5. Update Model
+                        SelectedCoin.ShapeId = newShape?.Id;
+                        SelectedCoin.ShapeInfo = newInfo;
+                        
+                        StatusMessage = "Shape updated.";
+                    }
+                    else
+                    {
+                        StatusMessage = "Change shape cancelled.";
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error changing shape: {ex.Message}";
+            }
+        }
+
         private bool CanPromoteSample()
         {
              return SelectedCoin != null && 
@@ -1490,6 +1594,152 @@ namespace Mintada.Navigator.ViewModels
             }
         }
 
+
+
+        [RelayCommand]
+        private async Task SearchByCoinId()
+        {
+            if (string.IsNullOrWhiteSpace(SearchCoinIdText) || !long.TryParse(SearchCoinIdText, out long coinId))
+            {
+                StatusMessage = "Invalid Coin ID format.";
+                return;
+            }
+
+            try
+            {
+                StatusMessage = $"Searching for Coin ID: {coinId}...";
+                var issuerId = await _databaseService.GetIssuerIdByCoinTypeIdAsync(coinId);
+                
+                if (issuerId.HasValue)
+                {
+                    // Find the issuer in our tree
+                    // Flatten the tree or search recursively?
+                    // We have _allIssuers list which is flat but hierarchically linked.
+                    // Or we can find it in _allIssuers easily since it contains ALL issuers.
+                    
+                    var issuer = _allIssuers.FirstOrDefault(i => i.Id == issuerId.Value);
+                    if (issuer != null)
+                    {
+                        // We need to ensure the parent path is expanded if it's a child?
+                        // The current UI logic uses `Issuers` (ObservableCollection) which is a filtered view of `_rootIssuers`.
+                        // If we are filtering, we might need to clear filter to see it?
+                        // For now, let's assume we select it.
+                        
+                        // Check if we need to clear filter to make it visible
+                        if (!string.IsNullOrEmpty(FilterText))
+                        {
+                            FilterText = string.Empty; // This will trigger filter clear and rebuild matches
+                        }
+
+                        // Select the issuer
+                        SelectedIssuer = issuer;
+                        
+                        // Force load coins and select this specific coin
+                        // LoadCoinsForIssuer is called by OnSelectedIssuerChanged, but we need to pass the coin ID.
+                        // Wait, OnSelectedIssuerChanged calls LoadCoinsForIssuer(value) without coin ID.
+                        // We should manually call it or update the logic.
+                        
+                        // Better approach: 
+                        // 1. Set SelectedIssuer (triggers load)
+                        // 2. Wait for load? Or call Load directly with ID?
+                        
+                        // If we set SelectedIssuer, it triggers OnSelectedIssuerChanged -> LoadCoinsForIssuer(value).
+                        // But we want to select a specific coin.
+                        // We can modify LoadCoinsForIssuer to take an optional coinId to select.
+                        // But OnSelectedIssuerChanged doesn't pass it.
+                        
+                        // Let's call LoadCoinsForIssuer directly here properly?
+                        // But setting SelectedIssuer will trigger the property changed handler.
+                        // We can suppress property change or just let it happen and then re-do it?
+                        // Or we can just call LoadCoinsForIssuer passing the ID, and update SelectedIssuer field directly (less clean).
+                        
+                        // Strategy:
+                        // 1. Set SelectedIssuer.
+                        // 2. The property setter triggers OnSelectedIssuerChanged.
+                        // 3. OnSelectedIssuerChanged triggers LoadCoinsForIssuer(issuer).
+                        // 4. This loads coins and selects the FIRST one.
+                        // 5. We want to select `coinId`.
+                        
+                        // Problem: The async void/Task nature of the event handler makes it hard to wait for the automatic load.
+                        // Solution: We can just call LoadCoinsForIssuer explicitly here with the ID.
+                        // But we also need to update the UI selection for the Issuer.
+                        
+                        // If we just set SelectedIssuer, the UI updates. The handler starts a task. 
+                        // If we fire another task immediately, they might race.
+                        
+                        // Let's rely on a slightly different mechanism or just accept we might load twice?
+                        // OR, we can just call LoadCoinsForIssuer(issuer, coinId) directly and THEN set _selectedIssuer backing field and notify?
+                        // If we set _selectedIssuer and Notify, the handler still fires? 
+                        // No, if we set the field and call OnPropertyChanged, it fires.
+                        // If we set the field only? UI won't update.
+                        
+                        // Let's just update the LoadCoinsForIssuer to be robust, and here:
+                        // We will set a temporary 'target coin id' flag or similar? No, that's messy.
+                        
+                        // How about we just call LoadCoinsForIssuer(issuer, coinId) MANUALLY here.
+                        // And we set SelectedIssuer property.
+                        // Getting around the "OnChanged" double load:
+                        // We can check if the issuer is ALREADY selected.
+                        
+                        if (SelectedIssuer != issuer)
+                        {
+                             // If we change it, the Handler fires. 
+                             // We can use a flag `_isNavigatingToCoin`? 
+                             // Or just let it load, and then we select the coin after?
+                             // But we can't easily wait for the property change handler task.
+                             
+                             // Hack: Set SelectedIssuer, then wait a tiny bit? No.
+                             // Better: Modify the setter logic?
+                             
+                             // Let's just do:
+                             // SelectedIssuer = issuer; 
+                             // And inside OnSelectedIssuerChanged, we check a pending ID?
+                             
+                             // Or we can just call LoadCoinsForIssuer(issuer, coinId) and NOT set SelectedIssuer property yet?
+                             // But then the Left Panel won't show it selected.
+                             
+                             // Correct way:
+                             // 1. Set SelectedIssuer = issuer.
+                             // 2. This triggers load default.
+                             // 3. We then (carefully) reload with specific coin? 
+                             
+                             // Actually, look at OnSelectedIssuerChanged:
+                             // partial void OnSelectedIssuerChanged(Issuer? value) { if (valid) _ = LoadCoinsForIssuer(value); }
+                             
+                             // MainViewModel is partial. I can't easily change the generated property logic deeply.
+                             // But I can change OnSelectedIssuerChanged implementation in the other file part (here).
+                             
+                             // I will modify OnSelectedIssuerChanged to accept a parameter? No, it's a partial method signature fixed by the generator.
+                             
+                             // Let's just use a private field `_pendingCoinSelectionId`.
+                             _pendingCoinSelectionId = coinId;
+                             SelectedIssuer = issuer;
+                             // OnSelectedIssuerChanged will see the field and use it.
+                        }
+                        else
+                        {
+                            // Already selected, just load/select the coin
+                            await LoadCoinsForIssuer(issuer, coinId);
+                        }
+                        
+                        StatusMessage = $"Found Coin {coinId} in {issuer.Name}.";
+                    }
+                    else
+                    {
+                        StatusMessage = "Issuer found in DB but not in loaded list. Try refreshing.";
+                    }
+                }
+                else
+                {
+                    StatusMessage = "Coin ID not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error searching: {ex.Message}";
+            }
+        }
+
         private Issuer? FilterIssuerRecursive(Issuer issuer, HashSet<long>? validIssuerIds)
         {
             bool textMatch = string.IsNullOrWhiteSpace(FilterText) || 
@@ -1589,6 +1839,95 @@ namespace Mintada.Navigator.ViewModels
             }
             
             return grouped;
+        }
+        [RelayCommand]
+        private async Task ChangeCoinShapeAsync()
+        {
+            if (SelectedCoin == null) return;
+
+            var shapes = await _databaseService.GetShapesAsync();
+            
+            int? initialShapeId = SelectedCoin.ShapeId;
+            string? initialShapeInfo = SelectedCoin.ShapeInfo;
+
+            // Try to parse if missing
+            if (initialShapeId == null && string.IsNullOrEmpty(initialShapeInfo))
+            {
+                try 
+                {
+                    if (!string.IsNullOrEmpty(SelectedCoin.IssuerUrlSlug) && !string.IsNullOrEmpty(SelectedCoin.CoinTypeSlug))
+                    {
+                         var htmlPath = _fileService.GetCoinHtmlPath(SelectedCoin.IssuerUrlSlug, SelectedCoin.CoinTypeSlug, SelectedCoin.Id);
+                         if (IO.File.Exists(htmlPath))
+                         {
+                             var htmlContent = await IO.File.ReadAllTextAsync(htmlPath);
+                             var data = _coinParserService.Parse(htmlContent);
+                             
+                             if (!string.IsNullOrEmpty(data.Shape))
+                             {
+                                 var match = shapes.FirstOrDefault(s => s.Name.Equals(data.Shape, StringComparison.OrdinalIgnoreCase));
+                                 if (match != null)
+                                 {
+                                     initialShapeId = match.Id;
+                                 }
+                                 else
+                                 {
+                                     // If we differ from DB list, put everything in Info
+                                     if (!string.IsNullOrEmpty(data.ShapeInfo)) 
+                                         initialShapeInfo = $"{data.Shape}, {data.ShapeInfo}";
+                                     else 
+                                         initialShapeInfo = data.Shape;
+                                 }
+                             }
+                             
+                             if (!string.IsNullOrEmpty(data.ShapeInfo) && initialShapeId != null)
+                             {
+                                 initialShapeInfo = data.ShapeInfo;
+                             }
+                         }
+                    }
+                }
+                catch { }
+            }
+
+            var dialog = new ChangeCoinShapeDialog();
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+            dialog.SetData(shapes, initialShapeId, initialShapeInfo);
+
+            if (dialog.ShowDialog() == true)
+            {
+                var newShapeId = dialog.SelectedShape?.Id;
+                var newShapeInfo = dialog.ShapeInfo;
+
+                await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShapeId, newShapeInfo);
+                
+                // If shape ID or logic changed, mark as fixed in shape_exceptions
+                // Compare against the ORIGINAL DB values (SelectedCoin), not the potentially autofilled 'initial' values
+                if (newShapeId != SelectedCoin.ShapeId || 
+                    (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty))
+                {
+                    await _databaseService.UpdateShapeExceptionFixedStatusAsync(SelectedCoin.Id, true);
+                }
+                
+                SelectedCoin.ShapeId = newShapeId;
+                SelectedCoin.ShapeInfo = newShapeInfo;
+                
+                // Refresh list item to update UI
+                 var index = Coins.IndexOf(SelectedCoin);
+                 if (index >= 0)
+                 {
+                     Coins[index] = SelectedCoin;
+                     SelectedCoin = Coins[index];
+                 }
+
+                 // Update Verified Shape UI
+                 if (ParsedData != null)
+                 {
+                     ParsedData.DbShapeId = newShapeId;
+                     // Force property changed notification for ParsedData to refresh UI
+                     OnPropertyChanged(nameof(ParsedData));
+                 }
+            }
         }
     }
 }
