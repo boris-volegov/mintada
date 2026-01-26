@@ -220,7 +220,6 @@ namespace Mintada.Navigator.ViewModels
                 }
 
                 BuildHierarchy();
-                BuildHierarchy();
                 await BuildLeafIssuers();
                 await FilterIssuers();
                 StatusMessage = "Ready.";
@@ -1387,64 +1386,76 @@ namespace Mintada.Navigator.ViewModels
         private async Task LoadCoinsForIssuer(Issuer issuer, long? preserveCoinId = null)
         {
             try 
+    {
+        StatusMessage = $"Loading coins for {issuer.Name}...";
+        
+        // Capture filter states to use in background thread
+        bool filterNonRef = IsNonReferenceFilterActive;
+        bool filterHidden = IsHideFixedFilterActive;
+        long issuerId = issuer.Id;
+        string issuerSlug = issuer.UrlSlug;
+
+        var coins = await Task.Run(async () => 
+        {
+            var rawCoins = await _databaseService.GetCoinTypesAsync(issuerId, issuerSlug);
+            
+            foreach(var coin in rawCoins)
             {
-                StatusMessage = $"Loading coins for {issuer.Name}...";
-                var coins = await _databaseService.GetCoinTypesAsync(issuer.Id, issuer.UrlSlug);
-                
-                foreach(var coin in coins)
+                foreach(var sample in coin.Samples)
                 {
-                    foreach(var sample in coin.Samples)
-                    {
-                        string coinFolder = $"{coin.CoinTypeSlug}_{coin.Id}";
-                        string htmlBasePath = @"D:\projects\mintada\scrappers\numista\coin_types\html";
-                        string imagesDir = System.IO.Path.Combine(htmlBasePath, issuer.UrlSlug, coinFolder, "images");
-                        
-                        if (!string.IsNullOrEmpty(sample.ObverseImage))
-                           sample.ObversePath = System.IO.Path.Combine(imagesDir, sample.ObverseImage);
-                           
-                        if (!string.IsNullOrEmpty(sample.ReverseImage))
-                           sample.ReversePath = System.IO.Path.Combine(imagesDir, sample.ReverseImage);
-                    }
-                    coin.Samples = new System.Collections.ObjectModel.ObservableCollection<CoinSample>(coin.Samples.OrderBy(s => s.SampleType == 1 ? 0 : 1));
+                    string coinFolder = $"{coin.CoinTypeSlug}_{coin.Id}";
+                    string htmlBasePath = @"D:\projects\mintada\scrappers\numista\coin_types\html";
+                    string imagesDir = System.IO.Path.Combine(htmlBasePath, issuerSlug, coinFolder, "images");
+                    
+                    if (!string.IsNullOrEmpty(sample.ObverseImage))
+                       sample.ObversePath = System.IO.Path.Combine(imagesDir, sample.ObverseImage);
+                       
+                    if (!string.IsNullOrEmpty(sample.ReverseImage))
+                       sample.ReversePath = System.IO.Path.Combine(imagesDir, sample.ReverseImage);
                 }
-
-                // Filter coins for middle panel if active (AND Logic)
-                if (IsNonReferenceFilterActive)
-                {
-                    coins = coins.Where(c => c.NonReferenceSamples.Any()).ToList();
-                }
-
-                if (IsHideFixedFilterActive)
-                {
-                    coins = coins.Where(c => !c.IsFixed).ToList();
-                }
-
-                Coins.Clear();
-                foreach(var c in coins) Coins.Add(c);
-
-                // Run Fuzzy Analysis in background
-                _ = Task.Run(() => AnalyzeFuzzyGroups(coins));
-                
-                StatusMessage = $"Loaded {coins.Count} coins for {issuer.Name}.";
-
-                if (Coins.Any())
-                {
-                    if (preserveCoinId.HasValue && Coins.Any(c => c.Id == preserveCoinId.Value))
-                    {
-                        SelectedCoin = Coins.First(c => c.Id == preserveCoinId.Value);
-                    }
-                    else
-                    {
-                        StatusMessage = $"Selecting first coin: {Coins.First().Title}";
-                        SelectedCoin = Coins.First();
-                    }
-                }
+                // Construct ObservableCollection on background - safe as it's not bound yet
+                coin.Samples = new System.Collections.ObjectModel.ObservableCollection<CoinSample>(coin.Samples.OrderBy(s => s.SampleType == 1 ? 0 : 1));
             }
-            catch (Exception ex)
+
+            // Filter
+            if (filterNonRef)
             {
-                StatusMessage = $"Error loading coins: {ex.Message}";
+                rawCoins = rawCoins.Where(c => c.NonReferenceSamples.Any()).ToList();
+            }
+
+            if (filterHidden)
+            {
+                rawCoins = rawCoins.Where(c => !c.IsFixed).ToList();
+            }
+
+            return rawCoins;
+        });
+
+        Coins = new ObservableCollection<CoinType>(coins);
+
+        // Run Fuzzy Analysis in background
+        _ = Task.Run(() => AnalyzeFuzzyGroups(coins));
+        
+        StatusMessage = $"Loaded {coins.Count} coins for {issuer.Name}.";
+
+        if (Coins.Any())
+        {
+            if (preserveCoinId.HasValue && Coins.Any(c => c.Id == preserveCoinId.Value))
+            {
+                SelectedCoin = Coins.First(c => c.Id == preserveCoinId.Value);
+            }
+            else
+            {
+                StatusMessage = $"Selecting first coin: {Coins.First().Title}";
+                SelectedCoin = Coins.First();
             }
         }
+    }
+    catch (Exception ex)
+    {
+        StatusMessage = $"Error loading coins: {ex.Message}";
+    }
+}
 
         private async Task AnalyzeFuzzyGroups(List<CoinType> coins)
         {
