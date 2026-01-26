@@ -165,4 +165,18 @@ public partial class MainWindow : Window
              }
         }
     }
+    private void CoinListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ListBox listBox && listBox.SelectedItem != null)
+        {
+             // Use Dispatcher to ensure the item is fully generated/visualized before scrolling
+             Application.Current.Dispatcher.InvokeAsync(() => 
+             {
+                 if (listBox.SelectedItem != null)
+                 {
+                    listBox.ScrollIntoView(listBox.SelectedItem);
+                 }
+             }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }
+    }
 }

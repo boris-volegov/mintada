@@ -29,6 +29,9 @@ namespace Mintada.Navigator.ViewModels
         private List<Issuer> _allIssuers = new();
         private List<Issuer> _rootIssuers = new(); 
         private long? _pendingCoinSelectionId = null;
+        private long? _exclusiveCoinId = null;
+        private Task? _activeFilteringTask;
+        private bool _suppressFilterChanges = false;
         private readonly string _cacheFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "issuers_cache.json");
         private readonly string _settingsFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
         private CancellationTokenSource? _swapCts;        
@@ -61,6 +64,19 @@ namespace Mintada.Navigator.ViewModels
 
         [ObservableProperty]
         private string _searchCoinIdText = string.Empty;
+
+        partial void OnSearchCoinIdTextChanged(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) && _exclusiveCoinId.HasValue)
+            {
+                // User cleared the search box. Reset exclusive mode and reload all coins for current issuer.
+                _exclusiveCoinId = null;
+                if (SelectedIssuer != null)
+                {
+                    _ = LoadCoinsForIssuer(SelectedIssuer);
+                }
+            }
+        }
 
         [ObservableProperty]
         private string _statusMessage = "Ready.";
@@ -232,12 +248,14 @@ namespace Mintada.Navigator.ViewModels
 
         partial void OnFilterTextChanged(string value)
         {
-            _ = FilterIssuers();
+            if (_suppressFilterChanges) return;
+            _activeFilteringTask = FilterIssuers();
         }
 
         partial void OnIsNonReferenceFilterActiveChanged(bool value)
         {
-            _ = FilterIssuers();
+            if (_suppressFilterChanges) return;
+            _activeFilteringTask = FilterIssuers();
             SaveSettings();
             if (SelectedIssuer != null)
             {
@@ -247,16 +265,18 @@ namespace Mintada.Navigator.ViewModels
 
         partial void OnIsHideFixedFilterActiveChanged(bool value)
         {
+            if (_suppressFilterChanges) return;
             if (value && IsShowCompletedFilterActive) IsShowCompletedFilterActive = false;
-            _ = FilterIssuers();
+            _activeFilteringTask = FilterIssuers();
             SaveSettings();
             if (SelectedIssuer != null) _ = LoadCoinsForIssuer(SelectedIssuer, SelectedCoin?.Id);
         }
 
         partial void OnIsShowCompletedFilterActiveChanged(bool value)
         {
+            if (_suppressFilterChanges) return;
             if (value && IsHideFixedFilterActive) IsHideFixedFilterActive = false;
-            _ = FilterIssuers();
+            _activeFilteringTask = FilterIssuers();
             SaveSettings();
             if (SelectedIssuer != null) _ = LoadCoinsForIssuer(SelectedIssuer, SelectedCoin?.Id);
         }
@@ -271,6 +291,7 @@ namespace Mintada.Navigator.ViewModels
                 {
                      long? pendingId = _pendingCoinSelectionId;
                      _pendingCoinSelectionId = null; // Clear it immediately
+
                     _ = LoadCoinsForIssuer(value, pendingId);
                 }
                 else // Rulers tab
@@ -1383,79 +1404,125 @@ namespace Mintada.Navigator.ViewModels
 
 
 
-        private async Task LoadCoinsForIssuer(Issuer issuer, long? preserveCoinId = null)
+        private System.Threading.CancellationTokenSource? _loadCoinsCts;
+
+        private async Task LoadCoinsForIssuer(Issuer issuer, long? preserveCoinId = null, bool exclusiveCoin = false)
         {
+            // Cancel previous load
+            _loadCoinsCts?.Cancel();
+            _loadCoinsCts = new System.Threading.CancellationTokenSource();
+            var token = _loadCoinsCts.Token;
+
+
+
             try 
-    {
-        StatusMessage = $"Loading coins for {issuer.Name}...";
-        
-        // Capture filter states to use in background thread
-        bool filterNonRef = IsNonReferenceFilterActive;
-        bool filterHidden = IsHideFixedFilterActive;
-        long issuerId = issuer.Id;
-        string issuerSlug = issuer.UrlSlug;
-
-        var coins = await Task.Run(async () => 
-        {
-            var rawCoins = await _databaseService.GetCoinTypesAsync(issuerId, issuerSlug);
-            
-            foreach(var coin in rawCoins)
             {
-                foreach(var sample in coin.Samples)
+                StatusMessage = $"Loading coins for {issuer.Name}...";
+                
+                // Capture filter states to use in background thread
+                bool filterNonRef = IsNonReferenceFilterActive;
+                bool filterHidden = IsHideFixedFilterActive;
+                long issuerId = issuer.Id;
+                string issuerSlug = issuer.UrlSlug;
+                
+                long? exclusiveIdTarget = _exclusiveCoinId; // Capture persistent state
+
+                var coins = await Task.Run(async () => 
                 {
-                    string coinFolder = $"{coin.CoinTypeSlug}_{coin.Id}";
-                    string htmlBasePath = @"D:\projects\mintada\scrappers\numista\coin_types\html";
-                    string imagesDir = System.IO.Path.Combine(htmlBasePath, issuerSlug, coinFolder, "images");
+                    if (token.IsCancellationRequested) return new List<CoinType>();
+
+                    var rawCoins = await _databaseService.GetCoinTypesAsync(issuerId, issuerSlug);
                     
-                    if (!string.IsNullOrEmpty(sample.ObverseImage))
-                       sample.ObversePath = System.IO.Path.Combine(imagesDir, sample.ObverseImage);
-                       
-                    if (!string.IsNullOrEmpty(sample.ReverseImage))
-                       sample.ReversePath = System.IO.Path.Combine(imagesDir, sample.ReverseImage);
+                    if (token.IsCancellationRequested) return new List<CoinType>();
+
+                    // Persistent Exclusive Filter
+                    // If we have an active exclusive ID, and this issuer contains it, forced filter.
+                    if (exclusiveIdTarget.HasValue)
+                    {
+                         if (rawCoins.Any(c => c.Id == exclusiveIdTarget.Value))
+                         {
+                             rawCoins = rawCoins.Where(c => c.Id == exclusiveIdTarget.Value).ToList();
+                             return rawCoins; // Skip other filters
+                         }
+                    }
+
+                    foreach(var coin in rawCoins)
+                    {
+                        if (token.IsCancellationRequested) break;
+
+                        foreach(var sample in coin.Samples)
+                        {
+                            string coinFolder = $"{coin.CoinTypeSlug}_{coin.Id}";
+                            string htmlBasePath = @"D:\projects\mintada\scrappers\numista\coin_types\html";
+                            string imagesDir = System.IO.Path.Combine(htmlBasePath, issuerSlug, coinFolder, "images");
+                            
+                            if (!string.IsNullOrEmpty(sample.ObverseImage))
+                               sample.ObversePath = System.IO.Path.Combine(imagesDir, sample.ObverseImage);
+                               
+                            if (!string.IsNullOrEmpty(sample.ReverseImage))
+                               sample.ReversePath = System.IO.Path.Combine(imagesDir, sample.ReverseImage);
+                        }
+                        // Construct ObservableCollection on background - safe as it's not bound yet
+                        coin.Samples = new System.Collections.ObjectModel.ObservableCollection<CoinSample>(coin.Samples.OrderBy(s => s.SampleType == 1 ? 0 : 1));
+                    }
+
+                    if (token.IsCancellationRequested) return new List<CoinType>();
+
+                    if (!exclusiveCoin)
+                    {
+                        // Filter
+                        if (filterNonRef)
+                        {
+                            rawCoins = rawCoins.Where(c => c.NonReferenceSamples.Any()).ToList();
+                        }
+
+                        if (filterHidden)
+                        {
+                            rawCoins = rawCoins.Where(c => !c.IsFixed).ToList();
+                        }
+                    }
+
+                    return rawCoins;
+                }, token);
+
+                if (token.IsCancellationRequested) return;
+
+                Coins = new ObservableCollection<CoinType>(coins);
+
+                // Run Fuzzy Analysis in background
+                _ = Task.Run(() => AnalyzeFuzzyGroups(coins));
+                
+                StatusMessage = $"Loaded {coins.Count} coins for {issuer.Name}.";
+
+                if (Coins.Any())
+                {
+                    if (preserveCoinId.HasValue)
+                    {
+                         var target = Coins.FirstOrDefault(c => c.Id == preserveCoinId.Value);
+                         if (target != null)
+                         {
+                             SelectedCoin = target;
+                             StatusMessage = $"Selected found coin: {target.Title}";
+                         }
+                         else
+                         {
+                             StatusMessage = $"Coin {preserveCoinId} not found in filtered list. Selecting first.";
+                             SelectedCoin = Coins.First();
+                         }
+                    }
+                    else
+                    {
+                        StatusMessage = $"Selecting first coin: {Coins.First().Title}";
+                        SelectedCoin = Coins.First();
+                    }
                 }
-                // Construct ObservableCollection on background - safe as it's not bound yet
-                coin.Samples = new System.Collections.ObjectModel.ObservableCollection<CoinSample>(coin.Samples.OrderBy(s => s.SampleType == 1 ? 0 : 1));
             }
-
-            // Filter
-            if (filterNonRef)
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
             {
-                rawCoins = rawCoins.Where(c => c.NonReferenceSamples.Any()).ToList();
-            }
-
-            if (filterHidden)
-            {
-                rawCoins = rawCoins.Where(c => !c.IsFixed).ToList();
-            }
-
-            return rawCoins;
-        });
-
-        Coins = new ObservableCollection<CoinType>(coins);
-
-        // Run Fuzzy Analysis in background
-        _ = Task.Run(() => AnalyzeFuzzyGroups(coins));
-        
-        StatusMessage = $"Loaded {coins.Count} coins for {issuer.Name}.";
-
-        if (Coins.Any())
-        {
-            if (preserveCoinId.HasValue && Coins.Any(c => c.Id == preserveCoinId.Value))
-            {
-                SelectedCoin = Coins.First(c => c.Id == preserveCoinId.Value);
-            }
-            else
-            {
-                StatusMessage = $"Selecting first coin: {Coins.First().Title}";
-                SelectedCoin = Coins.First();
+                StatusMessage = $"Error loading coins: {ex.Message}";
             }
         }
-    }
-    catch (Exception ex)
-    {
-        StatusMessage = $"Error loading coins: {ex.Message}";
-    }
-}
 
         private async Task AnalyzeFuzzyGroups(List<CoinType> coins)
         {
@@ -1637,10 +1704,14 @@ namespace Mintada.Navigator.ViewModels
                         // For now, let's assume we select it.
                         
                         // Check if we need to clear filter to make it visible
-                        if (!string.IsNullOrEmpty(FilterText))
-                        {
-                            FilterText = string.Empty; // This will trigger filter clear and rebuild matches
-                        }
+                if (!string.IsNullOrEmpty(FilterText)) FilterText = string.Empty;
+                if (IsNonReferenceFilterActive) IsNonReferenceFilterActive = false;
+                if (IsHideFixedFilterActive) IsHideFixedFilterActive = false;
+                if (IsShowCompletedFilterActive) IsShowCompletedFilterActive = false;
+                
+                // Allow a small yield to let property change handlers propagate/cancel?
+                // Actually, the property setters trigger async loads. We want to supersede them.
+                await Task.Delay(50);
 
                         // Select the issuer
                         SelectedIssuer = issuer;
@@ -1692,58 +1763,66 @@ namespace Mintada.Navigator.ViewModels
                         // Getting around the "OnChanged" double load:
                         // We can check if the issuer is ALREADY selected.
                         
-                        if (SelectedIssuer != issuer)
-                        {
+
                              // If we change it, the Handler fires. 
                              // We can use a flag `_isNavigatingToCoin`? 
                              // Or just let it load, and then we select the coin after?
-                             // But we can't easily wait for the property change handler task.
-                             
-                             // Hack: Set SelectedIssuer, then wait a tiny bit? No.
-                             // Better: Modify the setter logic?
-                             
-                             // Let's just do:
-                             // SelectedIssuer = issuer; 
-                             // And inside OnSelectedIssuerChanged, we check a pending ID?
-                             
-                             // Or we can just call LoadCoinsForIssuer(issuer, coinId) and NOT set SelectedIssuer property yet?
-                             // But then the Left Panel won't show it selected.
-                             
-                             // Correct way:
-                             // 1. Set SelectedIssuer = issuer.
-                             // 2. This triggers load default.
-                             // 3. We then (carefully) reload with specific coin? 
-                             
-                             // Actually, look at OnSelectedIssuerChanged:
-                             // partial void OnSelectedIssuerChanged(Issuer? value) { if (valid) _ = LoadCoinsForIssuer(value); }
-                             
-                             // MainViewModel is partial. I can't easily change the generated property logic deeply.
-                             // But I can change OnSelectedIssuerChanged implementation in the other file part (here).
-                             
-                             // I will modify OnSelectedIssuerChanged to accept a parameter? No, it's a partial method signature fixed by the generator.
-                             
-                             // Let's just use a private field `_pendingCoinSelectionId`.
-                             _pendingCoinSelectionId = coinId;
-                             SelectedIssuer = issuer;
-                             // OnSelectedIssuerChanged will see the field and use it.
-                        }
-                        else
-                        {
-                            // Already selected, just load/select the coin
-                            await LoadCoinsForIssuer(issuer, coinId);
-                        }
+
+                // Exclusive search mode - Set Persistent ID
+                _exclusiveCoinId = coinId;
+
+                // Batch clear filters (Performance optimization)
+                _suppressFilterChanges = true;
+                bool filtersWereActive = !string.IsNullOrEmpty(FilterText) || IsNonReferenceFilterActive || IsHideFixedFilterActive || IsShowCompletedFilterActive;
+                
+                FilterText = string.Empty;
+                IsNonReferenceFilterActive = false;
+                IsHideFixedFilterActive = false;
+                IsShowCompletedFilterActive = false;
+                
+                _suppressFilterChanges = false;
+                
+                if (filtersWereActive)
+                {
+                     // Manually trigger ONE filter update now that batch is done
+                     _activeFilteringTask = FilterIssuers(); 
+                     await _activeFilteringTask;
+                }
+
+                // Find the issuer instance in the current View collection (Issuers)
+                var targetIssuer = FindIssuerById(Issuers, issuerId.Value);
+
+                if (targetIssuer != null)
+                {
+                    _pendingCoinSelectionId = coinId;
                         
-                        StatusMessage = $"Found Coin {coinId} in {issuer.Name}.";
+                    if (SelectedIssuer == targetIssuer)
+                    {
+                        // Explicitly reload because property setter won't trigger change
+                        await LoadCoinsForIssuer(targetIssuer, coinId); 
                     }
                     else
                     {
-                        StatusMessage = "Issuer found in DB but not in loaded list. Try refreshing.";
+                        // Select the issuer - this triggers OnSelectedIssuerChanged
+                        SelectedIssuer = targetIssuer;
                     }
+                    
+                    StatusMessage = $"Found Coin {coinId} in {targetIssuer.Name}.";
                 }
                 else
                 {
-                    StatusMessage = "Coin ID not found.";
+                    // Fallback if not found in tree
+                    _exclusiveCoinId = null; 
+                    StatusMessage = "Issuer found but could not be located in the tree.";
                 }
+
+            }
+
+            }
+            else
+            {
+                StatusMessage = "Coin ID not found.";
+            }
             }
             catch (Exception ex)
             {
@@ -1787,6 +1866,20 @@ namespace Mintada.Navigator.ViewModels
                      Children = filteredChildren
                  };
                  return viewIssuer;
+            }
+            return null;
+        }
+
+        private Issuer? FindIssuerById(IEnumerable<Issuer> nodes, long id)
+        {
+            foreach (var node in nodes)
+            {
+                if (node.Id == id) return node;
+                if (node.Children != null)
+                {
+                    var found = FindIssuerById(node.Children, id);
+                    if (found != null) return found;
+                }
             }
             return null;
         }
