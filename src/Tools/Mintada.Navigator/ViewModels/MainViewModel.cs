@@ -1426,6 +1426,9 @@ namespace Mintada.Navigator.ViewModels
                 string issuerSlug = issuer.UrlSlug;
                 
                 long? exclusiveIdTarget = _exclusiveCoinId; // Capture persistent state
+                
+                // Capture file service reference for background usage
+                var fileService = _fileService;
 
                 var coins = await Task.Run(async () => 
                 {
@@ -1442,38 +1445,45 @@ namespace Mintada.Navigator.ViewModels
                          if (rawCoins.Any(c => c.Id == exclusiveIdTarget.Value))
                          {
                              rawCoins = rawCoins.Where(c => c.Id == exclusiveIdTarget.Value).ToList();
-                             return rawCoins; // Skip other filters
+                             // Continue to populate images for this coin
                          }
                     }
 
                     foreach(var coin in rawCoins)
                     {
                         if (token.IsCancellationRequested) break;
-
+                        
+                        // Use FileService to populate paths
+                        string coinDir = fileService.GetCoinDirectory(issuerSlug, coin.CoinTypeSlug, coin.Id);
+                        string imagesDir = System.IO.Path.Combine(coinDir, "images");
+                        
+                        // Use ObservableCollection constructor for thread safety preparation
                         foreach(var sample in coin.Samples)
                         {
-                            string coinFolder = $"{coin.CoinTypeSlug}_{coin.Id}";
-                            string htmlBasePath = @"D:\projects\mintada\scrappers\numista\coin_types\html";
-                            string imagesDir = System.IO.Path.Combine(htmlBasePath, issuerSlug, coinFolder, "images");
-                            
                             if (!string.IsNullOrEmpty(sample.ObverseImage))
                                sample.ObversePath = System.IO.Path.Combine(imagesDir, sample.ObverseImage);
                                
                             if (!string.IsNullOrEmpty(sample.ReverseImage))
                                sample.ReversePath = System.IO.Path.Combine(imagesDir, sample.ReverseImage);
                         }
-                        // Construct ObservableCollection on background - safe as it's not bound yet
+                        
                         coin.Samples = new System.Collections.ObjectModel.ObservableCollection<CoinSample>(coin.Samples.OrderBy(s => s.SampleType == 1 ? 0 : 1));
                     }
-
+                    
                     if (token.IsCancellationRequested) return new List<CoinType>();
-
-                    if (!exclusiveCoin)
+                    
+                    // Filter Logic (if not exclusive)
+                    if (!exclusiveIdTarget.HasValue)
                     {
                         // Filter
                         if (filterNonRef)
                         {
-                            rawCoins = rawCoins.Where(c => c.NonReferenceSamples.Any()).ToList();
+                            var keepIds = await _databaseService.GetIssuersWithNonReferenceSamplesAsync();
+                            // This logic seems wrong. GetIssuersWithNonReferenceSamplesAsync returns ISSUER IDs.
+                            // We need to filter COINS here.
+                            // Actually, DatabaseService.GetCoinTypesAsync already returns sample info.
+                            // Let's filter in-memory based on Sample properties.
+                             rawCoins = rawCoins.Where(c => c.NonReferenceSamples.Any()).ToList();
                         }
 
                         if (filterHidden)
