@@ -1108,19 +1108,25 @@ namespace Mintada.Navigator.ViewModels
                 {
                     var dialog = new ChangeCoinShapeDialog();
                     dialog.Owner = System.Windows.Application.Current.MainWindow;
-                    dialog.SetData(shapes, currentShapeId, currentShapeInfo);
+                    dialog.SetData(shapes, currentShapeId, currentShapeInfo, SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo);
                     
                     if (dialog.ShowDialog() == true)
                     {
                         var newShape = dialog.SelectedShape;
                         var newInfo = dialog.ShapeInfo;
+                        var newWeight = dialog.WeightInfo;
+                        var newDiameter = dialog.DiameterInfo;
+                        var newThickness = dialog.ThicknessInfo;
                         
                         // 4. Update DB
-                        await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShape?.Id, newInfo);
+                        await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShape?.Id, newInfo, newWeight, newDiameter, newThickness);
                         
                         // 5. Update Model
                         SelectedCoin.ShapeId = newShape?.Id;
                         SelectedCoin.ShapeInfo = newInfo;
+                        SelectedCoin.WeightInfo = newWeight;
+                        SelectedCoin.DiameterInfo = newDiameter;
+                        SelectedCoin.ThicknessInfo = newThickness;
                         
                         StatusMessage = "Shape updated.";
                     }
@@ -2006,25 +2012,36 @@ namespace Mintada.Navigator.ViewModels
 
             var dialog = new ChangeCoinShapeDialog();
             dialog.Owner = System.Windows.Application.Current.MainWindow;
-            dialog.SetData(shapes, initialShapeId, initialShapeInfo);
+            
+            // Pass current weight info (from DB/Model) to dialog
+            dialog.SetData(shapes, initialShapeId, initialShapeInfo, SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo);
 
             if (dialog.ShowDialog() == true)
             {
                 var newShapeId = dialog.SelectedShape?.Id;
                 var newShapeInfo = dialog.ShapeInfo;
+                var newWeightInfo = dialog.WeightInfo;
+                var newDiameterInfo = dialog.DiameterInfo;
+                var newThicknessInfo = dialog.ThicknessInfo;
 
-                await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShapeId, newShapeInfo);
+                await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShapeId, newShapeInfo, newWeightInfo, newDiameterInfo, newThicknessInfo);
                 
-                // If shape ID or logic changed, mark as fixed in shape_exceptions
-                // Compare against the ORIGINAL DB values (SelectedCoin), not the potentially autofilled 'initial' values
+                // If shape ID, info, weight etc changed, mark as fixed in shape_exceptions
+                // Compare against the ORIGINAL DB values (SelectedCoin)
                 if (newShapeId != SelectedCoin.ShapeId || 
-                    (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty))
+                    (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty) ||
+                    (newWeightInfo ?? string.Empty) != (SelectedCoin.WeightInfo ?? string.Empty) ||
+                    (newDiameterInfo ?? string.Empty) != (SelectedCoin.DiameterInfo ?? string.Empty) ||
+                    (newThicknessInfo ?? string.Empty) != (SelectedCoin.ThicknessInfo ?? string.Empty))
                 {
                     await _databaseService.UpdateShapeExceptionFixedStatusAsync(SelectedCoin.Id, true);
                 }
                 
                 SelectedCoin.ShapeId = newShapeId;
                 SelectedCoin.ShapeInfo = newShapeInfo;
+                SelectedCoin.WeightInfo = newWeightInfo;
+                SelectedCoin.DiameterInfo = newDiameterInfo;
+                SelectedCoin.ThicknessInfo = newThicknessInfo;
                 
                 // Refresh list item to update UI
                  var index = Coins.IndexOf(SelectedCoin);

@@ -9,13 +9,16 @@ namespace Mintada.Navigator.Views
     {
         public CoinShape? SelectedShape => ShapesComboBox.SelectedItem as CoinShape;
         public string ShapeInfo => ShapeInfoTextBox.Text;
+        public string WeightInfo => WeightInfoTextBox.Text;
+        public string DiameterInfo => DiameterInfoTextBox.Text;
+        public string ThicknessInfo => ThicknessInfoTextBox.Text;
 
         public ChangeCoinShapeDialog()
         {
             InitializeComponent();
         }
 
-        public void SetData(List<CoinShape> shapes, int? currentShapeId, string? currentInfo)
+        public void SetData(List<CoinShape> shapes, int? currentShapeId, string? currentInfo, string? currentWeight, string? currentDiameter, string? currentThickness)
         {
             ShapesComboBox.ItemsSource = shapes;
             if (currentShapeId.HasValue)
@@ -23,6 +26,9 @@ namespace Mintada.Navigator.Views
                 ShapesComboBox.SelectedItem = shapes.FirstOrDefault(s => s.Id == currentShapeId.Value);
             }
             ShapeInfoTextBox.Text = currentInfo ?? string.Empty;
+            WeightInfoTextBox.Text = currentWeight ?? string.Empty;
+            DiameterInfoTextBox.Text = currentDiameter ?? string.Empty;
+            ThicknessInfoTextBox.Text = currentThickness ?? string.Empty;
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)

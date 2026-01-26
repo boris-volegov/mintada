@@ -12,6 +12,9 @@ namespace Mintada.Navigator.Models
         public bool IsFixed { get; set; }
         public int? ShapeId { get; set; }
         public string? ShapeInfo { get; set; }
+        public string? WeightInfo { get; set; }
+        public string? DiameterInfo { get; set; }
+        public string? ThicknessInfo { get; set; }
         public System.Collections.ObjectModel.ObservableCollection<CoinSample> Samples { get; set; } = new();
         
         // Helper for view binding
