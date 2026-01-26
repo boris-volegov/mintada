@@ -15,6 +15,9 @@ namespace Mintada.Navigator.Models
         public string? WeightInfo { get; set; }
         public string? DiameterInfo { get; set; }
         public string? ThicknessInfo { get; set; }
+        public decimal? Weight { get; set; }
+        public decimal? Diameter { get; set; }
+        public decimal? Thickness { get; set; }
         public System.Collections.ObjectModel.ObservableCollection<CoinSample> Samples { get; set; } = new();
         
         // Helper for view binding

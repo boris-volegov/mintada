@@ -1051,96 +1051,7 @@ namespace Mintada.Navigator.ViewModels
             );
         }
 
-        [RelayCommand(CanExecute = nameof(CanImportFromUcoin))]
-        private async Task ChangeShape()
-        {
-            if (SelectedCoin == null || SelectedIssuer == null) return;
 
-            try
-            {
-                StatusMessage = "Loading shape info...";
-                
-                // 1. Get Shapes from DB
-                var shapes = await _databaseService.GetShapesAsync();
-                
-                // 2. Determine current values or try to parse
-                int? currentShapeId = SelectedCoin.ShapeId;
-                string? currentShapeInfo = SelectedCoin.ShapeInfo;
-
-                if (currentShapeId == null && string.IsNullOrEmpty(currentShapeInfo))
-                {
-                    // Try to parse from HTML
-                    try 
-                    {
-                        string htmlPath = _fileService.GetCoinHtmlPath(SelectedIssuer.UrlSlug, SelectedCoin.CoinTypeSlug, SelectedCoin.Id);
-                        if (IO.File.Exists(htmlPath))
-                        {
-                            string html = await IO.File.ReadAllTextAsync(htmlPath);
-                            var parsedData = _coinParserService.Parse(html);
-                            
-                            currentShapeInfo = parsedData.ShapeInfo;
-                            
-                            if (!string.IsNullOrEmpty(parsedData.Shape))
-                            {
-                                // Find ID by name
-                                var shape = shapes.FirstOrDefault(s => s.Name.Equals(parsedData.Shape, StringComparison.OrdinalIgnoreCase));
-                                if (shape != null)
-                                {
-                                    currentShapeId = shape.Id;
-                                }
-                                else
-                                {
-                                    // Maybe put unrecognized shape name into info?
-                                    if (string.IsNullOrEmpty(currentShapeInfo)) currentShapeInfo = parsedData.Shape;
-                                    else currentShapeInfo = $"{parsedData.Shape} {currentShapeInfo}";
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                         System.Diagnostics.Debug.WriteLine($"Error parsing html for shape: {ex.Message}");
-                    }
-                }
-
-                // 3. Open Dialog
-                await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () => 
-                {
-                    var dialog = new ChangeCoinShapeDialog();
-                    dialog.Owner = System.Windows.Application.Current.MainWindow;
-                    dialog.SetData(shapes, currentShapeId, currentShapeInfo, SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo);
-                    
-                    if (dialog.ShowDialog() == true)
-                    {
-                        var newShape = dialog.SelectedShape;
-                        var newInfo = dialog.ShapeInfo;
-                        var newWeight = dialog.WeightInfo;
-                        var newDiameter = dialog.DiameterInfo;
-                        var newThickness = dialog.ThicknessInfo;
-                        
-                        // 4. Update DB
-                        await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShape?.Id, newInfo, newWeight, newDiameter, newThickness);
-                        
-                        // 5. Update Model
-                        SelectedCoin.ShapeId = newShape?.Id;
-                        SelectedCoin.ShapeInfo = newInfo;
-                        SelectedCoin.WeightInfo = newWeight;
-                        SelectedCoin.DiameterInfo = newDiameter;
-                        SelectedCoin.ThicknessInfo = newThickness;
-                        
-                        StatusMessage = "Shape updated.";
-                    }
-                    else
-                    {
-                        StatusMessage = "Change shape cancelled.";
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Error changing shape: {ex.Message}";
-            }
-        }
 
         private bool CanPromoteSample()
         {
@@ -1961,16 +1872,17 @@ namespace Mintada.Navigator.ViewModels
             return grouped;
         }
         [RelayCommand]
-        private async Task ChangeCoinShapeAsync()
+        private async Task ChangeCoinAttributesAsync()
         {
             if (SelectedCoin == null) return;
 
             var shapes = await _databaseService.GetShapesAsync();
             
+            // Initial Values
             int? initialShapeId = SelectedCoin.ShapeId;
             string? initialShapeInfo = SelectedCoin.ShapeInfo;
 
-            // Try to parse if missing
+            // ... (keep parsing check if needed, or remove since it focused on shape? Let's keep it for shape id fallback)
             if (initialShapeId == null && string.IsNullOrEmpty(initialShapeInfo))
             {
                 try 
@@ -1992,7 +1904,6 @@ namespace Mintada.Navigator.ViewModels
                                  }
                                  else
                                  {
-                                     // If we differ from DB list, put everything in Info
                                      if (!string.IsNullOrEmpty(data.ShapeInfo)) 
                                          initialShapeInfo = $"{data.Shape}, {data.ShapeInfo}";
                                      else 
@@ -2010,11 +1921,12 @@ namespace Mintada.Navigator.ViewModels
                 catch { }
             }
 
-            var dialog = new ChangeCoinShapeDialog();
+            var dialog = new ChangeCoinAttributesDialog();
             dialog.Owner = System.Windows.Application.Current.MainWindow;
             
-            // Pass current weight info (from DB/Model) to dialog
-            dialog.SetData(shapes, initialShapeId, initialShapeInfo, SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo);
+            dialog.SetData(shapes, initialShapeId, initialShapeInfo, 
+                SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo,
+                SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness);
 
             if (dialog.ShowDialog() == true)
             {
@@ -2023,18 +1935,25 @@ namespace Mintada.Navigator.ViewModels
                 var newWeightInfo = dialog.WeightInfo;
                 var newDiameterInfo = dialog.DiameterInfo;
                 var newThicknessInfo = dialog.ThicknessInfo;
+                var newWeight = dialog.Weight;
+                var newDiameter = dialog.Diameter;
+                var newThickness = dialog.Thickness;
 
-                await _databaseService.UpdateCoinShapeAsync(SelectedCoin.Id, newShapeId, newShapeInfo, newWeightInfo, newDiameterInfo, newThicknessInfo);
+                await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
+                    newWeightInfo, newDiameterInfo, newThicknessInfo,
+                    newWeight, newDiameter, newThickness);
                 
-                // If shape ID, info, weight etc changed, mark as fixed in shape_exceptions
-                // Compare against the ORIGINAL DB values (SelectedCoin)
+                // If anything changed, mark fixed
                 if (newShapeId != SelectedCoin.ShapeId || 
                     (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty) ||
                     (newWeightInfo ?? string.Empty) != (SelectedCoin.WeightInfo ?? string.Empty) ||
                     (newDiameterInfo ?? string.Empty) != (SelectedCoin.DiameterInfo ?? string.Empty) ||
-                    (newThicknessInfo ?? string.Empty) != (SelectedCoin.ThicknessInfo ?? string.Empty))
+                    (newThicknessInfo ?? string.Empty) != (SelectedCoin.ThicknessInfo ?? string.Empty) ||
+                    newWeight != SelectedCoin.Weight ||
+                    newDiameter != SelectedCoin.Diameter ||
+                    newThickness != SelectedCoin.Thickness)
                 {
-                    await _databaseService.UpdateShapeExceptionFixedStatusAsync(SelectedCoin.Id, true);
+                    await _databaseService.UpdateCoinFixedStatusAsync(SelectedCoin.Id, true);
                 }
                 
                 SelectedCoin.ShapeId = newShapeId;
@@ -2042,6 +1961,9 @@ namespace Mintada.Navigator.ViewModels
                 SelectedCoin.WeightInfo = newWeightInfo;
                 SelectedCoin.DiameterInfo = newDiameterInfo;
                 SelectedCoin.ThicknessInfo = newThicknessInfo;
+                SelectedCoin.Weight = newWeight;
+                SelectedCoin.Diameter = newDiameter;
+                SelectedCoin.Thickness = newThickness;
                 
                 // Refresh list item to update UI
                  var index = Coins.IndexOf(SelectedCoin);
@@ -2055,7 +1977,6 @@ namespace Mintada.Navigator.ViewModels
                  if (ParsedData != null)
                  {
                      ParsedData.DbShapeId = newShapeId;
-                     // Force property changed notification for ParsedData to refresh UI
                      OnPropertyChanged(nameof(ParsedData));
                  }
             }

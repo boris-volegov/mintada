@@ -88,7 +88,8 @@ namespace Mintada.Navigator.Services
                     @"SELECT ct.id, ct.title, cts.obverse_image, cts.reverse_image, cts.sample_type, 
                              ct.subtitle, ct.coin_type_slug, ct.period, ct.fixed, cts.is_holder, 
                              cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin,
-                             ct.shape_id, ct.shape_info, ct.weight_info, ct.diameter_info, ct.thickness_info
+                             ct.shape_id, ct.shape_info, ct.weight_info, ct.diameter_info, ct.thickness_info,
+                             ct.weight, ct.diameter, ct.thickness
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -121,6 +122,9 @@ namespace Mintada.Navigator.Services
                                 WeightInfo = !reader.IsDBNull(17) ? reader.GetString(17) : null,
                                 DiameterInfo = !reader.IsDBNull(18) ? reader.GetString(18) : null,
                                 ThicknessInfo = !reader.IsDBNull(19) ? reader.GetString(19) : null,
+                                Weight = !reader.IsDBNull(20) ? reader.GetDecimal(20) : null,
+                                Diameter = !reader.IsDBNull(21) ? reader.GetDecimal(21) : null,
+                                Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
                                 IssuerUrlSlug = issuerSlug
                             };
                             coinDict[coinId] = coin;
@@ -798,41 +802,35 @@ namespace Mintada.Navigator.Services
             return shapes;
         }
 
-        public async Task UpdateCoinShapeAsync(long coinTypeId, int? shapeId, string? shapeInfo, string? weightInfo, string? diameterInfo, string? thicknessInfo)
+        public async Task UpdateCoinAttributesAsync(long coinTypeId, int? shapeId, string? shapeInfo, 
+            string? weightInfo, string? diameterInfo, string? thicknessInfo,
+            decimal? weight, decimal? diameter, decimal? thickness)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 
-                string query = "UPDATE coin_types SET shape_id = @sid, shape_info = @info, weight_info = @weight, diameter_info = @diameter, thickness_info = @thickness WHERE id = @id";
+                string query = @"UPDATE coin_types 
+                               SET shape_id = @sid, shape_info = @info, 
+                                   weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
+                                   weight = @weight, diameter = @diameter, thickness = @thickness
+                               WHERE id = @id";
                 
                 using var command = connection.CreateCommand();
                 command.CommandText = query;
                 command.Parameters.AddWithValue("@sid", shapeId ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@info", shapeInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@weight", weightInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@diameter", diameterInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@thickness", thicknessInfo ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@weightInfo", weightInfo ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@diameterInfo", diameterInfo ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@thicknessInfo", thicknessInfo ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@weight", weight ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@diameter", diameter ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@thickness", thickness ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@id", coinTypeId);
                 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task UpdateShapeExceptionFixedStatusAsync(long coinTypeId, bool isFixed)
-        {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                
-                var command = connection.CreateCommand();
-                command.CommandText = "UPDATE shape_exceptions SET is_fixed = @isFixed WHERE coin_type_id = @coinTypeId";
-                
-                command.Parameters.AddWithValue("@isFixed", isFixed ? 1 : 0);
-                command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
-                
-                await command.ExecuteNonQueryAsync();
-            }
-        }
     }
 }
