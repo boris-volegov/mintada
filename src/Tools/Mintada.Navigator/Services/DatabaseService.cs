@@ -89,7 +89,7 @@ namespace Mintada.Navigator.Services
                              ct.subtitle, ct.coin_type_slug, ct.period, ct.fixed, cts.is_holder, 
                              cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin,
                              ct.shape_id, ct.shape_info, ct.weight_info, ct.diameter_info, ct.thickness_info,
-                             ct.weight, ct.diameter, ct.thickness
+                             ct.weight, ct.diameter, ct.thickness, ct.size
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -124,7 +124,8 @@ namespace Mintada.Navigator.Services
                                 ThicknessInfo = !reader.IsDBNull(19) ? reader.GetString(19) : null,
                                 Weight = !reader.IsDBNull(20) ? reader.GetDecimal(20) : null,
                                 Diameter = !reader.IsDBNull(21) ? reader.GetDecimal(21) : null,
-                                Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
+                             Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
+                                Size = !reader.IsDBNull(23) ? reader.GetString(23) : null,
                                 IssuerUrlSlug = issuerSlug
                             };
                             coinDict[coinId] = coin;
@@ -804,7 +805,7 @@ namespace Mintada.Navigator.Services
 
         public async Task UpdateCoinAttributesAsync(long coinTypeId, int? shapeId, string? shapeInfo, 
             string? weightInfo, string? diameterInfo, string? thicknessInfo,
-            decimal? weight, decimal? diameter, decimal? thickness)
+            decimal? weight, decimal? diameter, decimal? thickness, string? size)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
@@ -813,7 +814,8 @@ namespace Mintada.Navigator.Services
                 string query = @"UPDATE coin_types 
                                SET shape_id = @sid, shape_info = @info, 
                                    weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
-                                   weight = @weight, diameter = @diameter, thickness = @thickness
+                                   weight = @weight, diameter = @diameter, thickness = @thickness,
+                                   size = @size
                                WHERE id = @id";
                 
                 using var command = connection.CreateCommand();
@@ -826,6 +828,7 @@ namespace Mintada.Navigator.Services
                 command.Parameters.AddWithValue("@weight", weight ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@diameter", diameter ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@thickness", thickness ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@size", size ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@id", coinTypeId);
                 
                 await command.ExecuteNonQueryAsync();

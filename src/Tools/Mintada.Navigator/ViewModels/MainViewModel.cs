@@ -1926,7 +1926,7 @@ namespace Mintada.Navigator.ViewModels
             
             dialog.SetData(shapes, initialShapeId, initialShapeInfo, 
                 SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo,
-                SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness);
+                SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness, SelectedCoin.Size);
 
             if (dialog.ShowDialog() == true)
             {
@@ -1938,10 +1938,11 @@ namespace Mintada.Navigator.ViewModels
                 var newWeight = dialog.Weight;
                 var newDiameter = dialog.Diameter;
                 var newThickness = dialog.Thickness;
+                var newSize = dialog.Size;
 
                 await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
                     newWeightInfo, newDiameterInfo, newThicknessInfo,
-                    newWeight, newDiameter, newThickness);
+                    newWeight, newDiameter, newThickness, newSize);
                 
                 // If anything changed, mark fixed
                 if (newShapeId != SelectedCoin.ShapeId || 
@@ -1951,7 +1952,8 @@ namespace Mintada.Navigator.ViewModels
                     (newThicknessInfo ?? string.Empty) != (SelectedCoin.ThicknessInfo ?? string.Empty) ||
                     newWeight != SelectedCoin.Weight ||
                     newDiameter != SelectedCoin.Diameter ||
-                    newThickness != SelectedCoin.Thickness)
+                    newThickness != SelectedCoin.Thickness ||
+                    (newSize ?? string.Empty) != (SelectedCoin.Size ?? string.Empty))
                 {
                     await _databaseService.UpdateCoinFixedStatusAsync(SelectedCoin.Id, true);
                 }
@@ -1964,6 +1966,7 @@ namespace Mintada.Navigator.ViewModels
                 SelectedCoin.Weight = newWeight;
                 SelectedCoin.Diameter = newDiameter;
                 SelectedCoin.Thickness = newThickness;
+                SelectedCoin.Size = newSize;
                 
                 // Refresh list item to update UI
                  var index = Coins.IndexOf(SelectedCoin);

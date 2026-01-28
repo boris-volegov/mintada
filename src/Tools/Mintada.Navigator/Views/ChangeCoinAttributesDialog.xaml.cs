@@ -18,6 +18,7 @@ namespace Mintada.Navigator.Views
         public decimal? Weight => ParseDecimal(WeightTextBox.Text);
         public decimal? Diameter => ParseDecimal(DiameterTextBox.Text);
         public decimal? Thickness => ParseDecimal(ThicknessTextBox.Text);
+        public string Size => SizeTextBox.Text;
 
         public ChangeCoinAttributesDialog()
         {
@@ -26,7 +27,7 @@ namespace Mintada.Navigator.Views
 
         public void SetData(List<CoinShape> shapes, int? currentShapeId, 
             string? currentInfo, string? currentWeightInfo, string? currentDiameterInfo, string? currentThicknessInfo,
-            decimal? currentWeight, decimal? currentDiameter, decimal? currentThickness)
+            decimal? currentWeight, decimal? currentDiameter, decimal? currentThickness, string? currentSize)
         {
             ShapesComboBox.ItemsSource = shapes;
             if (currentShapeId.HasValue)
@@ -42,6 +43,7 @@ namespace Mintada.Navigator.Views
             WeightTextBox.Text = currentWeight?.ToString() ?? string.Empty;
             DiameterTextBox.Text = currentDiameter?.ToString() ?? string.Empty;
             ThicknessTextBox.Text = currentThickness?.ToString() ?? string.Empty;
+            SizeTextBox.Text = currentSize ?? string.Empty;
         }
 
         private decimal? ParseDecimal(string text)

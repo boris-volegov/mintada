@@ -33,6 +33,9 @@
 
                 <TextBlock Text="Thickness (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
                 <TextBox x:Name="ThicknessTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.8)"/>
+
+                <TextBlock Text="Size (TEXT):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="SizeTextBox" Margin="0,0,0,15" Padding="5"/>
             </StackPanel>
 
             <!-- Right Column: Info Text -->
