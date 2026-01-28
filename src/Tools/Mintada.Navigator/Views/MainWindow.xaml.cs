@@ -32,6 +32,15 @@ public partial class MainWindow : Window
         }
     }
 
+    private void TreeViewItem_Selected(object sender, RoutedEventArgs e)
+    {
+        if (sender is TreeViewItem item)
+        {
+            item.BringIntoView();
+            e.Handled = true; 
+        }
+    }
+
     private void SplitLine_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is FrameworkElement element && element.Tag is Models.CoinSample sample)

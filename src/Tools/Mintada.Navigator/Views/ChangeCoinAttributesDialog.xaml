@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mintada.Navigator.Views"
         mc:Ignorable="d"
-        Title="Change Attributes" Height="400" Width="800"
+        Title="Change Attributes" Height="650" Width="800"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -13,46 +13,102 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!-- Left Column: Primary Values -->
-            <StackPanel Grid.Column="0">
-                <TextBlock Text="Shape:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <ComboBox x:Name="ShapesComboBox" DisplayMemberPath="Name" Margin="0,0,0,15" Padding="5"/>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                <!-- Section: Denomination -->
+                <TextBlock Text="Denomination" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Weight (g):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="WeightTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.25)"/>
+                    <!-- Row 1 Left -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Denomination:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DenominationTextBox" Margin="0,0,0,15" Padding="5"/>
 
-                <TextBlock Text="Diameter (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="DiameterTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 25.5)"/>
+                        <TextBlock Text="Denomination Value:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DenominationValueTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal value"/>
+                    </StackPanel>
 
-                <TextBlock Text="Thickness (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="ThicknessTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.8)"/>
+                    <!-- Row 1 Right -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Denomination Info 1:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DenominationInfo1TextBox" Margin="0,0,0,15" Padding="5"/>
 
-                <TextBlock Text="Size (TEXT):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="SizeTextBox" Margin="0,0,0,15" Padding="5"/>
+                        <TextBlock Text="Denomination Info 2:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DenominationInfo2TextBox" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Denomination Alt:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DenominationAltTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Margin="0,5,0,20"/>
+
+                <!-- Section: Shape -->
+                <TextBlock Text="Shape" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Shape:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="ShapesComboBox" DisplayMemberPath="Name" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Shape Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ShapeInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Margin="0,5,0,20"/>
+
+                <!-- Section: Measurements -->
+                <TextBlock Text="Measurements" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: Values -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Weight (g):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="WeightTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.25)"/>
+
+                        <TextBlock Text="Diameter (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DiameterTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 25.5)"/>
+
+                        <TextBlock Text="Thickness (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ThicknessTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.8)"/>
+
+                        <TextBlock Text="Size (TEXT):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="SizeTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+
+                    <!-- Right: Infos -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Weight Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="WeightInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Diameter Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DiameterInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Thickness Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ThicknessInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+                </Grid>
+                
             </StackPanel>
-
-            <!-- Right Column: Info Text -->
-            <StackPanel Grid.Column="2">
-                <TextBlock Text="Shape Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="ShapeInfoTextBox" Margin="0,0,0,15" Padding="5"/>
-
-                <TextBlock Text="Weight Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="WeightInfoTextBox" Margin="0,0,0,15" Padding="5"/>
-
-                <TextBlock Text="Diameter Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="DiameterInfoTextBox" Margin="0,0,0,15" Padding="5"/>
-
-                <TextBlock Text="Thickness Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <TextBox x:Name="ThicknessInfoTextBox" Margin="0,0,0,15" Padding="5"/>
-            </StackPanel>
-        </Grid>
+        </ScrollViewer>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button Content="OK" IsDefault="True" Click="OkButton_Click" Width="80" Margin="0,0,10,0" Padding="5"/>

@@ -173,7 +173,14 @@
                         </TreeView.ItemTemplate>
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="False" />
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                <EventSetter Event="Selected" Handler="TreeViewItem_Selected" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                         </TreeView.ItemContainerStyle>
                     </TreeView>

@@ -54,6 +54,7 @@ namespace Mintada.Navigator.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(OpenCoinFolderCommand))]
         [NotifyCanExecuteChangedFor(nameof(ImportFromUcoinCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ChangeCoinAttributesCommand))]
         private CoinType? _selectedCoin;
 
         [ObservableProperty]
@@ -71,6 +72,7 @@ namespace Mintada.Navigator.ViewModels
             {
                 // User cleared the search box. Reset exclusive mode and reload all coins for current issuer.
                 _exclusiveCoinId = null;
+                StatusMessage = "Search cleared. Reloading...";
                 if (SelectedIssuer != null)
                 {
                     _ = LoadCoinsForIssuer(SelectedIssuer);
@@ -1604,7 +1606,22 @@ namespace Mintada.Navigator.ViewModels
         [RelayCommand]
         private async Task SearchByCoinId()
         {
-            if (string.IsNullOrWhiteSpace(SearchCoinIdText) || !long.TryParse(SearchCoinIdText, out long coinId))
+            if (string.IsNullOrWhiteSpace(SearchCoinIdText))
+            {
+                // Treat empty search as reset
+                if (_exclusiveCoinId.HasValue)
+                {
+                    _exclusiveCoinId = null;
+                    StatusMessage = "Search cleared. Reloading...";
+                    if (SelectedIssuer != null)
+                    {
+                        await LoadCoinsForIssuer(SelectedIssuer);
+                    }
+                }
+                return;
+            }
+
+            if (!long.TryParse(SearchCoinIdText, out long coinId))
             {
                 StatusMessage = "Invalid Coin ID format.";
                 return;
@@ -1716,13 +1733,22 @@ namespace Mintada.Navigator.ViewModels
                      await _activeFilteringTask;
                 }
 
-                // Find the issuer instance in the current View collection (Issuers)
-                var targetIssuer = FindIssuerById(Issuers, issuerId.Value);
+                // Find the path to the issuer in the current View collection (Issuers)
+                var path = FindIssuerPath(Issuers, issuerId.Value);
 
-                if (targetIssuer != null)
+                if (path != null && path.Count > 0)
                 {
                     _pendingCoinSelectionId = coinId;
-                        
+                    
+                    // Expand all nodes in the path
+                    foreach (var node in path)
+                    {
+                        node.IsExpanded = true;
+                    }
+                    
+                    var targetIssuer = path.Last();
+                    targetIssuer.IsSelected = true;
+
                     if (SelectedIssuer == targetIssuer)
                     {
                         // Explicitly reload because property setter won't trigger change
@@ -1797,15 +1823,20 @@ namespace Mintada.Navigator.ViewModels
             return null;
         }
 
-        private Issuer? FindIssuerById(IEnumerable<Issuer> nodes, long id)
+        private List<Issuer>? FindIssuerPath(IEnumerable<Issuer> nodes, long id)
         {
             foreach (var node in nodes)
             {
-                if (node.Id == id) return node;
+                if (node.Id == id) return new List<Issuer> { node };
+                
                 if (node.Children != null)
                 {
-                    var found = FindIssuerById(node.Children, id);
-                    if (found != null) return found;
+                    var childPath = FindIssuerPath(node.Children, id);
+                    if (childPath != null)
+                    {
+                        childPath.Insert(0, node);
+                        return childPath;
+                    }
                 }
             }
             return null;
@@ -1871,7 +1902,12 @@ namespace Mintada.Navigator.ViewModels
             
             return grouped;
         }
-        [RelayCommand]
+        private bool CanChangeCoinAttributes()
+        {
+            return SelectedCoin != null;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanChangeCoinAttributes))]
         private async Task ChangeCoinAttributesAsync()
         {
             if (SelectedCoin == null) return;
@@ -1926,7 +1962,8 @@ namespace Mintada.Navigator.ViewModels
             
             dialog.SetData(shapes, initialShapeId, initialShapeInfo, 
                 SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo,
-                SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness, SelectedCoin.Size);
+                SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness, SelectedCoin.Size,
+                SelectedCoin.DenominationText, SelectedCoin.DenominationValue, SelectedCoin.DenominationInfo1, SelectedCoin.DenominationInfo2, SelectedCoin.DenominationAlt);
 
             if (dialog.ShowDialog() == true)
             {
@@ -1939,10 +1976,16 @@ namespace Mintada.Navigator.ViewModels
                 var newDiameter = dialog.Diameter;
                 var newThickness = dialog.Thickness;
                 var newSize = dialog.Size;
+                var newDenText = dialog.DenominationText;
+                var newDenVal = dialog.DenominationValue;
+                var newDenInfo1 = dialog.DenominationInfo1;
+                var newDenInfo2 = dialog.DenominationInfo2;
+                var newDenAlt = dialog.DenominationAlt;
 
                 await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
                     newWeightInfo, newDiameterInfo, newThicknessInfo,
-                    newWeight, newDiameter, newThickness, newSize);
+                    newWeight, newDiameter, newThickness, newSize,
+                    newDenText, newDenVal, newDenInfo1, newDenInfo2, newDenAlt);
                 
                 // If anything changed, mark fixed
                 if (newShapeId != SelectedCoin.ShapeId || 
@@ -1953,7 +1996,12 @@ namespace Mintada.Navigator.ViewModels
                     newWeight != SelectedCoin.Weight ||
                     newDiameter != SelectedCoin.Diameter ||
                     newThickness != SelectedCoin.Thickness ||
-                    (newSize ?? string.Empty) != (SelectedCoin.Size ?? string.Empty))
+                    (newSize ?? string.Empty) != (SelectedCoin.Size ?? string.Empty) ||
+                    (newDenText ?? string.Empty) != (SelectedCoin.DenominationText ?? string.Empty) ||
+                    newDenVal != SelectedCoin.DenominationValue ||
+                    (newDenInfo1 ?? string.Empty) != (SelectedCoin.DenominationInfo1 ?? string.Empty) ||
+                    (newDenInfo2 ?? string.Empty) != (SelectedCoin.DenominationInfo2 ?? string.Empty) ||
+                    (newDenAlt ?? string.Empty) != (SelectedCoin.DenominationAlt ?? string.Empty))
                 {
                     await _databaseService.UpdateCoinFixedStatusAsync(SelectedCoin.Id, true);
                 }
@@ -1967,6 +2015,11 @@ namespace Mintada.Navigator.ViewModels
                 SelectedCoin.Diameter = newDiameter;
                 SelectedCoin.Thickness = newThickness;
                 SelectedCoin.Size = newSize;
+                SelectedCoin.DenominationText = newDenText;
+                SelectedCoin.DenominationValue = newDenVal;
+                SelectedCoin.DenominationInfo1 = newDenInfo1;
+                SelectedCoin.DenominationInfo2 = newDenInfo2;
+                SelectedCoin.DenominationAlt = newDenAlt;
                 
                 // Refresh list item to update UI
                  var index = Coins.IndexOf(SelectedCoin);

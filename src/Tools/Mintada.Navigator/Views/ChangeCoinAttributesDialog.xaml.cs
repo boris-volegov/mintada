@@ -20,6 +20,12 @@ namespace Mintada.Navigator.Views
         public decimal? Thickness => ParseDecimal(ThicknessTextBox.Text);
         public string Size => SizeTextBox.Text;
 
+        public string DenominationText => DenominationTextBox.Text;
+        public decimal? DenominationValue => ParseDecimal(DenominationValueTextBox.Text);
+        public string DenominationInfo1 => DenominationInfo1TextBox.Text;
+        public string DenominationInfo2 => DenominationInfo2TextBox.Text;
+        public string DenominationAlt => DenominationAltTextBox.Text;
+
         public ChangeCoinAttributesDialog()
         {
             InitializeComponent();
@@ -27,7 +33,8 @@ namespace Mintada.Navigator.Views
 
         public void SetData(List<CoinShape> shapes, int? currentShapeId, 
             string? currentInfo, string? currentWeightInfo, string? currentDiameterInfo, string? currentThicknessInfo,
-            decimal? currentWeight, decimal? currentDiameter, decimal? currentThickness, string? currentSize)
+            decimal? currentWeight, decimal? currentDiameter, decimal? currentThickness, string? currentSize,
+            string? currentDenominationText, decimal? currentDenominationValue, string? currentDenominationInfo1, string? currentDenominationInfo2, string? currentDenominationAlt)
         {
             ShapesComboBox.ItemsSource = shapes;
             if (currentShapeId.HasValue)
@@ -44,6 +51,12 @@ namespace Mintada.Navigator.Views
             DiameterTextBox.Text = currentDiameter?.ToString() ?? string.Empty;
             ThicknessTextBox.Text = currentThickness?.ToString() ?? string.Empty;
             SizeTextBox.Text = currentSize ?? string.Empty;
+            
+            DenominationTextBox.Text = currentDenominationText ?? string.Empty;
+            DenominationValueTextBox.Text = currentDenominationValue?.ToString() ?? string.Empty;
+            DenominationInfo1TextBox.Text = currentDenominationInfo1 ?? string.Empty;
+            DenominationInfo2TextBox.Text = currentDenominationInfo2 ?? string.Empty;
+            DenominationAltTextBox.Text = currentDenominationAlt ?? string.Empty;
         }
 
         private decimal? ParseDecimal(string text)

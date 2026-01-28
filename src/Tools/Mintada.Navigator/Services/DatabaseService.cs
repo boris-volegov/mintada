@@ -89,7 +89,8 @@ namespace Mintada.Navigator.Services
                              ct.subtitle, ct.coin_type_slug, ct.period, ct.fixed, cts.is_holder, 
                              cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin,
                              ct.shape_id, ct.shape_info, ct.weight_info, ct.diameter_info, ct.thickness_info,
-                             ct.weight, ct.diameter, ct.thickness, ct.size
+                             ct.weight, ct.diameter, ct.thickness, ct.size,
+                             ct.denomination_text, ct.denomination_value, ct.denomination_info_1, ct.denomination_info_2, ct.denomination_alt
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -124,8 +125,13 @@ namespace Mintada.Navigator.Services
                                 ThicknessInfo = !reader.IsDBNull(19) ? reader.GetString(19) : null,
                                 Weight = !reader.IsDBNull(20) ? reader.GetDecimal(20) : null,
                                 Diameter = !reader.IsDBNull(21) ? reader.GetDecimal(21) : null,
-                             Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
+                                Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
                                 Size = !reader.IsDBNull(23) ? reader.GetString(23) : null,
+                                DenominationText = !reader.IsDBNull(24) ? reader.GetString(24) : null,
+                                DenominationValue = !reader.IsDBNull(25) ? reader.GetDecimal(25) : null,
+                                DenominationInfo1 = !reader.IsDBNull(26) ? reader.GetString(26) : null,
+                                DenominationInfo2 = !reader.IsDBNull(27) ? reader.GetString(27) : null,
+                                DenominationAlt = !reader.IsDBNull(28) ? reader.GetString(28) : null,
                                 IssuerUrlSlug = issuerSlug
                             };
                             coinDict[coinId] = coin;
@@ -805,7 +811,8 @@ namespace Mintada.Navigator.Services
 
         public async Task UpdateCoinAttributesAsync(long coinTypeId, int? shapeId, string? shapeInfo, 
             string? weightInfo, string? diameterInfo, string? thicknessInfo,
-            decimal? weight, decimal? diameter, decimal? thickness, string? size)
+            decimal? weight, decimal? diameter, decimal? thickness, string? size,
+            string? denominationText, decimal? denominationValue, string? denominationInfo1, string? denominationInfo2, string? denominationAlt)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
@@ -815,7 +822,9 @@ namespace Mintada.Navigator.Services
                                SET shape_id = @sid, shape_info = @info, 
                                    weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
                                    weight = @weight, diameter = @diameter, thickness = @thickness,
-                                   size = @size
+                                   size = @size,
+                                   denomination_text = @denText, denomination_value = @denVal,
+                                   denomination_info_1 = @denInfo1, denomination_info_2 = @denInfo2, denomination_alt = @denAlt
                                WHERE id = @id";
                 
                 using var command = connection.CreateCommand();
@@ -829,6 +838,11 @@ namespace Mintada.Navigator.Services
                 command.Parameters.AddWithValue("@diameter", diameter ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@thickness", thickness ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@size", size ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@denText", denominationText ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@denVal", denominationValue ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@denInfo1", denominationInfo1 ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@denInfo2", denominationInfo2 ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@denAlt", denominationAlt ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@id", coinTypeId);
                 
                 await command.ExecuteNonQueryAsync();
