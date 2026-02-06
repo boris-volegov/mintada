@@ -1,0 +1,4 @@
+interface:
+  display_name: "Numista Backup"
+  short_description: "Run database/html backup with auto suffix"
+  default_prompt: "Create a Numista backup archive using the project backup command."
