@@ -29,3 +29,7 @@ scrappers/numista/coin_types/html/
 # OS
 Thumbs.db
 Desktop.ini
+
+# Runtime artifacts
+pages.log
+cookie
