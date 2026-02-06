@@ -1,45 +1,54 @@
 # Mintada MCP Server
 
-This directory contains the source code for the Mintada MCP Server, a tool to expose the Numista coin database via the Model Context Protocol.
+This directory contains the source code for the Mintada MCP Server, which exposes the Numista coin database via the Model Context Protocol.
+
+## Transport
+
+The server now uses **streamable HTTP MCP** and exposes the MCP endpoint at:
+
+- `http://localhost:8080/mcp`
 
 ## Docker Usage
 
 ### Build
-To build the Docker image:
 
-```powershell
-docker build -t mintada-mcp -f Dockerfile .
-```
-*(Run from `src/Tools/Mintada.Mcp` directory, or adjust path if running from root)*
+From repo root:
 
-**Recommended (from root):**
 ```powershell
 docker build -t mintada-mcp -f src/Tools/Mintada.Mcp/Dockerfile .
 ```
 
 ### Run
-To run the server, you must mount the `coins.db` file to `/data/numista/coins.db` inside the container.
+
+Mount the `coins.db` file and publish port `8080`:
 
 ```powershell
-docker run -i --rm -v "d:\projects\mintada\data\numista\coins.db:/data/numista/coins.db" mintada-mcp
+docker run --rm -p 8080:8080 -v "d:\projects\mintada\data\numista\coins.db:/data/numista/coins.db" mintada-mcp
 ```
 
-## Configuration
-To use this with an MCP client (like VS Code or Claude Desktop), add this to your MCP configuration:
+Optional environment variables:
+
+- `DB_PATH` (default: `/data/numista/coins.db`)
+- `ASPNETCORE_URLS` (default: `http://0.0.0.0:8080`)
+
+## Codex Configuration
+
+Use a URL-based MCP server (no `docker run` spawn per connection):
+
+```toml
+[mcp_servers.mintada]
+url = "http://localhost:8080/mcp"
+```
+
+## Other MCP Clients
+
+For clients with JSON config:
 
 ```json
 {
   "mcpServers": {
     "mintada": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-v",
-        "d:\\projects\\mintada\\data\\numista\\coins.db:/data/numista/coins.db",
-        "mintada-mcp"
-      ]
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
