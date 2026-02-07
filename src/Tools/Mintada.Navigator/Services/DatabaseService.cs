@@ -393,8 +393,10 @@ namespace Mintada.Navigator.Services
                 var command = connection.CreateCommand();
                 command.CommandText = @"
                     CREATE INDEX IF NOT EXISTS idx_irr_issuer_id ON issuers_rulers_rel(issuer_id);
-                    CREATE INDEX IF NOT EXISTS idx_irr_issuer_name ON issuers_rulers_rel(issuer_name);
-                    CREATE INDEX IF NOT EXISTS idx_irr_period_order ON issuers_rulers_rel(period_order, subperiod_order);
+                    CREATE INDEX IF NOT EXISTS idx_irr_ruler_id ON issuers_rulers_rel(ruler_id);
+                    CREATE INDEX IF NOT EXISTS idx_irr_group_id ON issuers_rulers_rel(group_id);
+                    CREATE INDEX IF NOT EXISTS idx_irr_issuer_ruler_id ON issuers_rulers_rel(issuer_id, ruler_id);
+                    CREATE INDEX IF NOT EXISTS idx_irrg_id ON issuers_rulers_rel_groups(id);
                 ";
                 await command.ExecuteNonQueryAsync();
                 _indexesChecked = true;
@@ -409,7 +411,7 @@ namespace Mintada.Navigator.Services
         {
             var rulers = new List<Ruler>();
             
-            // 1. Ensure Auto-Association (linking) is performed first
+            // Keep legacy call path; currently a no-op for the current schema.
             await AutoAssociateRulersWithIssuerAsync(issuerId);
 
             using (var connection = new SqliteConnection(_connectionString))
@@ -417,81 +419,42 @@ namespace Mintada.Navigator.Services
                 await connection.OpenAsync();
                 await EnsureIndexesAsync(connection);
 
-                // 2. Fetch Logic matching AutoAssociate's criteria to find "Potential" rulers
-                // We need to mirror the logic to know what "Generic" or "Specific" means here.
-                string name = "";
-                string territory = "";
-                bool isSection = false;
-                
-                var issuerCmd = connection.CreateCommand();
-                issuerCmd.CommandText = "SELECT numista_name, numista_territory_type, is_section FROM issuers WHERE id = @id";
-                issuerCmd.Parameters.AddWithValue("@id", issuerId);
-                
-                using (var reader = await issuerCmd.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        name = reader.GetString(0);
-                        territory = !reader.IsDBNull(1) ? reader.GetString(1) : "";
-                        isSection = !reader.IsDBNull(2) && reader.GetBoolean(2);
-                    }
-                }
-
-                bool abortAssociation = false;
-                // A. Section vs Leaf Check
-                if (isSection)
-                {
-                    var checkCmd = connection.CreateCommand();
-                    checkCmd.CommandText = "SELECT count(*) FROM issuers WHERE numista_name = @name AND (is_section IS NULL OR is_section = 0)";
-                    checkCmd.Parameters.AddWithValue("@name", name);
-                    var count = Convert.ToInt32(await checkCmd.ExecuteScalarAsync());
-                    if (count > 0) abortAssociation = true;
-                }
-
-                string sqlWhere = "1=0"; // Default to nothing if aborted
-                if (!abortAssociation)
-                {
-                    // B. Ambiguity Check
-                    bool hasTerritory = !string.IsNullOrEmpty(territory);
-                    if (hasTerritory)
-                    {
-                        var checkAmbiguityCmd = connection.CreateCommand();
-                        checkAmbiguityCmd.CommandText = "SELECT count(*) FROM issuers WHERE numista_name = @name AND (is_section IS NULL OR is_section = 0)";
-                        checkAmbiguityCmd.Parameters.AddWithValue("@name", name);
-                        var leafCount = Convert.ToInt32(await checkAmbiguityCmd.ExecuteScalarAsync());
-
-                        if (leafCount > 1) sqlWhere = "issuer_name LIKE @combinedPattern";
-                        else sqlWhere = "issuer_name = @simpleName OR issuer_name LIKE @combinedPattern";
-                        
-                        // Note: parameters added strictly to command later
-                    }
-                    else
-                    {
-                        sqlWhere = "issuer_name = @simpleName";
-                    }
-                }
-
-                // 3. Fetch Rulers
-                // We fetch:
-                // a) Rulers explicitly assigned to us (issuer_id = @id)
-                // b) Potential rulers: Match criteria AND are unassigned (issuer_id IS NULL)
                 var command = connection.CreateCommand();
-                command.CommandText = $@"
-                    SELECT rowid, ruler_id, name, period, years_text, period_order, subperiod_order, issuer_id, is_manual
-                    FROM issuers_rulers_rel
-                    WHERE issuer_id = @issuerId
-                       OR ( ({sqlWhere}) AND issuer_id IS NULL )
-                    ORDER BY period_order, subperiod_order";
-                
+                command.CommandText = @"
+                    SELECT
+                        irr.rowid,
+                        COALESCE(irr.ruler_id, irr.id) AS resolved_ruler_id,
+                        COALESCE(NULLIF(TRIM(irr.name), ''), r.name, '') AS resolved_name,
+                        COALESCE(g.name, '') AS group_name,
+                        COALESCE(irr.group_id, 0) AS group_id,
+                        irr.issuer_id
+                    FROM issuers_rulers_rel AS irr
+                    LEFT JOIN rulers AS r ON r.id = irr.ruler_id
+                    LEFT JOIN issuers_rulers_rel_groups AS g ON g.id = irr.group_id
+                    WHERE irr.issuer_id = @issuerId
+                    ORDER BY
+                        CASE WHEN irr.group_id IS NULL THEN 1 ELSE 0 END,
+                        irr.group_id,
+                        resolved_name";
+
                 command.Parameters.AddWithValue("@issuerId", issuerId);
-                command.Parameters.AddWithValue("@simpleName", name);
-                command.Parameters.AddWithValue("@combinedPattern", name + "%" + territory);
-                
+
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        rulers.Add(ReadRuler(reader));
+                        rulers.Add(new Ruler
+                        {
+                            RowId = Convert.ToInt64(reader[0]),
+                            Id = Convert.ToInt64(reader[1]),
+                            Name = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                            Period = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                            YearsText = string.Empty,
+                            PeriodOrder = reader.IsDBNull(4) ? 0 : Convert.ToInt32(reader[4]),
+                            SubperiodOrder = null,
+                            IssuerId = reader.IsDBNull(5) ? null : Convert.ToInt64(reader[5]),
+                            IsManual = false
+                        });
                     }
                 }
             }
@@ -499,136 +462,11 @@ namespace Mintada.Navigator.Services
             return rulers;
         }
 
-
-        private Ruler ReadRuler(SqliteDataReader reader)
-        {
-            return new Ruler
-            {
-                RowId = Convert.ToInt64(reader[0]),
-                Id = Convert.ToInt64(reader[1]),
-                Name = reader.GetString(2),
-                Period = reader.IsDBNull(3) ? "" : reader.GetString(3),
-                YearsText = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                PeriodOrder = reader.FieldCount > 5 && !reader.IsDBNull(5) ? Convert.ToInt32(reader[5]) : 0,
-                SubperiodOrder = reader.FieldCount > 6 && !reader.IsDBNull(6) ? Convert.ToInt32(reader[6]) : null,
-                IssuerId = reader.FieldCount > 7 && !reader.IsDBNull(7) ? Convert.ToInt64(reader[7]) : null,
-                IsManual = reader.FieldCount > 8 && !reader.IsDBNull(8) && Convert.ToInt32(reader[8]) == 1
-            };
-        }
-
         public async Task AutoAssociateRulersWithIssuerAsync(long issuerId)
         {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                await EnsureIndexesAsync(connection);
-
-                // 1. Get Issuer Details First
-                string name = "";
-                string territory = "";
-                bool isSection = false;
-                
-                var issuerCmd = connection.CreateCommand();
-                issuerCmd.CommandText = "SELECT numista_name, numista_territory_type, is_section FROM issuers WHERE id = @id";
-                issuerCmd.Parameters.AddWithValue("@id", issuerId);
-                
-                using (var reader = await issuerCmd.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        name = reader.GetString(0);
-                        territory = !reader.IsDBNull(1) ? reader.GetString(1) : "";
-                        isSection = !reader.IsDBNull(2) && reader.GetBoolean(2);
-                    }
-                    else return;
-                }
-
-                // Smart Association Logic:
-                // If this is a Section (non-leaf), check if a Leaf node with the same name exists.
-                // If a Leaf exists, it takes precedence, so we do NOT associate with this Section.
-                if (isSection)
-                {
-                    var checkCmd = connection.CreateCommand();
-                    checkCmd.CommandText = "SELECT count(*) FROM issuers WHERE numista_name = @name AND (is_section IS NULL OR is_section = 0)";
-                    checkCmd.Parameters.AddWithValue("@name", name);
-                    var count = Convert.ToInt32(await checkCmd.ExecuteScalarAsync());
-                    
-                    if (count > 0)
-                    {
-                        // A leaf node exists, so we skip association for this section.
-                        return; 
-                    }
-                }
-
-                var command = connection.CreateCommand();
-                
-                // 2. Perform Update with optimized WHERE clause
-                // Only update non-manual rows
-                bool hasTerritory = !string.IsNullOrEmpty(territory);
-                string sqlWhere;
-                
-                if (hasTerritory)
-                {
-                    // Check if *ANY* other Leaf issuer (non-section) exists with the same name.
-                    // If multiple Leaf nodes share this name (Count > 1), it is ambiguous which one the "Simple Name" rulers belong to.
-                    // In that case, we should be conservative and ONLY claim rulers that match our specific combined pattern (Name + Territory).
-                    // We do not want to randomly assign generic/simple rulers to one of the siblings.
-                    var checkAmbiguityCmd = connection.CreateCommand();
-                    checkAmbiguityCmd.CommandText = "SELECT count(*) FROM issuers WHERE numista_name = @name AND (is_section IS NULL OR is_section = 0)";
-                    checkAmbiguityCmd.Parameters.AddWithValue("@name", name);
-                    var leafCount = Convert.ToInt32(await checkAmbiguityCmd.ExecuteScalarAsync());
-
-                    if (leafCount > 1)
-                    {
-                         // Ambiguity exists (e.g. "CityA (Type1)" and "CityA (Type2)" both exist).
-                         // Or "Austria (Generic)" and "Austria (Empire)" both exist.
-                         // We only claim the strictly matching rulers.
-                         sqlWhere = "issuer_name LIKE @combinedPattern";
-                    }
-                    else
-                    {
-                         // We are the ONLY Leaf node with this name.
-                         // Safe to claim generic/simple matches too.
-                         sqlWhere = "issuer_name = @simpleName OR issuer_name LIKE @combinedPattern";
-                    }
-                    command.Parameters.AddWithValue("@combinedPattern", name + "%" + territory);
-                }
-                else
-                {
-                    sqlWhere = "issuer_name = @simpleName";
-                }
-                
-                command.Parameters.AddWithValue("@simpleName", name);
-                command.Parameters.AddWithValue("@issuerId", issuerId);
-
-                command.CommandText = $@"
-                    UPDATE issuers_rulers_rel
-                    SET issuer_id = @issuerId
-                    WHERE (issuer_id IS NULL OR issuer_id = @issuerId)
-                      AND (is_manual IS NULL OR is_manual = 0)
-                      AND ({sqlWhere})";
-                
-                await command.ExecuteNonQueryAsync();
-
-                // 3. Dissociate invalid auto-associations
-                // If any rulers are currently associated with this issuer (non-manually)
-                // but DO NOT match the current strict criteria (e.g. they matched the old relaxed criteria),
-                // we must release them (set issuer_id = NULL).
-                // This self-corrects cases like 'Qandahar' vs 'Qandahar, City Of' where mixed associations persist.
-                var cleanupCmd = connection.CreateCommand();
-                cleanupCmd.Parameters.AddWithValue("@combinedPattern", name + "%" + territory);
-                cleanupCmd.Parameters.AddWithValue("@simpleName", name);
-                cleanupCmd.Parameters.AddWithValue("@issuerId", issuerId);
-                
-                cleanupCmd.CommandText = $@"
-                    UPDATE issuers_rulers_rel
-                    SET issuer_id = NULL
-                    WHERE issuer_id = @issuerId
-                      AND (is_manual IS NULL OR is_manual = 0)
-                      AND NOT ({sqlWhere})";
-
-                await cleanupCmd.ExecuteNonQueryAsync();
-            }
+            // The current DB schema stores direct issuer ownership in issuers_rulers_rel.issuer_id
+            // and does not contain the legacy matching columns required for auto-association.
+            await Task.CompletedTask;
         }
 
         public async Task ToggleRulerAssociationAsync(long rowId, long? issuerId)
@@ -640,7 +478,7 @@ namespace Mintada.Navigator.Services
                 var command = connection.CreateCommand();
                 command.CommandText = @"
                     UPDATE issuers_rulers_rel
-                    SET issuer_id = @issuerId, is_manual = 1
+                    SET issuer_id = @issuerId
                     WHERE rowid = @rowId";
                 
                 command.Parameters.AddWithValue("@issuerId", issuerId ?? (object)DBNull.Value);
@@ -653,6 +491,16 @@ namespace Mintada.Navigator.Services
 
         public async Task<List<Ruler>> GetRulersForIssuerFromNewTableAsync(long issuerId)
         {
+            // Fallback for DBs that do not contain issuers_rulers_rel_new.
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                if (!await TableExistsAsync(connection, "issuers_rulers_rel_new"))
+                {
+                    return await GetRulersForIssuerAsync(issuerId);
+                }
+            }
+
             var rulers = new List<Ruler>();
             
             using (var connection = new SqliteConnection(_connectionString))
@@ -671,7 +519,7 @@ namespace Mintada.Navigator.Services
                 {
                     while (await reader.ReadAsync())
                     {
-                        bool isPrimary = !reader.IsDBNull(6) && (reader.GetBoolean(6) || reader.GetInt32(6) == 1);
+                        bool isPrimary = !reader.IsDBNull(6) && Convert.ToInt32(reader[6]) == 1;
                         
                         rulers.Add(new Ruler
                         {
@@ -699,9 +547,16 @@ namespace Mintada.Navigator.Services
             using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                
+
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT DISTINCT issuer_id FROM issuers_rulers_rel_new WHERE issuer_id IS NOT NULL";
+                if (await TableExistsAsync(connection, "issuers_rulers_rel_new"))
+                {
+                    command.CommandText = "SELECT DISTINCT issuer_id FROM issuers_rulers_rel_new WHERE issuer_id IS NOT NULL";
+                }
+                else
+                {
+                    command.CommandText = "SELECT DISTINCT issuer_id FROM issuers_rulers_rel WHERE issuer_id IS NOT NULL";
+                }
                 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -726,26 +581,24 @@ namespace Mintada.Navigator.Services
                 
                 if (associate)
                 {
-                    // Associate all rulers in this period with this issuer
-                    // But we MUST check period/periodOrder match
                     command.CommandText = @"
                         UPDATE issuers_rulers_rel
-                        SET issuer_id = @issuerId, is_manual = 1
-                        WHERE period = @period AND period_order = @periodOrder";
+                        SET issuer_id = @issuerId
+                        WHERE (group_id = @groupId OR (@groupId = 0 AND group_id IS NULL))
+                          AND (issuer_id IS NULL OR issuer_id = @issuerId)";
                     command.Parameters.AddWithValue("@issuerId", issuerId);
                 }
                 else
                 {
-                    // Disassociate (set issuer_id to NULL) only for rulers currently associated with this issuer
                     command.CommandText = @"
                         UPDATE issuers_rulers_rel
-                        SET issuer_id = NULL, is_manual = 1
-                        WHERE period = @period AND period_order = @periodOrder AND issuer_id = @issuerId";
+                        SET issuer_id = NULL
+                        WHERE (group_id = @groupId OR (@groupId = 0 AND group_id IS NULL))
+                          AND issuer_id = @issuerId";
                     command.Parameters.AddWithValue("@issuerId", issuerId);
                 }
                 
-                command.Parameters.AddWithValue("@period", periodName);
-                command.Parameters.AddWithValue("@periodOrder", periodOrder);
+                command.Parameters.AddWithValue("@groupId", periodOrder);
                 
                 await command.ExecuteNonQueryAsync();
             }
@@ -759,8 +612,9 @@ namespace Mintada.Navigator.Services
                 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-                    SELECT name, years_text 
-                    FROM issuers_rulers_rel 
+                    SELECT COALESCE(NULLIF(TRIM(irr.name), ''), r.name, '') AS resolved_name
+                    FROM issuers_rulers_rel AS irr
+                    LEFT JOIN rulers AS r ON r.id = irr.ruler_id
                     WHERE issuer_id = @issuerId AND ruler_id = @rulerId
                     LIMIT 1";
                 
@@ -771,13 +625,23 @@ namespace Mintada.Navigator.Services
                 {
                     if (await reader.ReadAsync())
                     {
-                        string name = reader.GetString(0);
-                        string years = reader.IsDBNull(1) ? "" : reader.GetString(1);
-                        return (name, years);
+                        string name = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                        return (name, "");
                     }
                 }
             }
             return null;
+        }
+
+        private static async Task<bool> TableExistsAsync(SqliteConnection connection, string tableName)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = @tableName LIMIT 1";
+                command.Parameters.AddWithValue("@tableName", tableName);
+                var result = await command.ExecuteScalarAsync();
+                return result != null && result != DBNull.Value;
+            }
         }
 
         public async Task<int?> GetShapeIdByNameAsync(string shapeName)

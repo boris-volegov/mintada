@@ -19,6 +19,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:TabIndexToVisibilityConverter x:Key="TabIndexToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:BooleanInverseConverter x:Key="BooleanInverseConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -27,13 +28,13 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="600" />
+            <ColumnDefinition Width="400" />
             <ColumnDefinition Width="337" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Left Panel: Tab Control -->
-        <TabControl Grid.Column="0" SelectedIndex="{Binding SelectedTabIndex}">
+        <TabControl Grid.Column="0" SelectedIndex="{Binding SelectedTabIndex}" IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
             <TabControl.Resources>
                 <!-- Style for tab headers -->
                 <Style TargetType="TabItem">
@@ -292,7 +293,7 @@
         </TabControl>
 
         <!-- Middle Panel: Coins or Rulers -->
-        <Grid Grid.Column="1" Background="#F0F0F0">
+        <Grid Grid.Column="1" Background="#F0F0F0" IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
             <!-- Show Coins when Coin Types tab is selected -->
             <ListBox ItemsSource="{Binding Coins}" SelectedItem="{Binding SelectedCoin}" 
                      Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabIndexToVisibilityConverter}, ConverterParameter=0}"
@@ -621,7 +622,7 @@
         <Grid Grid.Column="2" x:Name="RightPanel">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" /> <!-- Browser -->
-                <ColumnDefinition Width="1*" />  <!-- Parse Panel -->
+                <ColumnDefinition Width="2*" />  <!-- Parse Panel -->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -634,7 +635,8 @@
             
                 <!-- Import Bar Overlay (at top of HTML view) -->
                 <Border VerticalAlignment="Top" Background="#F5F5F5" BorderBrush="#CCCCCC" 
-                        BorderThickness="0,0,0,1" Padding="5" Height="35" Panel.ZIndex="1">
+                        BorderThickness="0,0,0,1" Padding="5" Height="35" Panel.ZIndex="1"
+                        IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <Button Command="{Binding ImportFromUcoinCommand}" Padding="15,2" Margin="5,0,0,0" Cursor="Hand" ToolTip="Import data from ucoin system">
                             <Button.Content>
@@ -676,146 +678,30 @@
             </Grid>
 
             <!-- Parse Panel Content (Sidebar) -->
-            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,0" Visibility="{Binding ParsedData, Converter={StaticResource NullToVisibilityConverter}}">
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,0" Visibility="{Binding ParsedData, Converter={StaticResource NullToVisibilityConverter}}"
+                  IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
                  <Grid.RowDefinitions>
                      <RowDefinition Height="Auto"/>
                      <RowDefinition Height="*"/>
                  </Grid.RowDefinitions>
 
-                 <!-- Title & Subtitle -->
+                 <!-- Parsed Title -->
                  <StackPanel Grid.Row="0" Margin="0,5,0,10">
                      <TextBlock Text="{Binding ParsedData.Title}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,2"/>
-                     <TextBlock Text="{Binding ParsedData.Subtitle}" FontSize="11" Foreground="#555" TextWrapping="Wrap" FontStyle="Italic"/>
+                     <TextBlock Text="{Binding ParsedData.DenominationText}" FontSize="12" Foreground="#2E7D32" FontWeight="SemiBold" TextWrapping="Wrap"/>
                  </StackPanel>
 
                  <!-- Content Stack (Vertical Scroll) -->
                  <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                     <StackPanel>
-                         <!-- Raw Values -->
-                         <GroupBox Header="Raw Values" Margin="0,0,0,10">
-                             <Grid>
-                                 <Grid.Resources>
-                                     <Style TargetType="TextBlock">
-                                         <Setter Property="FontSize" Value="11"/>
-                                         <Setter Property="VerticalAlignment" Value="Center"/>
-                                         <Setter Property="Padding" Value="2"/>
-                                     </Style>
-                                     <Style TargetType="TextBlock" x:Key="RawLabel">
-                                         <Setter Property="Foreground" Value="#666666"/>
-                                         <Setter Property="Margin" Value="0,0,5,0"/>
-                                     </Style>
-                                     <Style TargetType="TextBlock" x:Key="RawValue">
-                                         <Setter Property="FontWeight" Value="SemiBold"/>
-                                         <Setter Property="TextWrapping" Value="Wrap"/>
-                                     </Style>
-                                 </Grid.Resources>
-                                 
-                                 <Grid.ColumnDefinitions>
-                                     <ColumnDefinition Width="Auto" SharedSizeGroup="RawLabels"/>
-                                     <ColumnDefinition Width="*"/>
-                                 </Grid.ColumnDefinitions>
-                                 
-                                 <Grid.RowDefinitions>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                     <RowDefinition Height="Auto"/>
-                                 </Grid.RowDefinitions>
-
-                                 <!-- Rows -->
-                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Issuer:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ParsedData.Issuer}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Year:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ParsedData.YearText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Value:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ParsedData.ValueText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Currency:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ParsedData.CurrencyText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Composition:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ParsedData.Composition}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Weight:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ParsedData.WeightText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Diameter:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding ParsedData.DiameterText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Thickness:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding ParsedData.ThicknessText}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="8" Grid.Column="0" Text="Shape:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding ParsedData.Shape}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="9" Grid.Column="0" Text="Orientation:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ParsedData.Orientation}" Style="{StaticResource RawValue}"/>
-
-                                 <TextBlock Grid.Row="10" Grid.Column="0" Text="References:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding ParsedData.References}" Style="{StaticResource RawValue}"/>
-                                 
-                                 <TextBlock Grid.Row="11" Grid.Column="0" Text="Ruler ID:" Style="{StaticResource RawLabel}"/>
-                                 <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding ParsedData.RulerId}" Style="{StaticResource RawValue}"/>
-                             </Grid>
-                         </GroupBox>
-
-                         <!-- Cleaned Data -->
-                         <GroupBox Header="Cleaned Data">
-                             <StackPanel>
-                                 <!-- DB Verified Ruler -->
-                                 <StackPanel Visibility="{Binding ParsedData.IsRulerVerified, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                      <TextBlock Text="DB VERIFIED RULER:" FontWeight="Bold" FontSize="11" Foreground="Green" Margin="0,0,0,5"/>
-                                      <TextBlock Text="{Binding ParsedData.DbRulerName}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                      <TextBlock Text="{Binding ParsedData.DbRulerYears}" FontSize="11" Foreground="#666" Margin="0,2,0,10"/>
-                                 </StackPanel>
-
-                                 <!-- Inspection Warning -->
-                                 <StackPanel Visibility="{Binding ParsedData.NeedsInspection, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                     <TextBlock Text="⚠️ INSPECTION REQUIRED" Foreground="#D32F2F" FontWeight="Bold" Margin="0,0,0,5"/>
-                                     <TextBlock Text="Ruler ID found in HTML matches no ruler for this issuer in DB." TextWrapping="Wrap" FontSize="11"/>
-                                 </StackPanel>
-
-                                 <!-- Verified Dimensions -->
-                                 <StackPanel Margin="0,8,0,0">
-                                      <!-- DB Verified Shape -->
-                                      <StackPanel Orientation="Horizontal" Margin="0,0,0,5"
-                                                  Visibility="{Binding ParsedData.DbShapeId, Converter={StaticResource NullToVisibilityConverter}}">
-                                          <TextBlock Text="DB VERIFIED SHAPE:" FontWeight="Bold" FontSize="11" Foreground="Green" Margin="0,0,5,0"/>
-                                          <TextBlock Text="{Binding ParsedData.DbShapeId}" FontWeight="Bold" FontSize="11" Foreground="Green"/>
-                                      </StackPanel>
-
-                                      <!-- Alarm -->
-                                      <TextBlock Text="{Binding ParsedData.DimensionAlarmMessage}"
-                                                 Visibility="{Binding ParsedData.HasDimensionAlarm, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                 Foreground="#D32F2F" FontWeight="Bold" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,4"/>
-                                      
-                                      <!-- Header + Values Inline -->
-                                      <TextBlock FontSize="12">
-                                          <Run Text="Dimensions (mm/g) " FontSize="10" Foreground="#888888" BaselineAlignment="Center"/>
-                                          <LineBreak/>
-                                          <Run Text="W:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalWeight, TargetNullValue='-'}" FontWeight="SemiBold"/>
-                                          <Run Text=" D:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalDiameter, TargetNullValue='-'}" FontWeight="SemiBold"/>
-                                          <Run Text=" T:" Foreground="#666666" FontSize="11"/> <Run Text="{Binding ParsedData.DecimalThickness, TargetNullValue='-'}" FontWeight="SemiBold"/>
-                                      </TextBlock>
-                                 </StackPanel>
-                             </StackPanel>
-                         </GroupBox>
+                     <StackPanel Margin="5">
                      </StackPanel>
                  </ScrollViewer>
+
             </Grid>
 
             <!-- Non-Reference Samples List -->
-            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="#E0E0E0">
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="#E0E0E0"
+                  IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>

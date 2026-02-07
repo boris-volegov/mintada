@@ -20,10 +20,23 @@ namespace Mintada.Navigator.Models
         public decimal? Thickness { get; set; }
         public string? Size { get; set; }
         public string? DenominationText { get; set; }
-        public decimal? DenominationValue { get; set; }
+        public decimal? ValueAmount { get; set; }
         public string? DenominationInfo1 { get; set; }
-        public string? DenominationInfo2 { get; set; }
+        public decimal? ValueAmountUsd { get; set; }
+        public string? ValueCurrencySymbol { get; set; }
         public string? DenominationAlt { get; set; }
+        public string? StartDate { get; set; }
+        public string? EndDate { get; set; }
+        public string? StartNativeDate { get; set; }
+        public string? EndNativeDate { get; set; }
+        public string? StartMintDate { get; set; }
+        public string? EndMintDate { get; set; }
+        public string? RestrikeDate { get; set; }
+        public string? RestrikeStartMintDate { get; set; }
+        public string? RestrikeEndMintDate { get; set; }
+        public string? ErroneousDates { get; set; }
+        public int? CalendarSystemId { get; set; }
+        public int? PeriodId { get; set; }
         public System.Collections.ObjectModel.ObservableCollection<CoinSample> Samples { get; set; } = new();
         
         // Helper for view binding
