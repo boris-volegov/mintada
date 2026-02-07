@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mintada.Navigator.Views"
         mc:Ignorable="d"
-        Title="Change Attributes" Height="650" Width="800"
+        Title="Change Attributes" Height="780" Width="1100"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -15,54 +15,51 @@
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="0,0,10,0">
-                <!-- Section: Denomination -->
-                <TextBlock Text="Denomination" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <!-- Section: Denomination & Shape -->
+                <TextBlock Text="Denomination &amp; Shape" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Row 1 Left -->
+                    <!-- Column 1 -->
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Denomination:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="DenominationTextBox" Margin="0,0,0,15" Padding="5"/>
 
-                        <TextBlock Text="Denomination Value:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="DenominationValueTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal value"/>
+                        <TextBlock Text="Value Amount:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ValueAmountTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal value"/>
                     </StackPanel>
 
-                    <!-- Row 1 Right -->
+                    <!-- Column 2 -->
                     <StackPanel Grid.Column="2">
                         <TextBlock Text="Denomination Info 1:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="DenominationInfo1TextBox" Margin="0,0,0,15" Padding="5"/>
 
-                        <TextBlock Text="Denomination Info 2:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="DenominationInfo2TextBox" Margin="0,0,0,15" Padding="5"/>
+                        <TextBlock Text="Value Amount (USD):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ValueAmountUsdTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal value"/>
+                    </StackPanel>
+
+                    <!-- Column 3 -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Value Currency Symbol:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ValueCurrencySymbolTextBox" Margin="0,0,0,15" Padding="5"/>
 
                         <TextBlock Text="Denomination Alt:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="DenominationAltTextBox" Margin="0,0,0,15" Padding="5"/>
                     </StackPanel>
-                </Grid>
-
-                <Separator Margin="0,5,0,20"/>
-
-                <!-- Section: Shape -->
-                <TextBlock Text="Shape" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0">
+                    
+                    <!-- Column 4 -->
+                    <StackPanel Grid.Column="6">
                         <TextBlock Text="Shape:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <ComboBox x:Name="ShapesComboBox" DisplayMemberPath="Name" Margin="0,0,0,15" Padding="5"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2">
+                        
                         <TextBlock Text="Shape Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="ShapeInfoTextBox" Margin="0,0,0,15" Padding="5"/>
                     </StackPanel>
@@ -77,35 +74,172 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Left: Values -->
+                    <!-- Column 1 -->
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Weight (g):" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="WeightTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.25)"/>
-
-                        <TextBlock Text="Diameter (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="DiameterTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 25.5)"/>
-
-                        <TextBlock Text="Thickness (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="ThicknessTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.8)"/>
-
-                        <TextBlock Text="Size (TEXT):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="SizeTextBox" Margin="0,0,0,15" Padding="5"/>
-                    </StackPanel>
-
-                    <!-- Right: Infos -->
-                    <StackPanel Grid.Column="2">
+                        
                         <TextBlock Text="Weight Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="WeightInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
 
+                    <!-- Column 2 -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Diameter (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="DiameterTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 25.5)"/>
+                        
                         <TextBlock Text="Diameter Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="DiameterInfoTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
 
+                    <!-- Column 3 -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Thickness (mm):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="ThicknessTextBox" Margin="0,0,0,15" Padding="5" ToolTip="Decimal values only (e.g. 1.8)"/>
+                        
                         <TextBlock Text="Thickness Info:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox x:Name="ThicknessInfoTextBox" Margin="0,0,0,15" Padding="5"/>
                     </StackPanel>
+                    
+                    <!-- Column 4 -->
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="Size (TEXT):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="SizeTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
                 </Grid>
+                
+                
+                <Separator Margin="0,5,0,20"/>
+
+                <!-- Section: Periods & Rulers -->
+                <TextBlock Text="Periods &amp;Rulers" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Period:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="PeriodsComboBox" Margin="0,0,0,0" Padding="5" DisplayMemberPath="Name"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Ruler 1:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="Ruler1ComboBox" Margin="0,0,0,0" Padding="5" DisplayMemberPath="Name"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Ruler 2:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="Ruler2ComboBox" Margin="0,0,0,0" Padding="5" DisplayMemberPath="Name"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="Ruler 3:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="Ruler3ComboBox" Margin="0,0,0,0" Padding="5" DisplayMemberPath="Name"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Margin="0,5,0,20"/>
+                
+                <!-- Section: Dates -->
+                <TextBlock Text="Dates" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Column 1: Gregorian -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Start Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="StartDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                        
+                        <TextBlock Text="End Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="EndDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+                    
+                    <!-- Column 2: Native -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Start Native Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="StartNativeDateTextBox" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="End Native Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="EndNativeDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+
+                    <!-- Column 3: Mint -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Start Mint Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="StartMintDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                        
+                        <TextBlock Text="End Mint Date:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="EndMintDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                    </StackPanel>
+                    
+                    <!-- Column 4: Calendar System & Tools -->
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="Calendar System:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="CalendarSystemComboBox" Margin="0,0,0,15" Padding="5" DisplayMemberPath="Name"/>
+
+                        <Button Content="Native &#x21C5; Mint" Click="MoveNativeMintButton_Click" Padding="10,5" Margin="0,21,0,15" ToolTip="Move/Swap values between Native and Mint fields"/>
+                    </StackPanel>
+                </Grid>
+                
+                <!-- Restrike Dates Section -->
+                <Expander x:Name="RestrikeExpander" Header="Restrike and Erroneous Dates" Margin="0,10,0,0" IsExpanded="False" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" FontWeight="Bold">
+                    <Grid Margin="0,5,0,0" TextElement.FontWeight="Normal">
+                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/> 
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Column 1: Restrike Date -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Restrike Date:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black"/>
+                            <TextBox x:Name="RestrikeDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                        </StackPanel>
+
+                        <!-- Column 2: Restrike Start Mint -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Restrike Start Mint Date:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black"/>
+                            <TextBox x:Name="RestrikeStartMintDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                        </StackPanel>
+                        
+                        <!-- Column 3: Restrike End Mint -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Restrike End Mint Date:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black"/>
+                            <TextBox x:Name="RestrikeEndMintDateTextBox" Margin="0,0,0,15" Padding="5"/>
+                        </StackPanel>
+                        
+                        <!-- Column 4: Erroneous Dates -->
+                         <StackPanel Grid.Column="6">
+                            <TextBlock Text="Erroneous Dates:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black"/>
+                            <TextBox x:Name="ErroneousDatesTextBox" Margin="0,0,0,15" Padding="5"/>
+                        </StackPanel>
+                    </Grid>
+                </Expander>
                 
             </StackPanel>
         </ScrollViewer>

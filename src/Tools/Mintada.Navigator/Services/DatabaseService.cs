@@ -90,7 +90,12 @@ namespace Mintada.Navigator.Services
                              cts.is_counterstamped, cts.is_roll, cts.contains_holder, cts.contains_text, cts.is_multi_coin,
                              ct.shape_id, ct.shape_info, ct.weight_info, ct.diameter_info, ct.thickness_info,
                              ct.weight, ct.diameter, ct.thickness, ct.size,
-                             ct.denomination_text, ct.denomination_value, ct.denomination_info_1, ct.denomination_info_2, ct.denomination_alt
+                             ct.denomination_text, ct.value_amount, ct.denomination_info_1, ct.value_amount_usd, ct.value_currency_symbol, ct.denomination_alt,
+                             ct.start_date, ct.end_date, ct.start_native_date, ct.end_native_date, ct.start_mint_date, ct.end_mint_date,
+                             ct.restrike_date, ct.restrike_start_mint_date, ct.restrike_end_mint_date,
+                             ct.erroneous_dates,
+                             ct.calendar_system_id,
+                             ct.period_id
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -128,10 +133,23 @@ namespace Mintada.Navigator.Services
                                 Thickness = !reader.IsDBNull(22) ? reader.GetDecimal(22) : null,
                                 Size = !reader.IsDBNull(23) ? reader.GetString(23) : null,
                                 DenominationText = !reader.IsDBNull(24) ? reader.GetString(24) : null,
-                                DenominationValue = !reader.IsDBNull(25) ? reader.GetDecimal(25) : null,
+                                ValueAmount = !reader.IsDBNull(25) ? reader.GetDecimal(25) : null,
                                 DenominationInfo1 = !reader.IsDBNull(26) ? reader.GetString(26) : null,
-                                DenominationInfo2 = !reader.IsDBNull(27) ? reader.GetString(27) : null,
-                                DenominationAlt = !reader.IsDBNull(28) ? reader.GetString(28) : null,
+                                ValueAmountUsd = !reader.IsDBNull(27) ? reader.GetDecimal(27) : null,
+                                ValueCurrencySymbol = !reader.IsDBNull(28) ? reader.GetString(28) : null,
+                                DenominationAlt = !reader.IsDBNull(29) ? reader.GetString(29) : null,
+                                StartDate = !reader.IsDBNull(30) ? reader.GetString(30) : null,
+                                EndDate = !reader.IsDBNull(31) ? reader.GetString(31) : null,
+                                StartNativeDate = !reader.IsDBNull(32) ? reader.GetString(32) : null,
+                                EndNativeDate = !reader.IsDBNull(33) ? reader.GetString(33) : null,
+                                StartMintDate = !reader.IsDBNull(34) ? reader.GetString(34) : null,
+                                EndMintDate = !reader.IsDBNull(35) ? reader.GetString(35) : null,
+                                RestrikeDate = !reader.IsDBNull(36) ? reader.GetString(36) : null,
+                                RestrikeStartMintDate = !reader.IsDBNull(37) ? reader.GetString(37) : null,
+                                RestrikeEndMintDate = !reader.IsDBNull(38) ? reader.GetString(38) : null,
+                                ErroneousDates = !reader.IsDBNull(39) ? reader.GetString(39) : null,
+                                CalendarSystemId = !reader.IsDBNull(40) ? reader.GetInt32(40) : (int?)null,
+                                PeriodId = !reader.IsDBNull(41) ? reader.GetInt32(41) : (int?)null,
                                 IssuerUrlSlug = issuerSlug
                             };
                             coinDict[coinId] = coin;
@@ -809,43 +827,286 @@ namespace Mintada.Navigator.Services
             return shapes;
         }
 
+        public async Task<List<Period>> GetPeriodsForIssuerAsync(long issuerId)
+        {
+            var periods = new List<Period>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT DISTINCT p.id, p.name 
+                    FROM periods p 
+                    JOIN coin_types ct ON p.id = ct.period_id 
+                    WHERE ct.issuer_id = @issuerId
+                    ORDER BY p.name";
+                
+                command.Parameters.AddWithValue("@issuerId", issuerId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        periods.Add(new Period
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+            return periods;
+        }
+
+        public async Task<List<CalendarSystem>> GetCalendarSystemsAsync()
+        {
+            var systems = new List<CalendarSystem>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT id, name FROM calendar_systems ORDER BY name"; 
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        systems.Add(new CalendarSystem 
+                        { 
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+            return systems;
+        }
+        
+        public async Task<int> EnsureRulerRelationsForCoinTypeAsync(long coinTypeId, long issuerId, IEnumerable<RulerOption> selectedRulers)
+        {
+            var rulers = selectedRulers
+                .Where(r => r != null && r.Id > 0 && !string.IsNullOrWhiteSpace(r.Name))
+                .GroupBy(r => r.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            if (rulers.Count == 0)
+            {
+                return 0;
+            }
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    int insertedCount = 0;
+                    long seedId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    try
+                    {
+                        for (int i = 0; i < rulers.Count; i++)
+                        {
+                            var ruler = rulers[i];
+
+                            using (var existsIssuerRelCmd = connection.CreateCommand())
+                            {
+                                existsIssuerRelCmd.Transaction = transaction;
+                                existsIssuerRelCmd.CommandText = @"
+                                    SELECT 1
+                                    FROM issuers_rulers_rel
+                                    WHERE issuer_id = @issuerId AND ruler_id = @rulerId
+                                    LIMIT 1";
+                                existsIssuerRelCmd.Parameters.AddWithValue("@issuerId", issuerId);
+                                existsIssuerRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+
+                                var exists = await existsIssuerRelCmd.ExecuteScalarAsync();
+                                if (exists == null)
+                                {
+                                    long newId = await GetNextIssuerRulerRelationIdAsync(connection, transaction, seedId + i);
+
+                                    using (var insertIssuerRelCmd = connection.CreateCommand())
+                                    {
+                                        insertIssuerRelCmd.Transaction = transaction;
+                                        insertIssuerRelCmd.CommandText = @"
+                                            INSERT INTO issuers_rulers_rel (id, issuer_id, ruler_id, name)
+                                            VALUES (@id, @issuerId, @rulerId, @name)";
+                                        insertIssuerRelCmd.Parameters.AddWithValue("@id", newId);
+                                        insertIssuerRelCmd.Parameters.AddWithValue("@issuerId", issuerId);
+                                        insertIssuerRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+                                        insertIssuerRelCmd.Parameters.AddWithValue("@name", ruler.Name.Trim());
+                                        await insertIssuerRelCmd.ExecuteNonQueryAsync();
+                                    }
+
+                                    insertedCount++;
+                                }
+                            }
+
+                            using (var existsCoinTypeRelCmd = connection.CreateCommand())
+                            {
+                                existsCoinTypeRelCmd.Transaction = transaction;
+                                existsCoinTypeRelCmd.CommandText = @"
+                                    SELECT 1
+                                    FROM coin_types_rulers_rel
+                                    WHERE coin_type_id = @coinTypeId AND ruler_id = @rulerId
+                                    LIMIT 1";
+                                existsCoinTypeRelCmd.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                                existsCoinTypeRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+
+                                var exists = await existsCoinTypeRelCmd.ExecuteScalarAsync();
+                                if (exists == null)
+                                {
+                                    using (var insertCoinTypeRelCmd = connection.CreateCommand())
+                                    {
+                                        insertCoinTypeRelCmd.Transaction = transaction;
+                                        insertCoinTypeRelCmd.CommandText = @"
+                                            INSERT INTO coin_types_rulers_rel (coin_type_id, ruler_id)
+                                            VALUES (@coinTypeId, @rulerId)";
+                                        insertCoinTypeRelCmd.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                                        insertCoinTypeRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+
+                                        try
+                                        {
+                                            await insertCoinTypeRelCmd.ExecuteNonQueryAsync();
+                                            insertedCount++;
+                                        }
+                                        catch (SqliteException ex) when (ex.Message.Contains("foreign key constraint failed", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            // Keep the dialog save flow resilient if a ruler is missing in rulers table.
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        transaction.Commit();
+                        return insertedCount;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        private static async Task<long> GetNextIssuerRulerRelationIdAsync(SqliteConnection connection, SqliteTransaction transaction, long seed)
+        {
+            long candidateId = seed;
+
+            while (true)
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.Transaction = transaction;
+                    command.CommandText = @"
+                        SELECT 1
+                        FROM issuers_rulers_rel
+                        WHERE id = @id
+                        LIMIT 1";
+                    command.Parameters.AddWithValue("@id", candidateId);
+
+                    var exists = await command.ExecuteScalarAsync();
+                    if (exists == null)
+                    {
+                        return candidateId;
+                    }
+                }
+
+                candidateId++;
+            }
+        }
+
         public async Task UpdateCoinAttributesAsync(long coinTypeId, int? shapeId, string? shapeInfo, 
             string? weightInfo, string? diameterInfo, string? thicknessInfo,
             decimal? weight, decimal? diameter, decimal? thickness, string? size,
-            string? denominationText, decimal? denominationValue, string? denominationInfo1, string? denominationInfo2, string? denominationAlt)
+            string? denominationText, decimal? valueAmount, string? denominationInfo1, decimal? valueAmountUsd, string? valueCurrencySymbol, string? denominationAlt,
+            string? startDate, string? endDate, string? startNativeDate, string? endNativeDate, string? startMintDate, string? endMintDate,
+            string? restrikeDate, string? restrikeStartMintDate, string? restrikeEndMintDate, string? erroneousDates, int? calendarSystemId, int? periodId,
+            bool markAsFixed = false)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 
-                string query = @"UPDATE coin_types 
-                               SET shape_id = @sid, shape_info = @info, 
-                                   weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
-                                   weight = @weight, diameter = @diameter, thickness = @thickness,
-                                   size = @size,
-                                   denomination_text = @denText, denomination_value = @denVal,
-                                   denomination_info_1 = @denInfo1, denomination_info_2 = @denInfo2, denomination_alt = @denAlt
-                               WHERE id = @id";
-                
-                using var command = connection.CreateCommand();
-                command.CommandText = query;
-                command.Parameters.AddWithValue("@sid", shapeId ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@info", shapeInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@weightInfo", weightInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@diameterInfo", diameterInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@thicknessInfo", thicknessInfo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@weight", weight ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@diameter", diameter ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@thickness", thickness ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@size", size ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@denText", denominationText ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@denVal", denominationValue ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@denInfo1", denominationInfo1 ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@denInfo2", denominationInfo2 ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@denAlt", denominationAlt ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@id", coinTypeId);
-                
-                await command.ExecuteNonQueryAsync();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string query = @"UPDATE coin_types 
+                                       SET shape_id = @sid, shape_info = @info, 
+                                           weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
+                                           weight = @weight, diameter = @diameter, thickness = @thickness,
+                                           size = @size,
+                                           denomination_text = @denText, value_amount = @denVal,
+                                           denomination_info_1 = @denInfo1, value_amount_usd = @valUsd, value_currency_symbol = @valSym, denomination_alt = @denAlt,
+                                           start_date = @startDate, end_date = @endDate, start_native_date = @startNativeDate, end_native_date = @endNativeDate, start_mint_date = @startMintDate, end_mint_date = @endMintDate,
+                                           restrike_date = @restrikeDate, restrike_start_mint_date = @restrikeStartMintDate, restrike_end_mint_date = @restrikeEndMintDate,
+                                           erroneous_dates = @errDates,
+                                           calendar_system_id = @calSysId,
+                                           period_id = @periodId
+                                       WHERE id = @id";
+                        
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.Transaction = transaction;
+                            command.CommandText = query;
+                            command.Parameters.AddWithValue("@sid", shapeId ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@info", shapeInfo ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@weightInfo", weightInfo ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@diameterInfo", diameterInfo ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@thicknessInfo", thicknessInfo ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@weight", weight ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@diameter", diameter ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@thickness", thickness ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@size", size ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@denText", denominationText ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@denVal", valueAmount ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@denInfo1", denominationInfo1 ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@valUsd", valueAmountUsd ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@valSym", valueCurrencySymbol ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@denAlt", denominationAlt ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@startDate", startDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@endDate", endDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@startNativeDate", startNativeDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@endNativeDate", endNativeDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@startMintDate", startMintDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@endMintDate", endMintDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@restrikeDate", restrikeDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@restrikeStartMintDate", restrikeStartMintDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@restrikeEndMintDate", restrikeEndMintDate ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@errDates", erroneousDates ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@calSysId", calendarSystemId ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@periodId", periodId ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@id", coinTypeId);
+                            
+                            await command.ExecuteNonQueryAsync();
+                        }
+
+                        if (markAsFixed)
+                        {
+                            using (var fixedCmd = connection.CreateCommand())
+                            {
+                                fixedCmd.Transaction = transaction;
+                                fixedCmd.CommandText = "UPDATE coin_types SET fixed = 1 WHERE id = @id";
+                                fixedCmd.Parameters.AddWithValue("@id", coinTypeId);
+                                await fixedCmd.ExecuteNonQueryAsync();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+
+                connection.Close();
             }
         }
 

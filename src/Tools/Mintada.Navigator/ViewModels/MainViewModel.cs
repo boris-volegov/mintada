@@ -388,58 +388,8 @@ namespace Mintada.Navigator.ViewModels
                         var data = _coinParserService.Parse(content);
                         ParsedData = data;
                         
-                        // Fire and forget verification
-                        _ = Task.Run(async () => 
-                        {
-                            try 
-                            {
-                                // Verify Ruler
-                                if (ParsedData.RulerId.HasValue && ParsedData.RulerId.Value != 0 && SelectedIssuer != null)
-                                {
-                                    var info = await _databaseService.GetRulerInfoAsync(SelectedIssuer.Id, ParsedData.RulerId.Value);
-                                    if (info != null)
-                                    {
-                                        ParsedData.DbRulerName = info.Value.Name;
-                                        ParsedData.DbRulerYears = info.Value.YearsText;
-                                        ParsedData.IsRulerVerified = true;
-                                        ParsedData.NeedsInspection = false;
-                                    }
-                                    else
-                                    {
-                                        ParsedData.NeedsInspection = true;
-                                        ParsedData.IsRulerVerified = false;
-                                    }
-                                }
+                        // Fire and forget verification - REMOVED
 
-                                // Verify Shape
-                                int? verifiedShapeId = null;
-                                if (value.ShapeId.HasValue)
-                                {
-                                    verifiedShapeId = value.ShapeId.Value;
-                                }
-                                else if (!string.IsNullOrWhiteSpace(ParsedData.Shape))
-                                {
-                                    var shapeId = await _databaseService.GetShapeIdByNameAsync(ParsedData.Shape);
-                                    if (shapeId.HasValue)
-                                    {
-                                        verifiedShapeId = shapeId.Value;
-                                    }
-                                }
-
-                                if (verifiedShapeId.HasValue)
-                                {
-                                    ParsedData.DbShapeId = verifiedShapeId;
-                                    System.Windows.Application.Current.Dispatcher.Invoke(() => OnPropertyChanged(nameof(ParsedData)));
-                                }
-
-                                
-                                OnPropertyChanged(nameof(ParsedData));
-                            }
-                            catch (Exception ex)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"Error verifying data: {ex.Message}");
-                            }
-                        });
                     }
                     catch (Exception ex)
                     {
@@ -1907,55 +1857,44 @@ namespace Mintada.Navigator.ViewModels
             return SelectedCoin != null;
         }
 
+        [ObservableProperty]
+        private bool _isEditModeActive;
+
         [RelayCommand(CanExecute = nameof(CanChangeCoinAttributes))]
         private async Task ChangeCoinAttributesAsync()
         {
             if (SelectedCoin == null) return;
 
+            IsEditModeActive = true;
             var shapes = await _databaseService.GetShapesAsync();
+            var calendarSystems = await _databaseService.GetCalendarSystemsAsync();
+            var periods = await _databaseService.GetPeriodsForIssuerAsync(SelectedCoin.IssuerId);
+            var rulerOptions = new List<RulerOption>();
+
+            try
+            {
+                var issuerSlug = !string.IsNullOrWhiteSpace(SelectedIssuer?.UrlSlug)
+                    ? SelectedIssuer!.UrlSlug
+                    : SelectedCoin.IssuerUrlSlug;
+
+                if (!string.IsNullOrWhiteSpace(issuerSlug))
+                {
+                    var coinHtmlPath = _fileService.GetCoinHtmlPath(issuerSlug, SelectedCoin.CoinTypeSlug, SelectedCoin.Id);
+                    if (IO.File.Exists(coinHtmlPath))
+                    {
+                        var coinHtml = await IO.File.ReadAllTextAsync(coinHtmlPath);
+                        rulerOptions = _coinParserService.ExtractRulers(coinHtml);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error parsing ruler links for Change Attributes dialog: {ex.Message}");
+            }
             
             // Initial Values
             int? initialShapeId = SelectedCoin.ShapeId;
             string? initialShapeInfo = SelectedCoin.ShapeInfo;
-
-            // ... (keep parsing check if needed, or remove since it focused on shape? Let's keep it for shape id fallback)
-            if (initialShapeId == null && string.IsNullOrEmpty(initialShapeInfo))
-            {
-                try 
-                {
-                    if (!string.IsNullOrEmpty(SelectedCoin.IssuerUrlSlug) && !string.IsNullOrEmpty(SelectedCoin.CoinTypeSlug))
-                    {
-                         var htmlPath = _fileService.GetCoinHtmlPath(SelectedCoin.IssuerUrlSlug, SelectedCoin.CoinTypeSlug, SelectedCoin.Id);
-                         if (IO.File.Exists(htmlPath))
-                         {
-                             var htmlContent = await IO.File.ReadAllTextAsync(htmlPath);
-                             var data = _coinParserService.Parse(htmlContent);
-                             
-                             if (!string.IsNullOrEmpty(data.Shape))
-                             {
-                                 var match = shapes.FirstOrDefault(s => s.Name.Equals(data.Shape, StringComparison.OrdinalIgnoreCase));
-                                 if (match != null)
-                                 {
-                                     initialShapeId = match.Id;
-                                 }
-                                 else
-                                 {
-                                     if (!string.IsNullOrEmpty(data.ShapeInfo)) 
-                                         initialShapeInfo = $"{data.Shape}, {data.ShapeInfo}";
-                                     else 
-                                         initialShapeInfo = data.Shape;
-                                 }
-                             }
-                             
-                             if (!string.IsNullOrEmpty(data.ShapeInfo) && initialShapeId != null)
-                             {
-                                 initialShapeInfo = data.ShapeInfo;
-                             }
-                         }
-                    }
-                }
-                catch { }
-            }
 
             var dialog = new ChangeCoinAttributesDialog();
             dialog.Owner = System.Windows.Application.Current.MainWindow;
@@ -1963,9 +1902,13 @@ namespace Mintada.Navigator.ViewModels
             dialog.SetData(shapes, initialShapeId, initialShapeInfo, 
                 SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo,
                 SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness, SelectedCoin.Size,
-                SelectedCoin.DenominationText, SelectedCoin.DenominationValue, SelectedCoin.DenominationInfo1, SelectedCoin.DenominationInfo2, SelectedCoin.DenominationAlt);
+                SelectedCoin.DenominationText, SelectedCoin.ValueAmount, SelectedCoin.DenominationInfo1, SelectedCoin.ValueAmountUsd, SelectedCoin.ValueCurrencySymbol, SelectedCoin.DenominationAlt,
+                SelectedCoin.StartDate, SelectedCoin.EndDate, SelectedCoin.StartNativeDate, SelectedCoin.EndNativeDate, SelectedCoin.StartMintDate, SelectedCoin.EndMintDate,
+                SelectedCoin.RestrikeDate, SelectedCoin.RestrikeStartMintDate, SelectedCoin.RestrikeEndMintDate, SelectedCoin.ErroneousDates,
+                calendarSystems, SelectedCoin.CalendarSystemId, periods, SelectedCoin.PeriodId, rulerOptions);
 
-            if (dialog.ShowDialog() == true)
+            // Handle Save
+            dialog.RequestSave += async (s, e) => 
             {
                 var newShapeId = dialog.SelectedShape?.Id;
                 var newShapeInfo = dialog.ShapeInfo;
@@ -1977,18 +1920,33 @@ namespace Mintada.Navigator.ViewModels
                 var newThickness = dialog.Thickness;
                 var newSize = dialog.Size;
                 var newDenText = dialog.DenominationText;
-                var newDenVal = dialog.DenominationValue;
+                var newDenVal = dialog.ValueAmount;
                 var newDenInfo1 = dialog.DenominationInfo1;
-                var newDenInfo2 = dialog.DenominationInfo2;
+                var newValUsd = dialog.ValueAmountUsd;
+                var newValSym = dialog.ValueCurrencySymbol;
                 var newDenAlt = dialog.DenominationAlt;
-
-                await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
-                    newWeightInfo, newDiameterInfo, newThicknessInfo,
-                    newWeight, newDiameter, newThickness, newSize,
-                    newDenText, newDenVal, newDenInfo1, newDenInfo2, newDenAlt);
                 
-                // If anything changed, mark fixed
-                if (newShapeId != SelectedCoin.ShapeId || 
+                var newStartDate = dialog.StartDate;
+                var newEndDate = dialog.EndDate;
+                var newStartNativeDate = dialog.StartNativeDate;
+                var newEndNativeDate = dialog.EndNativeDate;
+                var newStartMintDate = dialog.StartMintDate;
+                var newEndMintDate = dialog.EndMintDate;
+                var newRestrikeDate = dialog.RestrikeDate;
+                var newRestrikeStartMintDate = dialog.RestrikeStartMintDate;
+                var newRestrikeEndMintDate = dialog.RestrikeEndMintDate;
+                var newErroneousDates = dialog.ErroneousDates;
+                var newCalendarSystemId = dialog.SelectedCalendarSystem?.Id;
+                var newPeriodId = dialog.SelectedPeriod?.Id;
+                var selectedRulers = dialog.SelectedRulers;
+
+                int relationInsertions = await _databaseService.EnsureRulerRelationsForCoinTypeAsync(
+                    SelectedCoin.Id,
+                    SelectedCoin.IssuerId,
+                    selectedRulers);
+
+                // Calculate if any attribute changed
+                bool changed = newShapeId != SelectedCoin.ShapeId || 
                     (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty) ||
                     (newWeightInfo ?? string.Empty) != (SelectedCoin.WeightInfo ?? string.Empty) ||
                     (newDiameterInfo ?? string.Empty) != (SelectedCoin.DiameterInfo ?? string.Empty) ||
@@ -1998,13 +1956,32 @@ namespace Mintada.Navigator.ViewModels
                     newThickness != SelectedCoin.Thickness ||
                     (newSize ?? string.Empty) != (SelectedCoin.Size ?? string.Empty) ||
                     (newDenText ?? string.Empty) != (SelectedCoin.DenominationText ?? string.Empty) ||
-                    newDenVal != SelectedCoin.DenominationValue ||
+                    newDenVal != SelectedCoin.ValueAmount ||
                     (newDenInfo1 ?? string.Empty) != (SelectedCoin.DenominationInfo1 ?? string.Empty) ||
-                    (newDenInfo2 ?? string.Empty) != (SelectedCoin.DenominationInfo2 ?? string.Empty) ||
-                    (newDenAlt ?? string.Empty) != (SelectedCoin.DenominationAlt ?? string.Empty))
-                {
-                    await _databaseService.UpdateCoinFixedStatusAsync(SelectedCoin.Id, true);
-                }
+                    newValUsd != SelectedCoin.ValueAmountUsd ||
+                    (newValSym ?? string.Empty) != (SelectedCoin.ValueCurrencySymbol ?? string.Empty) ||
+                    (newDenAlt ?? string.Empty) != (SelectedCoin.DenominationAlt ?? string.Empty) ||
+                    (newStartDate ?? string.Empty) != (SelectedCoin.StartDate ?? string.Empty) ||
+                    (newEndDate ?? string.Empty) != (SelectedCoin.EndDate ?? string.Empty) ||
+                    (newStartNativeDate ?? string.Empty) != (SelectedCoin.StartNativeDate ?? string.Empty) ||
+                    (newEndNativeDate ?? string.Empty) != (SelectedCoin.EndNativeDate ?? string.Empty) ||
+                    (newStartMintDate ?? string.Empty) != (SelectedCoin.StartMintDate ?? string.Empty) ||
+                    (newEndMintDate ?? string.Empty) != (SelectedCoin.EndMintDate ?? string.Empty) ||
+                    (newRestrikeDate ?? string.Empty) != (SelectedCoin.RestrikeDate ?? string.Empty) ||
+                    (newRestrikeStartMintDate ?? string.Empty) != (SelectedCoin.RestrikeStartMintDate ?? string.Empty) ||
+                    (newRestrikeEndMintDate ?? string.Empty) != (SelectedCoin.RestrikeEndMintDate ?? string.Empty) ||
+                    (newErroneousDates ?? string.Empty) != (SelectedCoin.ErroneousDates ?? string.Empty) ||
+                    newCalendarSystemId != SelectedCoin.CalendarSystemId ||
+                    newPeriodId != SelectedCoin.PeriodId ||
+                    relationInsertions > 0;
+
+                await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
+                    newWeightInfo, newDiameterInfo, newThicknessInfo,
+                    newWeight, newDiameter, newThickness, newSize,
+                    newDenText, newDenVal, newDenInfo1, newValUsd, newValSym, newDenAlt,
+                    newStartDate, newEndDate, newStartNativeDate, newEndNativeDate, newStartMintDate, newEndMintDate,
+                    newRestrikeDate, newRestrikeStartMintDate, newRestrikeEndMintDate, newErroneousDates, newCalendarSystemId, newPeriodId,
+                    markAsFixed: changed);
                 
                 SelectedCoin.ShapeId = newShapeId;
                 SelectedCoin.ShapeInfo = newShapeInfo;
@@ -2016,10 +1993,24 @@ namespace Mintada.Navigator.ViewModels
                 SelectedCoin.Thickness = newThickness;
                 SelectedCoin.Size = newSize;
                 SelectedCoin.DenominationText = newDenText;
-                SelectedCoin.DenominationValue = newDenVal;
+                SelectedCoin.ValueAmount = newDenVal;
                 SelectedCoin.DenominationInfo1 = newDenInfo1;
-                SelectedCoin.DenominationInfo2 = newDenInfo2;
+                SelectedCoin.ValueAmountUsd = newValUsd;
+                SelectedCoin.ValueCurrencySymbol = newValSym;
                 SelectedCoin.DenominationAlt = newDenAlt;
+                
+                SelectedCoin.StartDate = newStartDate;
+                SelectedCoin.EndDate = newEndDate;
+                SelectedCoin.StartNativeDate = newStartNativeDate;
+                SelectedCoin.EndNativeDate = newEndNativeDate;
+                SelectedCoin.StartMintDate = newStartMintDate;
+                SelectedCoin.EndMintDate = newEndMintDate;
+                SelectedCoin.RestrikeDate = newRestrikeDate;
+                SelectedCoin.RestrikeStartMintDate = newRestrikeStartMintDate;
+                SelectedCoin.RestrikeEndMintDate = newRestrikeEndMintDate;
+                SelectedCoin.ErroneousDates = newErroneousDates;
+                SelectedCoin.CalendarSystemId = newCalendarSystemId;
+                SelectedCoin.PeriodId = newPeriodId;
                 
                 // Refresh list item to update UI
                  var index = Coins.IndexOf(SelectedCoin);
@@ -2030,12 +2021,15 @@ namespace Mintada.Navigator.ViewModels
                  }
 
                  // Update Verified Shape UI
-                 if (ParsedData != null)
-                 {
-                     ParsedData.DbShapeId = newShapeId;
-                     OnPropertyChanged(nameof(ParsedData));
-                 }
-            }
+                 dialog.Close();
+            };
+
+            dialog.Closed += (s, e) => 
+            {
+                IsEditModeActive = false;
+            };
+
+            dialog.Show();
         }
     }
 }
