@@ -4,7 +4,7 @@ import os
 class CoinTypesDbHelper:
     def __init__(self):
         # Database is in the parent directory's db folder
-        self.db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "db", "coins.db")
+        self.db_path = r"D:\projects\mintada\data\numista\coins.db"
         self.db_connection = sqlite3.connect(self.db_path)  
 
         self.db_connection.execute("PRAGMA foreign_keys = ON")
@@ -203,3 +203,15 @@ class CoinTypesDbHelper:
                 "issuer_url_slug": row[2] # This key name is expected by the caller
             }
         return None
+
+    def save_period(self, period, issuer_id):
+        # Check if period exists for this issuer
+        sql_check = "SELECT 1 FROM periods WHERE name = ? AND issuer_id = ?"
+        cursor = self.db_connection.execute(sql_check, (period["period_text"], issuer_id))
+        if cursor.fetchone():
+            return
+
+        # Insert if not exists
+        sql_insert = "INSERT INTO periods (name, unit_relation_text, issuer_id) VALUES (?, ?, ?)"
+        self.db_connection.execute(sql_insert, (period["period_text"], period["unit_relation_text"], issuer_id))
+        self.db_connection.commit()

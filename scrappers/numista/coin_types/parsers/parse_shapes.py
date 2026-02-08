@@ -1,9 +1,16 @@
 import os
 import sqlite3
 import re
+import argparse
 from bs4 import BeautifulSoup
+from _coin_inputs import iter_coin_html_targets
 
 def main():
+    arg_parser = argparse.ArgumentParser(description="Parse shapes from coin_type.html")
+    arg_parser.add_argument("--coin-type-id", type=int, default=None)
+    arg_parser.add_argument("--coin-html-path", default=None)
+    args, _ = arg_parser.parse_known_args()
+
     # Paths
     current_dir = os.path.dirname(os.path.abspath(__file__))
     # DB Path: ../../../../data/numista/coins.db
@@ -31,64 +38,47 @@ def main():
     count_updated = 0
     count_processed = 0
     
-    # Iterate issuer folders
-    issuer_folders = [f for f in os.listdir(html_root) if os.path.isdir(os.path.join(html_root, f))]
-    
-    for issuer_folder in issuer_folders:
-        issuer_path = os.path.join(html_root, issuer_folder)
-        coin_folders = [f for f in os.listdir(issuer_path) if os.path.isdir(os.path.join(issuer_path, f))]
-        
-        for coin_folder in coin_folders:
-            count_processed += 1
-            if count_processed % 1000 == 0:
-                print(f"Processed {count_processed} coins...")
-                conn.commit()
+    for coin_type_id, coin_html_path in iter_coin_html_targets(
+        html_root, args.coin_type_id, args.coin_html_path
+    ):
+        count_processed += 1
+        if count_processed % 1000 == 0:
+            print(f"Processed {count_processed} coins...")
+            conn.commit()
 
-            # Parse coin_type_id
-            try:
-                coin_type_id_str = coin_folder.split('_')[-1]
-                coin_type_id = int(coin_type_id_str)
-            except ValueError:
-                continue
-                
-            coin_html_path = os.path.join(issuer_path, coin_folder, "coin_type.html")
+        try:
+            with open(coin_html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+        except Exception as e:
+            print(f"Error reading {coin_html_path}: {e}")
+            continue
             
-            if not os.path.exists(coin_html_path):
-                continue
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Find Shape in table
+        # Looking for <tr><th>Shape</th><td>Round</td></tr>
+        # We can search for the 'th' with text "Shape" and get the next sibling 'td'
+        
+        shape_th = soup.find('th', string=lambda text: text and 'Shape' in text)
+        if shape_th:
+            shape_td = shape_th.find_next_sibling('td')
+            if shape_td:
+                shape_text = shape_td.get_text(strip=True)
                 
-            try:
-                with open(coin_html_path, 'r', encoding='utf-8') as f:
-                    html_content = f.read()
-            except Exception as e:
-                print(f"Error reading {coin_html_path}: {e}")
-                continue
-                
-            soup = BeautifulSoup(html_content, 'html.parser')
-            
-            # Find Shape in table
-            # Looking for <tr><th>Shape</th><td>Round</td></tr>
-            # We can search for the 'th' with text "Shape" and get the next sibling 'td'
-            
-            shape_th = soup.find('th', string=lambda text: text and 'Shape' in text)
-            if shape_th:
-                shape_td = shape_th.find_next_sibling('td')
-                if shape_td:
-                    shape_text = shape_td.get_text(strip=True)
+                if shape_text:
+                    lookup_key = shape_text.lower()
                     
-                    if shape_text:
-                        lookup_key = shape_text.lower()
+                    if lookup_key in shapes_map:
+                        shape_id = shapes_map[lookup_key]
                         
-                        if lookup_key in shapes_map:
-                            shape_id = shapes_map[lookup_key]
-                            
-                            # Update coin_types
-                            cursor.execute("UPDATE coin_types SET shape_id = ? WHERE id = ?", (shape_id, coin_type_id))
-                            count_updated += 1
-                        else:
-                            # Log exception to table
-                            # Check if already exists to avoid dupes? Or just insert? User just said "write records".
-                            # Let's simple insert.
-                            cursor.execute("INSERT INTO shape_exceptions (coin_type_id, shape) VALUES (?, ?)", (coin_type_id, shape_text))
+                        # Update coin_types
+                        cursor.execute("UPDATE coin_types SET shape_id = ? WHERE id = ?", (shape_id, coin_type_id))
+                        count_updated += 1
+                    else:
+                        # Log exception to table
+                        # Check if already exists to avoid dupes? Or just insert? User just said "write records".
+                        # Let's simple insert.
+                        cursor.execute("INSERT INTO shape_exceptions (coin_type_id, shape) VALUES (?, ?)", (coin_type_id, shape_text))
 
     print(f"Finished processing {count_processed} coins.")
     print(f"Total coin types updated with shape: {count_updated}")

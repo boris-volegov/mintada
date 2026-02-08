@@ -1,12 +1,14 @@
 import os
 import sqlite3
+import html
+import unicodedata
 import argparse
 from bs4 import BeautifulSoup
 from _coin_inputs import iter_coin_html_targets
 
 
 def main():
-    arg_parser = argparse.ArgumentParser(description="Parse size field from coin_type.html")
+    arg_parser = argparse.ArgumentParser(description="Parse calendar field from coin_type.html")
     arg_parser.add_argument("--coin-type-id", type=int, default=None)
     arg_parser.add_argument("--coin-html-path", default=None)
     args, _ = arg_parser.parse_known_args()
@@ -35,7 +37,14 @@ def main():
 
     count_updated = 0
     count_processed = 0
-    count_exceptions = 0
+    unknown_calendars = set()
+
+    cursor.execute("SELECT id, name FROM calendar_systems")
+    calendar_map = {
+        (row[1] or "").strip().lower(): row[0]
+        for row in cursor.fetchall()
+        if row[1]
+    }
 
     for coin_type_id, coin_html_path in iter_coin_html_targets(
         html_root, args.coin_type_id, args.coin_html_path
@@ -54,44 +63,43 @@ def main():
 
         soup = BeautifulSoup(html_content, "html.parser")
 
-        size_header = soup.find("th", string=lambda text: text and "Size" in text)
-        if not size_header:
-            size_header = soup.find("td", string=lambda text: text and "Size" in text)
+        calendar_header = soup.find("th", string=lambda text: text and "Calendar" in text)
+        if not calendar_header:
+            calendar_header = soup.find("td", string=lambda text: text and "Calendar" in text)
 
-        if not size_header:
+        if not calendar_header:
             continue
 
-        value_td = size_header.find_next_sibling("td")
+        value_td = calendar_header.find_next_sibling("td")
         if not value_td:
             continue
 
-        raw_text = value_td.get_text(strip=True)
-        cleaned_text = raw_text.replace("\xa0", " ").replace("&nbsp;", " ").strip()
-        final_value = cleaned_text
+        raw_text = value_td.get_text(separator=" ", strip=True)
+        cleaned_text = html.unescape(raw_text)
+        cleaned_text = unicodedata.normalize("NFKC", cleaned_text)
+        cleaned_text = cleaned_text.replace("\xa0", " ").strip()
 
-        if final_value.lower().endswith("mm"):
-            final_value = final_value[:-2].strip()
-
-        if not final_value:
-            continue
-
-        try:
-            cursor.execute("UPDATE coin_types SET size = ? WHERE id = ?", (final_value, coin_type_id))
-            count_updated += 1
-        except Exception as db_err:
-            print(f"Error updating DB for coin {coin_type_id}: {db_err}")
+        if cleaned_text:
+            calendar_id = calendar_map.get(cleaned_text.lower())
+            if calendar_id is None:
+                unknown_calendars.add(cleaned_text)
+                continue
             try:
                 cursor.execute(
-                    "INSERT OR REPLACE INTO parse_exceptions (coin_type_id, size) VALUES (?, ?)",
-                    (coin_type_id, raw_text),
+                    "UPDATE coin_types SET calendar_system_id = ? WHERE id = ?",
+                    (calendar_id, coin_type_id),
                 )
-                count_exceptions += 1
-            except Exception:
-                pass
+                count_updated += 1
+            except Exception as db_err:
+                print(f"Error updating DB for coin {coin_type_id}: {db_err}")
 
     print(f"Finished processing {count_processed} coins.")
-    print(f"Total coin types updated with size: {count_updated}")
-    print(f"Total exceptions logged: {count_exceptions}")
+    print(f"Total coins updated: {count_updated}")
+    if unknown_calendars:
+        print(
+            f"Skipped {len(unknown_calendars)} unknown calendar name(s): "
+            + ", ".join(sorted(list(unknown_calendars))[:10])
+        )
     conn.commit()
     conn.close()
 
