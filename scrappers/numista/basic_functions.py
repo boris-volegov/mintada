@@ -2,6 +2,7 @@ from pathlib import Path
 from curl_cffi import requests as creq
 import re
 import time
+import os
 from urllib.parse import parse_qs, urlparse
 
 class BasicHelper:
@@ -41,7 +42,27 @@ class BasicHelper:
                      r.raise_for_status()
 
                 if is_image:
-                    return r.content
+                    content = r.content
+                    if not content:
+                        raise Exception("Empty image content")
+                    
+                    # Validate image using cv2
+                    try:
+                        import numpy as np
+                        import cv2
+                        nparr = np.frombuffer(content, np.uint8)
+                        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                        if img is None:
+                             # Debugging: what did we get?
+                             ctype = r.headers.get("Content-Type", "unknown")
+                             snippet = content[:100]
+                             raise Exception(f"Invalid image data (cv2 decode failed). Content-Type: {ctype}, Start: {snippet}")
+                    except ImportError:
+                        pass # verification fallback if deps missing
+                    except Exception as img_err:
+                        raise Exception(f"Image validation failed: {img_err}")
+
+                    return content
                 else:
                     text = r.text
                     # Check for Cloudflare challenge page
@@ -154,5 +175,8 @@ class BasicHelper:
 
     @staticmethod
     def _read_cookie_file():
+        cookie_from_env = os.environ.get("NUMISTA_COOKIE", "")
+        if cookie_from_env.strip():
+            return cookie_from_env
         return (Path(__file__).parent / "cookie").read_text(encoding="utf-8")
 

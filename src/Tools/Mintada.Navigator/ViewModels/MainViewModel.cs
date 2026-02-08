@@ -22,6 +22,8 @@ namespace Mintada.Navigator.ViewModels
         private readonly Services.AnalysisService _analysisService;
         private readonly Services.ImageAnalysisService _imageAnalysisService;
         private readonly CoinParserService _coinParserService;
+        private readonly CoinTypesScraperService _coinTypesScraperService;
+        private readonly string _numistaCookiePath;
 
         [ObservableProperty]
         private ParsedCoinData? _parsedData;
@@ -125,12 +127,15 @@ namespace Mintada.Navigator.ViewModels
             string dbPath = @"D:\projects\mintada\data\numista\coins.db";
             string pythonPath = @"d:\projects\mintada\.venv\Scripts\python.exe"; 
             string scriptPath = @"d:\projects\mintada\tools\segmentation\detect_swap_interactive.py";
+            string coinTypesScrapperPath = @"d:\projects\mintada\scrappers\numista\coin_types\coin_types_scrapper.py";
+            _numistaCookiePath = @"d:\projects\mintada\scrappers\numista\cookie";
 
             _fileService = new FileService(rootPath);
             _databaseService = new DatabaseService(dbPath);
             _analysisService = new Services.AnalysisService(pythonPath, scriptPath);
             _imageAnalysisService = new Services.ImageAnalysisService();
             _coinParserService = new CoinParserService();
+            _coinTypesScraperService = new CoinTypesScraperService(pythonPath, coinTypesScrapperPath);
 
             LoadIssuersCommand = new RelayCommand(async () => await LoadData(false));
             
@@ -1552,6 +1557,130 @@ namespace Mintada.Navigator.ViewModels
         }
 
 
+        [RelayCommand]
+        private async Task AddCoinTypeForIssuer(Issuer? issuer)
+        {
+            if (issuer == null || string.IsNullOrWhiteSpace(issuer.UrlSlug))
+            {
+                StatusMessage = "Issuer is not valid for Add action.";
+                return;
+            }
+
+            try
+            {
+                var dialog = new AddCoinTypeDialog
+                {
+                    Owner = System.Windows.Application.Current.MainWindow
+                };
+
+                var initialCookie = IO.File.Exists(_numistaCookiePath)
+                    ? await IO.File.ReadAllTextAsync(_numistaCookiePath)
+                    : string.Empty;
+
+                dialog.SetData(
+                    issuerName: issuer.Name,
+                    issuerSlug: issuer.UrlSlug,
+                    initialCoinTypeId: SearchCoinIdText,
+                    initialCookie: initialCookie
+                );
+
+                var dialogResult = dialog.ShowDialog();
+                if (dialogResult != true)
+                {
+                    StatusMessage = "Add cancelled.";
+                    return;
+                }
+
+                if (!long.TryParse(dialog.CoinTypeIdText, out long coinId))
+                {
+                    StatusMessage = "Invalid Coin ID format.";
+                    return;
+                }
+
+                SearchCoinIdText = coinId.ToString();
+
+                var existingIssuerId = await _databaseService.GetIssuerIdByCoinTypeIdAsync(coinId);
+                if (existingIssuerId.HasValue)
+                {
+                    StatusMessage = $"Coin {coinId} already exists. Selecting it...";
+                    await SearchByCoinId();
+                    return;
+                }
+
+                StatusMessage = $"Scraping coin {coinId} for issuer '{issuer.UrlSlug}'...";
+                var run = await _coinTypesScraperService.ScrapeCoinTypeAsync(
+                    coinTypeId: coinId,
+                    issuerUrlSlug: issuer.UrlSlug,
+                    page: 1,
+                    cookie: dialog.CookieText
+                );
+
+                if (run.ExitCode != 0)
+                {
+                    StatusMessage = $"Scraper failed: {TailForStatus(run.StandardError)}";
+                    return;
+                }
+
+                var normalizedCookie = NormalizeCookie(dialog.CookieText);
+                if (!string.IsNullOrWhiteSpace(normalizedCookie))
+                {
+                    try
+                    {
+                        await IO.File.WriteAllTextAsync(_numistaCookiePath, normalizedCookie);
+                    }
+                    catch (Exception cookieEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to save cookie file: {cookieEx.Message}");
+                    }
+                }
+
+                var issuerId = await _databaseService.GetIssuerIdByCoinTypeIdAsync(coinId);
+                if (!issuerId.HasValue)
+                {
+                    StatusMessage = $"Coin {coinId} was not found in issuer '{issuer.UrlSlug}' page scan.";
+                    return;
+                }
+
+                StatusMessage = $"Coin {coinId} added. Refreshing...";
+                await LoadData(forceRefresh: true);
+                await SearchByCoinId();
+
+                System.Windows.MessageBox.Show(
+                    $"Coin {coinId} was scraped and added successfully.",
+                    "Add Completed",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error adding coin: {ex.Message}";
+            }
+        }
+
+        private static string TailForStatus(string text, int maxLen = 180)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "No error details.";
+            }
+
+            var trimmed = text.Trim();
+            if (trimmed.Length <= maxLen)
+            {
+                return trimmed;
+            }
+
+            return trimmed[^maxLen..];
+        }
+
+        private static string NormalizeCookie(string cookie)
+        {
+            return (cookie ?? string.Empty)
+                .Replace("\r\n", " ")
+                .Replace('\n', ' ')
+                .Replace('\r', ' ')
+                .Trim();
+        }
 
         [RelayCommand]
         private async Task SearchByCoinId()

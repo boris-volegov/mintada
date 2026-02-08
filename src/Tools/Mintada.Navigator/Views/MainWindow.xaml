@@ -177,6 +177,7 @@
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <EventSetter Event="Selected" Handler="TreeViewItem_Selected" />
+                                <EventSetter Event="ContextMenuOpening" Handler="TreeViewItem_ContextMenuOpening" />
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="FontWeight" Value="Bold"/>

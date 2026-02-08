@@ -1,4 +1,5 @@
 import os, sys
+import argparse
 from curl_cffi import requests as creq
 from bs4 import BeautifulSoup, Tag, NavigableString
 import re
@@ -1216,6 +1217,7 @@ class CoinTypesScraper:
 
     def process(self, issuer_url_slug=None, page=None, coin_type_id=None):
         is_restart = issuer_url_slug is None and page is None and coin_type_id is None
+        target_single_issuer = coin_type_id is not None and issuer_url_slug is not None
         
         if is_restart:
             issuer_url_slug, page = _read_last_log_entry(self.log_file_name)
@@ -1389,11 +1391,42 @@ class CoinTypesScraper:
                 f"inserted {total_coin_type_ruler_rel_inserted_count} coin_types_rulers_rel row(s)."
             )
 
+            if target_single_issuer:
+                print(
+                    f"Targeted run finished issuer '{issuer_slug}' without finding coin_type_id={coin_type_id}. "
+                    "Exiting without scanning other issuers."
+                )
+                return
+
 
 def main():
+    arg_parser = argparse.ArgumentParser(
+        description=(
+            "Numista coin types scraper. "
+            "Without arguments it resumes from pages.log; with --coin-type-id it runs targeted mode."
+        )
+    )
+    arg_parser.add_argument("--issuer-url-slug", type=str, default=None)
+    arg_parser.add_argument("--page", type=int, default=None)
+    arg_parser.add_argument("--coin-type-id", type=int, default=None)
+    arg_parser.add_argument(
+        "--no-cleanup",
+        action="store_true",
+        help="Disable restart cleanup when running in resume mode.",
+    )
+    args = arg_parser.parse_args()
+
+    if args.page is not None and args.page < 1:
+        arg_parser.error("--page must be >= 1")
+
     scraper = CoinTypesScraper()
-    scraper.should_cleanup = True
-    scraper.process()
+    scraper.should_cleanup = not args.no_cleanup
+    scraper.process(
+        issuer_url_slug=args.issuer_url_slug,
+        page=args.page,
+        coin_type_id=args.coin_type_id,
+    )
+    return 0
 
 if __name__ == '__main__':
     raise SystemExit(main())
