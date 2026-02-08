@@ -29,6 +29,18 @@ It crawls issuer catalogue pages, fetches coin-type detail pages, stores normali
   - `process(..., coin_type_id=<id>)` can force reprocess a specific coin:
     - deletes existing DB row and local folder for that coin
     - re-scrapes and exits after that coin is processed
+  - If `coin_type_id` is provided without `issuer_url_slug`, the scraper resolves issuer slug automatically by:
+    - fetching `https://en.numista.com/{coin_type_id}`
+    - reading `section#fiche_caracteristiques` -> `Issuer` row
+    - extracting issuer link (e.g. `/catalogue/royaume-uni-1.html`)
+    - converting to `issuers.numista_url_slug` (`royaume-uni`)
+
+## Period handling
+
+- Period headers parsed on catalogue pages now feed `periods` and `coin_types.period_id`:
+  - for each encountered period, scraper finds existing `periods` row by `(issuer_id, period name)` or inserts a new row with `unit_relation_text`
+  - coin type save keeps legacy `coin_types.period` text and also sets `coin_types.period_id`
+- This ensures reruns can preserve normalized period linkage while keeping source text.
 
 ## Parser invocation (end of scrape flow)
 

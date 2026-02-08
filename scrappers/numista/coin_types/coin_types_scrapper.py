@@ -37,6 +37,7 @@ class CoinTypesScraper:
         self.db_connection = self.db_helper.db_connection
         self.db_connection.row_factory = sqlite3.Row
         self.coin_type_parser = CoinTypesParser(db_connection=self.db_connection)
+        self._period_id_cache = {}
 
         logging.basicConfig(
             filename = self.log_file_name,       # Log file name
@@ -1088,6 +1089,87 @@ class CoinTypesScraper:
                     current["links"].append(a)
         return periods
 
+    def _get_or_create_period_id(self, issuer_id, period):
+        period_name = (period.get("period_text") or "").strip()
+        if not period_name:
+            return None
+
+        cache_key = (issuer_id, period_name)
+        cached_period_id = self._period_id_cache.get(cache_key)
+        if cached_period_id is not None:
+            return cached_period_id
+
+        sql_select = "SELECT id FROM periods WHERE issuer_id = ? AND name = ? LIMIT 1"
+        cursor = self.db_connection.execute(sql_select, (issuer_id, period_name))
+        row = cursor.fetchone()
+        if row:
+            period_id = int(row["id"])
+            self._period_id_cache[cache_key] = period_id
+            return period_id
+
+        sql_insert = "INSERT INTO periods (name, unit_relation_text, issuer_id) VALUES (?, ?, ?)"
+        cursor = self.db_connection.execute(
+            sql_insert,
+            (period_name, period.get("unit_relation_text"), issuer_id),
+        )
+        self.db_connection.commit()
+
+        period_id = int(cursor.lastrowid)
+        self._period_id_cache[cache_key] = period_id
+        return period_id
+
+    def _save_coin_type_period_id(self, coin_type_id, period_id):
+        self.db_connection.execute(
+            "UPDATE coin_types SET period_id = ? WHERE id = ?",
+            (period_id, coin_type_id),
+        )
+        self.db_connection.commit()
+
+    def _resolve_issuer_slug_from_coin_type_id(self, coin_type_id):
+        coin_page_url = urljoin(self.base_url, str(coin_type_id))
+        coin_page_text = self.basic_helper.fetch(coin_page_url)
+        coin_page_soup = BeautifulSoup(coin_page_text, "html.parser")
+
+        characteristics_section = coin_page_soup.find("section", id="fiche_caracteristiques")
+        if not characteristics_section:
+            raise ValueError(
+                f"Could not find section #fiche_caracteristiques for coin_type_id={coin_type_id}"
+            )
+
+        issuer_td = None
+        for row in characteristics_section.select("tr"):
+            th = row.find("th")
+            if not th:
+                continue
+            th_text = self.basic_helper.clean_text(th.get_text(" ", strip=True)).lower()
+            if th_text == "issuer":
+                issuer_td = row.find("td")
+                break
+
+        if not issuer_td:
+            raise ValueError(f"Could not find Issuer row for coin_type_id={coin_type_id}")
+
+        issuer_link = issuer_td.find("a", href=True)
+        if not issuer_link:
+            raise ValueError(f"Could not find Issuer link for coin_type_id={coin_type_id}")
+
+        issuer_href = issuer_link["href"].strip()
+        issuer_path = urlparse(urljoin(self.base_url, issuer_href)).path
+        issuer_file_name = os.path.basename(issuer_path)
+        if not issuer_file_name:
+            raise ValueError(
+                f"Could not parse issuer link '{issuer_href}' for coin_type_id={coin_type_id}"
+            )
+
+        issuer_stem = re.sub(r"\.html?$", "", issuer_file_name, flags=re.IGNORECASE)
+        issuer_slug = re.sub(r"-\d+$", "", issuer_stem)
+        if not issuer_slug:
+            raise ValueError(
+                f"Could not derive issuer slug from '{issuer_file_name}' for coin_type_id={coin_type_id}"
+            )
+
+        return issuer_slug
+
     def _get_next_page_number(self, soup):
         # <a rel="next" href="index.php?e=...&p=2">Next</a>
         next_a = soup.find("a", rel="next")
@@ -1217,7 +1299,6 @@ class CoinTypesScraper:
 
     def process(self, issuer_url_slug=None, page=None, coin_type_id=None):
         is_restart = issuer_url_slug is None and page is None and coin_type_id is None
-        target_single_issuer = coin_type_id is not None and issuer_url_slug is not None
         
         if is_restart:
             issuer_url_slug, page = _read_last_log_entry(self.log_file_name)
@@ -1225,12 +1306,29 @@ class CoinTypesScraper:
         if is_restart and self.should_cleanup:
             self.cleanup_last_run()
 
+        if coin_type_id is not None and not issuer_url_slug:
+            issuer_url_slug = self._resolve_issuer_slug_from_coin_type_id(coin_type_id)
+            page = 1
+            print(
+                f"Resolved issuer_url_slug='{issuer_url_slug}' from coin_type_id={coin_type_id}"
+            )
+
+        target_single_issuer = coin_type_id is not None and issuer_url_slug is not None
         page = 1 if page is None else page
         
         # If we have a target issuer (resume), we skip until we find it
         seeking_resume = issuer_url_slug is not None
 
         issuer_records = self.issuers_db_helper.get_issuers()
+
+        if issuer_url_slug is not None:
+            issuer_exists = any(
+                record["numista_url_slug"] == issuer_url_slug for record in issuer_records
+            )
+            if not issuer_exists:
+                raise ValueError(
+                    f"Issuer slug '{issuer_url_slug}' was not found in issuers table."
+                )
 
         for issuer_record in issuer_records:
             issuer_id = int(issuer_record["id"])
@@ -1275,6 +1373,7 @@ class CoinTypesScraper:
                 periods = self.parse_country_page(country_page_soup)
 
                 for period in periods:
+                    period_id = self._get_or_create_period_id(issuer_id, period)
                     for coin_type_link in period["links"]:
                         coin_type_url = coin_type_link["href"]
 
@@ -1337,6 +1436,7 @@ class CoinTypesScraper:
                             "subtitle": None,
                             "edge_image": None,
                             "period": period["period_text"],
+                            "period_id": period_id,
                             "file_name_prefix": file_name_prefix,
                             "sample_images": [],
                             "comment_images": [],
@@ -1348,6 +1448,7 @@ class CoinTypesScraper:
                         if not coin_type_db_info:
                             # Save coin type fully
                             self.db_helper.save_coin_type_full(out)
+                            self._save_coin_type_period_id(id, period_id)
 
                         # Create dir if not exists (it shouldn't, unless created partially during this run? No, we checked exists above)
                         os.makedirs(coin_type_dir, exist_ok=True)
