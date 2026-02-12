@@ -3,7 +3,7 @@ import os
 
 class RulersDbHelper:
     def __init__(self):
-        self.db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "db", "coins.db")
+        self.db_path = r"D:\projects\mintada\data\numista\coins.db"
         self.db_connection = sqlite3.connect(self.db_path)  
 
         self.db_connection.execute("PRAGMA foreign_keys = ON") 

@@ -42,6 +42,9 @@ This document summarizes the current parser pipeline behavior for Numista coin t
     - integer/decimal numbers
     - simple fractions (for example `1/2`)
     - mixed fractions (for example `10 1/2`)
+  - Fraction outputs are normalized to decimal strings for storage in `value_amount`:
+    - `1/2` -> `0.5`
+    - `10 1/2` -> `10.5`
 
 ## Majority-based denomination_unit normalization
 

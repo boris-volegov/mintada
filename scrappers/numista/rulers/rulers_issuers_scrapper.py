@@ -254,7 +254,7 @@ class RulersIssuersScraper:
         rulers = self._parse_rulers(rulers_page)
         
         # Sort rulers by ID to ensure sequential processing
-        rulers.sort(key=lambda x: x["id"] if x["id"] is not None else -1)
+        rulers.sort(key=lambda x: x["ruler_id"] if x["ruler_id"] is not None else -1)
         
         if ruler_name:
             rulers = [r for r in rulers if r["name"].startswith(ruler_name)]
@@ -272,7 +272,7 @@ class RulersIssuersScraper:
                 print(f"Error reading log file: {e}")
 
         for ruler_issuer in rulers:
-            current_id = ruler_issuer["id"]
+            current_id = ruler_issuer["ruler_id"]
             if current_id is None:
                 continue
 
