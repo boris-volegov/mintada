@@ -29,6 +29,16 @@ def main():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
+    # Some DBs don't have this helper table yet; create it lazily so parser does not fail.
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS shape_exceptions (
+            coin_type_id INTEGER,
+            shape TEXT
+        )
+        """
+    )
+
     # Pre-load shapes into a dictionary for fast lookup
     # Case-insensitive lookup map: "round" -> id
     cursor.execute("SELECT id, name FROM shapes")

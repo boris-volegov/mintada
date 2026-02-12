@@ -1,4 +1,5 @@
 import argparse
+from decimal import Decimal
 import html
 import os
 import re
@@ -61,6 +62,30 @@ def _normalize_numeric_token(token: str) -> str:
     return token.replace(" ", "").replace(",", "")
 
 
+def _decimal_to_storage_string(value: Decimal) -> str:
+    text = format(value, "f")
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    return text or "0"
+
+
+def _fraction_to_decimal_string(numer: str, denom: str, whole: str | None = None) -> str | None:
+    try:
+        denominator = Decimal(denom)
+        if denominator == 0:
+            return None
+
+        numerator = Decimal(numer)
+        value = numerator / denominator
+
+        if whole is not None:
+            value += Decimal(whole)
+    except Exception:
+        return None
+
+    return _decimal_to_storage_string(value)
+
+
 def _escape_like(raw: str) -> str:
     return raw.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
@@ -113,10 +138,9 @@ def _parse_derived_fields(denomination_text: str) -> tuple[str, str] | None:
         unit = mixed_match.group("unit").strip()
         if not unit:
             return None
-        if whole == "0":
-            value_amount = f"{numer}/{denom}"
-        else:
-            value_amount = f"{whole} {numer}/{denom}"
+        value_amount = _fraction_to_decimal_string(numer=numer, denom=denom, whole=whole)
+        if value_amount is None:
+            return None
         return value_amount, unit
 
     fraction_match = FRACTION_RE.match(text)
@@ -126,7 +150,9 @@ def _parse_derived_fields(denomination_text: str) -> tuple[str, str] | None:
         unit = fraction_match.group("unit").strip()
         if not unit:
             return None
-        value_amount = f"{numer}/{denom}"
+        value_amount = _fraction_to_decimal_string(numer=numer, denom=denom)
+        if value_amount is None:
+            return None
         return value_amount, unit
 
     number_match = NUMBER_RE.match(text)
