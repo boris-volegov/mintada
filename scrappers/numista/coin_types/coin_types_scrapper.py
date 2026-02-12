@@ -922,11 +922,15 @@ class CoinTypesScraper:
         if not relations_by_name:
             ruler_links = self._extract_ruler_links(coin_type_html)
             if ruler_links:
-                inserted = self._save_coin_type_exception(coin_type_id)
+                ruler_ids = sorted({int(link["ruler_id"]) for link in ruler_links if link.get("ruler_id") is not None})
+                inserted_count = 0
+                for ruler_id in ruler_ids:
+                    if self._save_coin_type_exception(coin_type_id, ruler_id=ruler_id):
+                        inserted_count += 1
                 print(
                     f"[WARN] {issuer_slug}: ru options are empty but coin_type_id={coin_type_id} "
                     f"(folder='{folder_name}') has {len(ruler_links)} ruler link(s). "
-                    f"{'Saved' if inserted else 'Already present in'} _coin_type_exceptions."
+                    f"Inserted {inserted_count}/{len(ruler_ids)} _coin_type_exceptions row(s) with ruler_id."
                 )
                 self.db_connection.commit()
                 return 0, 0, 0
@@ -1149,9 +1153,29 @@ class CoinTypesScraper:
         if not issuer_td:
             raise ValueError(f"Could not find Issuer row for coin_type_id={coin_type_id}")
 
-        issuer_link = issuer_td.find("a", href=True)
-        if not issuer_link:
+        issuer_links = issuer_td.find_all("a", href=True)
+        if not issuer_links:
             raise ValueError(f"Could not find Issuer link for coin_type_id={coin_type_id}")
+
+        html_issuer_links = []
+        for candidate_link in issuer_links:
+            candidate_href = (candidate_link.get("href") or "").strip()
+            candidate_path = urlparse(urljoin(self.base_url, candidate_href)).path
+            if re.search(r"\.html?$", candidate_path, flags=re.IGNORECASE):
+                html_issuer_links.append(candidate_link)
+
+        if not html_issuer_links:
+            hrefs = [str((a.get("href") or "").strip()) for a in issuer_links]
+            raise ValueError(
+                f"Could not find Issuer .html link for coin_type_id={coin_type_id}. "
+                f"Links seen: {hrefs}"
+            )
+
+        issuer_td_text = issuer_td.get_text(" ", strip=False)
+        if "›" in issuer_td_text:
+            issuer_link = html_issuer_links[-1]
+        else:
+            issuer_link = html_issuer_links[0]
 
         issuer_href = issuer_link["href"].strip()
         issuer_path = urlparse(urljoin(self.base_url, issuer_href)).path

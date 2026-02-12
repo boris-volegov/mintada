@@ -33,3 +33,6 @@ Desktop.ini
 # Runtime artifacts
 pages.log
 cookie
+scrappers/numista/coin_types/fixers/
+scrappers/numista/rulers/fixers/
+.vscode/settings.json
