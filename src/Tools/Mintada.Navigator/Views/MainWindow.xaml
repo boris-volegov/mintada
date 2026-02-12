@@ -54,17 +54,33 @@
                     </Grid.RowDefinitions>
                     
                     <StackPanel Grid.Row="0" Margin="5">
-                        <!-- Coin ID Filter with Label -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                            <TextBlock Text="Coin ID:" VerticalAlignment="Center" Width="60" Foreground="#555"/>
-                            <TextBox Text="{Binding SearchCoinIdText, UpdateSourceTrigger=PropertyChanged}" 
-                                     Width="120" Padding="5" ToolTip="Search by Coin ID (Enter)" VerticalContentAlignment="Center">
-                                <TextBox.InputBindings>
-                                    <KeyBinding Key="Enter" Command="{Binding SearchByCoinIdCommand}"/>
-                                </TextBox.InputBindings>
-                            </TextBox>
-                            <Button Command="{Binding SearchByCoinIdCommand}" Content="Go" Padding="10,0" Margin="5,0,0,0" Cursor="Hand"/>
-                        </StackPanel>
+                        <!-- Coin ID Filter with Add action -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Text="Coin ID:" VerticalAlignment="Center" Width="60" Foreground="#555"/>
+                                <TextBox Text="{Binding SearchCoinIdText, UpdateSourceTrigger=PropertyChanged}" 
+                                         Width="120" Padding="5" ToolTip="Search by Coin ID (Enter)" VerticalContentAlignment="Center">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding SearchByCoinIdCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Command="{Binding SearchByCoinIdCommand}" Content="Go" Padding="10,0" Margin="5,0,0,0" Cursor="Hand"/>
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Content="Add..."
+                                    Padding="12,3"
+                                    Margin="10,0,0,0"
+                                    HorizontalAlignment="Right"
+                                    Cursor="Hand"
+                                    Click="AddCoinTypeButton_Click"
+                                    ToolTip="Open Add Coin Type dialog for selected issuer"/>
+                        </Grid>
 
                         <!-- Issuer Filter with Label -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
@@ -177,7 +193,6 @@
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <EventSetter Event="Selected" Handler="TreeViewItem_Selected" />
-                                <EventSetter Event="ContextMenuOpening" Handler="TreeViewItem_ContextMenuOpening" />
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="FontWeight" Value="Bold"/>

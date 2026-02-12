@@ -1,11 +1,11 @@
 <Window x:Class="Mintada.Navigator.Views.AddCoinTypeDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add Coin Type" Height="520" Width="680"
+        Title="Add Coin Type" Height="280" Width="680"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         ShowInTaskbar="False"
-        MinHeight="420"
+        MinHeight="240"
         MinWidth="560">
 
     <Grid Margin="16">
@@ -13,7 +13,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -24,28 +23,21 @@
             <TextBlock x:Name="IssuerTextBlock" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Coin ID:" Width="70" VerticalAlignment="Center" Foreground="#555"/>
-            <TextBox x:Name="CoinTypeIdTextBox" Width="160" Padding="6" VerticalContentAlignment="Center"/>
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Coin ID:" Width="70" VerticalAlignment="Center" Foreground="#555"/>
+                <TextBox x:Name="CoinTypeIdTextBox" Width="160" Padding="6" VerticalContentAlignment="Center"/>
+            </StackPanel>
+            <TextBlock x:Name="ExistingCoinWarningTextBlock"
+                       Margin="70,6,0,0"
+                       Foreground="#CC0000"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed"
+                       Text="This coin type ID already exists. Clicking OK will reprocess and overwrite its current scraped data."/>
         </StackPanel>
 
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0" Text="Cookie" Foreground="#555" Margin="0,0,0,6"/>
-            <TextBox Grid.Row="1"
-                     x:Name="CookieTextBox"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Auto"
-                     HorizontalScrollBarVisibility="Auto"
-                     Padding="8"/>
-        </Grid>
-
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
             <Button Content="Cancel" Click="Cancel_Click" Padding="18,7" Margin="0,0,8,0" Cursor="Hand"/>
             <Button Content="OK" Click="Ok_Click" Padding="22,7" Cursor="Hand"
                     Background="#4CAF50" Foreground="White" BorderBrush="#4CAF50"/>

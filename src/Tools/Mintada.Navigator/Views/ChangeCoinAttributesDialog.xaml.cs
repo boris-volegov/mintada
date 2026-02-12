@@ -65,7 +65,7 @@ namespace Mintada.Navigator.Views
             string? currentStartDate, string? currentEndDate, string? currentStartNativeDate, string? currentEndNativeDate, string? currentStartMintDate, string? currentEndMintDate,
             string? currentRestrikeDate, string? currentRestrikeStartMintDate, string? currentRestrikeEndMintDate, string? currentErroneousDates,
             List<CalendarSystem> calendarSystems, int? currentCalendarSystemId, List<Period> periods, int? currentPeriodId,
-            List<RulerOption> rulerOptions)
+            List<RulerOption> rulerOptions, List<long> selectedRulerIds)
         {
             ShapesComboBox.ItemsSource = shapes;
             if (currentShapeId.HasValue)
@@ -89,9 +89,16 @@ namespace Mintada.Navigator.Views
             Ruler2ComboBox.ItemsSource = rulerOptions;
             Ruler3ComboBox.ItemsSource = rulerOptions;
 
-            Ruler1ComboBox.SelectedItem = rulerOptions.ElementAtOrDefault(0);
-            Ruler2ComboBox.SelectedItem = rulerOptions.ElementAtOrDefault(1);
-            Ruler3ComboBox.SelectedItem = rulerOptions.ElementAtOrDefault(2);
+            var selectedOptions = selectedRulerIds
+                .Distinct()
+                .Select(id => rulerOptions.FirstOrDefault(r => r.Id == id))
+                .Where(r => r != null)
+                .Select(r => r!)
+                .ToList();
+
+            Ruler1ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(0);
+            Ruler2ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(1);
+            Ruler3ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(2);
             
             ShapeInfoTextBox.Text = currentInfo ?? string.Empty;
             WeightInfoTextBox.Text = currentWeightInfo ?? string.Empty;

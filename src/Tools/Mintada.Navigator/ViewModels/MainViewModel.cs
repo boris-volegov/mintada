@@ -23,7 +23,6 @@ namespace Mintada.Navigator.ViewModels
         private readonly Services.ImageAnalysisService _imageAnalysisService;
         private readonly CoinParserService _coinParserService;
         private readonly CoinTypesScraperService _coinTypesScraperService;
-        private readonly string _numistaCookiePath;
 
         [ObservableProperty]
         private ParsedCoinData? _parsedData;
@@ -128,7 +127,6 @@ namespace Mintada.Navigator.ViewModels
             string pythonPath = @"d:\projects\mintada\.venv\Scripts\python.exe"; 
             string scriptPath = @"d:\projects\mintada\tools\segmentation\detect_swap_interactive.py";
             string coinTypesScrapperPath = @"d:\projects\mintada\scrappers\numista\coin_types\coin_types_scrapper.py";
-            _numistaCookiePath = @"d:\projects\mintada\scrappers\numista\cookie";
 
             _fileService = new FileService(rootPath);
             _databaseService = new DatabaseService(dbPath);
@@ -1560,28 +1558,48 @@ namespace Mintada.Navigator.ViewModels
         [RelayCommand]
         private async Task AddCoinTypeForIssuer(Issuer? issuer)
         {
-            if (issuer == null || string.IsNullOrWhiteSpace(issuer.UrlSlug))
-            {
-                StatusMessage = "Issuer is not valid for Add action.";
-                return;
-            }
-
             try
             {
+                var initialCoinTypeIdText = SearchCoinIdText?.Trim() ?? string.Empty;
+
+                var issuerNameForDialog = string.IsNullOrWhiteSpace(issuer?.Name)
+                    ? "Auto-detect from Coin ID"
+                    : issuer.Name;
+                var issuerSlugForDialog = string.IsNullOrWhiteSpace(issuer?.UrlSlug)
+                    ? "Auto"
+                    : issuer.UrlSlug;
+                var issuerSlugForScrape = string.IsNullOrWhiteSpace(issuer?.UrlSlug)
+                    ? null
+                    : issuer.UrlSlug;
+
+                if (issuerSlugForScrape is null && long.TryParse(initialCoinTypeIdText, out var initialCoinTypeId) && initialCoinTypeId > 0)
+                {
+                    try
+                    {
+                        var resolvedIssuer = await _coinTypesScraperService.TryResolveIssuerFromCoinTypeIdAsync(initialCoinTypeId);
+                        if (resolvedIssuer.HasValue)
+                        {
+                            issuerNameForDialog = resolvedIssuer.Value.IssuerName;
+                            issuerSlugForDialog = resolvedIssuer.Value.IssuerSlug;
+                        }
+                    }
+                    catch
+                    {
+                        // Keep dialog in auto mode if online issuer resolution fails.
+                    }
+                }
+
                 var dialog = new AddCoinTypeDialog
                 {
                     Owner = System.Windows.Application.Current.MainWindow
                 };
 
-                var initialCookie = IO.File.Exists(_numistaCookiePath)
-                    ? await IO.File.ReadAllTextAsync(_numistaCookiePath)
-                    : string.Empty;
-
                 dialog.SetData(
-                    issuerName: issuer.Name,
-                    issuerSlug: issuer.UrlSlug,
-                    initialCoinTypeId: SearchCoinIdText,
-                    initialCookie: initialCookie
+                    issuerName: issuerNameForDialog,
+                    issuerSlug: issuerSlugForDialog,
+                    initialCoinTypeId: initialCoinTypeIdText,
+                    coinTypeExistsChecker: async id =>
+                        (await _databaseService.GetIssuerIdByCoinTypeIdAsync(id)).HasValue
                 );
 
                 var dialogResult = dialog.ShowDialog();
@@ -1600,19 +1618,17 @@ namespace Mintada.Navigator.ViewModels
                 SearchCoinIdText = coinId.ToString();
 
                 var existingIssuerId = await _databaseService.GetIssuerIdByCoinTypeIdAsync(coinId);
-                if (existingIssuerId.HasValue)
-                {
-                    StatusMessage = $"Coin {coinId} already exists. Selecting it...";
-                    await SearchByCoinId();
-                    return;
-                }
 
-                StatusMessage = $"Scraping coin {coinId} for issuer '{issuer.UrlSlug}'...";
+                var isReprocess = existingIssuerId.HasValue;
+                StatusMessage = isReprocess
+                    ? $"Reprocessing existing coin {coinId}..."
+                    : issuerSlugForScrape is null
+                        ? $"Scraping coin {coinId} with issuer auto-detection..."
+                        : $"Scraping coin {coinId} for issuer '{issuerSlugForScrape}'...";
                 var run = await _coinTypesScraperService.ScrapeCoinTypeAsync(
                     coinTypeId: coinId,
-                    issuerUrlSlug: issuer.UrlSlug,
-                    page: 1,
-                    cookie: dialog.CookieText
+                    issuerUrlSlug: isReprocess ? null : issuerSlugForScrape,
+                    page: 1
                 );
 
                 if (run.ExitCode != 0)
@@ -1621,33 +1637,24 @@ namespace Mintada.Navigator.ViewModels
                     return;
                 }
 
-                var normalizedCookie = NormalizeCookie(dialog.CookieText);
-                if (!string.IsNullOrWhiteSpace(normalizedCookie))
-                {
-                    try
-                    {
-                        await IO.File.WriteAllTextAsync(_numistaCookiePath, normalizedCookie);
-                    }
-                    catch (Exception cookieEx)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Failed to save cookie file: {cookieEx.Message}");
-                    }
-                }
-
                 var issuerId = await _databaseService.GetIssuerIdByCoinTypeIdAsync(coinId);
                 if (!issuerId.HasValue)
                 {
-                    StatusMessage = $"Coin {coinId} was not found in issuer '{issuer.UrlSlug}' page scan.";
+                    StatusMessage = $"Coin {coinId} was not found after page scan.";
                     return;
                 }
 
-                StatusMessage = $"Coin {coinId} added. Refreshing...";
+                StatusMessage = isReprocess
+                    ? $"Coin {coinId} reprocessed. Refreshing..."
+                    : $"Coin {coinId} added. Refreshing...";
                 await LoadData(forceRefresh: true);
                 await SearchByCoinId();
 
                 System.Windows.MessageBox.Show(
-                    $"Coin {coinId} was scraped and added successfully.",
-                    "Add Completed",
+                    isReprocess
+                        ? $"Coin {coinId} was reprocessed successfully."
+                        : $"Coin {coinId} was scraped and added successfully.",
+                    isReprocess ? "Reprocess Completed" : "Add Completed",
                     System.Windows.MessageBoxButton.OK,
                     System.Windows.MessageBoxImage.Information);
             }
@@ -1671,15 +1678,6 @@ namespace Mintada.Navigator.ViewModels
             }
 
             return trimmed[^maxLen..];
-        }
-
-        private static string NormalizeCookie(string cookie)
-        {
-            return (cookie ?? string.Empty)
-                .Replace("\r\n", " ")
-                .Replace('\n', ' ')
-                .Replace('\r', ' ')
-                .Trim();
         }
 
         [RelayCommand]
@@ -1998,7 +1996,8 @@ namespace Mintada.Navigator.ViewModels
             var shapes = await _databaseService.GetShapesAsync();
             var calendarSystems = await _databaseService.GetCalendarSystemsAsync();
             var periods = await _databaseService.GetPeriodsForIssuerAsync(SelectedCoin.IssuerId);
-            var rulerOptions = new List<RulerOption>();
+            var dbRulerOptions = await _databaseService.GetRulerOptionsForIssuerAsync(SelectedCoin.IssuerId);
+            var htmlRulerOptions = new List<RulerOption>();
 
             try
             {
@@ -2012,7 +2011,7 @@ namespace Mintada.Navigator.ViewModels
                     if (IO.File.Exists(coinHtmlPath))
                     {
                         var coinHtml = await IO.File.ReadAllTextAsync(coinHtmlPath);
-                        rulerOptions = _coinParserService.ExtractRulers(coinHtml);
+                        htmlRulerOptions = _coinParserService.ExtractRulers(coinHtml);
                     }
                 }
             }
@@ -2020,6 +2019,64 @@ namespace Mintada.Navigator.ViewModels
             {
                 System.Diagnostics.Debug.WriteLine($"Error parsing ruler links for Change Attributes dialog: {ex.Message}");
             }
+
+            var rulerOptionsById = new Dictionary<long, RulerOption>();
+            foreach (var option in dbRulerOptions.Where(r => r != null && r.Id > 0))
+            {
+                if (rulerOptionsById.ContainsKey(option.Id))
+                {
+                    continue;
+                }
+
+                rulerOptionsById[option.Id] = new RulerOption
+                {
+                    Id = option.Id,
+                    Name = string.IsNullOrWhiteSpace(option.Name) ? $"Ruler {option.Id}" : option.Name
+                };
+            }
+
+            foreach (var option in htmlRulerOptions.Where(r => r != null && r.Id > 0))
+            {
+                if (!rulerOptionsById.ContainsKey(option.Id))
+                {
+                    rulerOptionsById[option.Id] = new RulerOption
+                    {
+                        Id = option.Id,
+                        Name = string.IsNullOrWhiteSpace(option.Name) ? $"Ruler {option.Id}" : option.Name
+                    };
+                }
+            }
+
+            var selectedRulerIds = await _databaseService.GetRulerIdsForCoinTypeAsync(SelectedCoin.Id);
+            if (selectedRulerIds.Count == 0)
+            {
+                selectedRulerIds = htmlRulerOptions
+                    .Where(r => r != null && r.Id > 0)
+                    .Select(r => r.Id)
+                    .Distinct()
+                    .Take(3)
+                    .ToList();
+            }
+
+            foreach (var rulerId in selectedRulerIds)
+            {
+                if (rulerOptionsById.ContainsKey(rulerId))
+                {
+                    continue;
+                }
+
+                var htmlOption = htmlRulerOptions.FirstOrDefault(r => r.Id == rulerId);
+                rulerOptionsById[rulerId] = new RulerOption
+                {
+                    Id = rulerId,
+                    Name = !string.IsNullOrWhiteSpace(htmlOption?.Name) ? htmlOption.Name : $"Ruler {rulerId}"
+                };
+            }
+
+            var rulerOptions = rulerOptionsById.Values
+                .OrderBy(r => r.Name)
+                .ThenBy(r => r.Id)
+                .ToList();
             
             // Initial Values
             int? initialShapeId = SelectedCoin.ShapeId;
@@ -2034,7 +2091,7 @@ namespace Mintada.Navigator.ViewModels
                 SelectedCoin.DenominationText, SelectedCoin.ValueAmount, SelectedCoin.DenominationInfo1, SelectedCoin.ValueAmountUsd, SelectedCoin.ValueCurrencySymbol, SelectedCoin.DenominationAlt,
                 SelectedCoin.StartDate, SelectedCoin.EndDate, SelectedCoin.StartNativeDate, SelectedCoin.EndNativeDate, SelectedCoin.StartMintDate, SelectedCoin.EndMintDate,
                 SelectedCoin.RestrikeDate, SelectedCoin.RestrikeStartMintDate, SelectedCoin.RestrikeEndMintDate, SelectedCoin.ErroneousDates,
-                calendarSystems, SelectedCoin.CalendarSystemId, periods, SelectedCoin.PeriodId, rulerOptions);
+                calendarSystems, SelectedCoin.CalendarSystemId, periods, SelectedCoin.PeriodId, rulerOptions, selectedRulerIds);
 
             // Handle Save
             dialog.RequestSave += async (s, e) => 

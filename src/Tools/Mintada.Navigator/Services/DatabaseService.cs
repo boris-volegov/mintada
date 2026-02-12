@@ -722,6 +722,104 @@ namespace Mintada.Navigator.Services
             return periods;
         }
 
+        public async Task<List<RulerOption>> GetRulerOptionsForIssuerAsync(long issuerId)
+        {
+            var rawOptions = new List<RulerOption>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT irr.ruler_id,
+                           COALESCE(NULLIF(TRIM(irr.name), ''), r.name, '') AS resolved_name
+                    FROM issuers_rulers_rel AS irr
+                    LEFT JOIN rulers AS r ON r.id = irr.ruler_id
+                    WHERE irr.issuer_id = @issuerId
+                      AND irr.ruler_id IS NOT NULL
+                    ORDER BY resolved_name";
+
+                command.Parameters.AddWithValue("@issuerId", issuerId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        if (reader.IsDBNull(0))
+                        {
+                            continue;
+                        }
+
+                        rawOptions.Add(new RulerOption
+                        {
+                            Id = Convert.ToInt64(reader[0]),
+                            Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            var deduped = new Dictionary<long, RulerOption>();
+            foreach (var option in rawOptions)
+            {
+                if (!deduped.TryGetValue(option.Id, out var existing))
+                {
+                    deduped[option.Id] = new RulerOption
+                    {
+                        Id = option.Id,
+                        Name = string.IsNullOrWhiteSpace(option.Name) ? $"Ruler {option.Id}" : option.Name
+                    };
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(existing.Name) && !string.IsNullOrWhiteSpace(option.Name))
+                {
+                    existing.Name = option.Name;
+                }
+            }
+
+            return deduped.Values
+                .OrderBy(r => r.Name)
+                .ThenBy(r => r.Id)
+                .ToList();
+        }
+
+        public async Task<List<long>> GetRulerIdsForCoinTypeAsync(long coinTypeId)
+        {
+            var ids = new List<long>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT ruler_id
+                    FROM coin_types_rulers_rel
+                    WHERE coin_type_id = @coinTypeId
+                    ORDER BY rowid";
+                command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        if (reader.IsDBNull(0))
+                        {
+                            continue;
+                        }
+
+                        ids.Add(Convert.ToInt64(reader[0]));
+                    }
+                }
+            }
+
+            return ids
+                .Distinct()
+                .ToList();
+        }
+
         public async Task<List<CalendarSystem>> GetCalendarSystemsAsync()
         {
             var systems = new List<CalendarSystem>();

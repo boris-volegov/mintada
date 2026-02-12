@@ -41,43 +41,15 @@ public partial class MainWindow : Window
         }
     }
 
-    private void TreeViewItem_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    private async void AddCoinTypeButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not TreeViewItem item || item.DataContext is not Models.Issuer issuer)
-        {
-            return;
-        }
-
-        if (item.ContextMenu == null)
-        {
-            var contextMenu = new ContextMenu();
-            var addMenuItem = new MenuItem { Header = "Add..." };
-            addMenuItem.Click += IssuerAddMenuItem_Click;
-            contextMenu.Items.Add(addMenuItem);
-            item.ContextMenu = contextMenu;
-        }
-
-        item.ContextMenu.Tag = issuer;
-    }
-
-    private async void IssuerAddMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is not MenuItem menuItem)
-        {
-            return;
-        }
-
         if (DataContext is not ViewModels.MainViewModel viewModel)
         {
             return;
         }
-
-        if (menuItem.Parent is not ContextMenu contextMenu || contextMenu.Tag is not Models.Issuer issuer)
-        {
-            return;
-        }
-
-        await viewModel.AddCoinTypeForIssuerCommand.ExecuteAsync(issuer);
+ 
+        // Always open Add Coin Type in auto-issuer mode to avoid carrying stale issuer context.
+        await viewModel.AddCoinTypeForIssuerCommand.ExecuteAsync(null);
     }
 
     private void SplitLine_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

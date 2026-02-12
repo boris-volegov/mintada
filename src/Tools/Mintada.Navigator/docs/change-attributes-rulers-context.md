@@ -9,14 +9,17 @@ This note captures the work completed in `Mintada.Navigator` for the **Change At
 3. Parsed ruler links from `coin_type.html` (`/catalogue/ruler.php?id=...`) to extract:
    - `ruler_id` (from link querystring),
    - display text (cleaned of tags/entities and extra spaces, without name normalization).
-4. Populated ruler dropdowns from parsed rulers:
-   - value = parsed `ruler_id`,
-   - text = parsed ruler link text,
-   - defaults = first/second/third parsed rulers.
-5. On `OK`, inserted missing relations only:
-   - `issuers_rulers_rel` if `(issuer_id, ruler_id)` does not exist,
-   - `coin_types_rulers_rel` if `(coin_type_id, ruler_id)` does not exist.
-6. Generated `issuers_rulers_rel.id` from Unix milliseconds (collision-safe by incrementing if needed).
+4. Populated ruler dropdowns from a union by `ruler_id`:
+   - all DB rulers for issuer from `issuers_rulers_rel` (with name fallback from `rulers`),
+   - plus HTML ruler IDs not already present in issuer DB list.
+5. Default selected ruler(s):
+   - first from `coin_types_rulers_rel` for current coin type,
+   - if no DB mapping exists, fallback to first up to 3 parsed HTML rulers,
+   - if neither exists, keep dropdowns empty (no forced first-option selection).
+6. On `OK`, inserted missing relations only:
+   - ensure `issuers_rulers_rel` exists for each selected `(issuer_id, ruler_id)`,
+   - then ensure `coin_types_rulers_rel` exists for each selected `(coin_type_id, ruler_id)`.
+7. Generated `issuers_rulers_rel.id` from Unix milliseconds (collision-safe by incrementing if needed).
 
 ## Files Changed
 
@@ -28,8 +31,8 @@ This note captures the work completed in `Mintada.Navigator` for the **Change At
   - added selected ruler properties:
     - `SelectedRuler1`, `SelectedRuler2`, `SelectedRuler3`
     - `SelectedRulers` (deduped by `Id`)
-  - extended `SetData(...)` to accept `List<RulerOption>`
-  - default selection logic for first 3 parsed rulers
+  - extended `SetData(...)` to accept `List<RulerOption>` and selected ruler IDs
+  - selection defaults now passed as explicit selected ruler IDs
 
 - `src/Tools/Mintada.Navigator/Models/RulerOption.cs`
   - new model: `Id`, `Name`
@@ -40,27 +43,33 @@ This note captures the work completed in `Mintada.Navigator` for the **Change At
 
 - `src/Tools/Mintada.Navigator/ViewModels/MainViewModel.cs`
   - in `ChangeCoinAttributesAsync()`:
-    - loads current coin `coin_type.html`
-    - parses rulers via `_coinParserService.ExtractRulers(...)`
-    - passes ruler options into dialog
+    - loads current coin `coin_type.html` and parses rulers via `_coinParserService.ExtractRulers(...)`
+    - loads issuer ruler options from DB (`GetRulerOptionsForIssuerAsync`)
+    - builds union list by `ruler_id` (DB first, add missing HTML IDs)
+    - loads selected ruler IDs from `coin_types_rulers_rel` (`GetRulerIdsForCoinTypeAsync`)
+    - falls back to parsed HTML IDs only when DB relation list is empty
+    - passes both options and selected IDs into dialog
     - on save, calls DB relation upsert helper with `dialog.SelectedRulers`
 
 - `src/Tools/Mintada.Navigator/Services/DatabaseService.cs`
+  - added `GetRulerOptionsForIssuerAsync(...)`
+  - added `GetRulerIdsForCoinTypeAsync(...)`
   - added `EnsureRulerRelationsForCoinTypeAsync(...)`
   - added `GetNextIssuerRulerRelationIdAsync(...)`
   - relation insert behavior:
-    - checks existence first,
-    - inserts only missing rows,
+    - checks existence first for both relation tables,
+    - inserts only missing rows (no duplicate inserts),
     - keeps save flow resilient on FK issues for `coin_types_rulers_rel`
 
 ## Runtime Flow (Current)
 
 1. User opens **Change Attributes**.
-2. ViewModel reads local `coin_type.html` for selected coin.
-3. Ruler links are parsed into `RulerOption` list.
+2. ViewModel loads issuer ruler options from DB and parses ruler links from local `coin_type.html`.
+3. Ruler options are merged by `ruler_id` (DB options + missing HTML options).
 4. Dialog shows `Period` + `Ruler 1/2/3` dropdowns.
-5. User clicks `OK`.
-6. App:
+5. Selection defaults from `coin_types_rulers_rel`; fallback to HTML IDs only if no DB mapping exists; otherwise stay empty.
+6. User clicks `OK`.
+7. App:
    - ensures ruler relations exist in DB (insert-if-missing),
    - updates coin attributes as before.
 
