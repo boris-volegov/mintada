@@ -54,7 +54,7 @@
         }
       }
     },
-    "/api/Issuers": {
+    "/api/issuers": {
       "get": {
         "tags": [
           "Issuers"
@@ -92,7 +92,7 @@
         }
       }
     },
-    "/api/Issuers/{id}/coin-types": {
+    "/api/issuers/{id}/coin-types": {
       "get": {
         "tags": [
           "Issuers"
@@ -142,7 +142,7 @@
         }
       }
     },
-    "/api/Issuers/{slug}/coin-types": {
+    "/api/issuers/{slug}/coin-types": {
       "get": {
         "tags": [
           "Issuers"

@@ -7,7 +7,7 @@ using Mintada.Domain.Entities;
 namespace Mintada.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/issuers")]
 public class IssuersController : ControllerBase
 {
     private readonly MintadaDbContext _context;

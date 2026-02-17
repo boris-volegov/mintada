@@ -15,7 +15,7 @@ export class IssuersService {
     public static getApiIssuers(): CancelablePromise<Array<IssuerDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/Issuers',
+            url: '/api/issuers',
         });
     }
     /**
@@ -28,7 +28,7 @@ export class IssuersService {
     ): CancelablePromise<Array<CoinTypeDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/Issuers/{id}/coin-types',
+            url: '/api/issuers/{id}/coin-types',
             path: {
                 'id': id,
             },
@@ -44,7 +44,7 @@ export class IssuersService {
     ): CancelablePromise<Array<CoinTypeDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/Issuers/{slug}/coin-types',
+            url: '/api/issuers/{slug}/coin-types',
             path: {
                 'slug': slug,
             },

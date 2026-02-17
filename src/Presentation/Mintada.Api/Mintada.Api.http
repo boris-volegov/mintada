@@ -1,6 +1,31 @@
 @Mintada.Api_HostAddress = http://localhost:5216
 
-GET {{Mintada.Api_HostAddress}}/weatherforecast/
+### Get all issuers (flat)
+GET {{Mintada.Api_HostAddress}}/api/issuers
+Accept: application/json
+
+###
+
+### Get issuer hierarchy
+GET {{Mintada.Api_HostAddress}}/api/issuers/hierarchy
+Accept: application/json
+
+###
+
+### Get coin types by issuer id
+GET {{Mintada.Api_HostAddress}}/api/issuers/1/coin-types
+Accept: application/json
+
+###
+
+### Get coin types by issuer slug
+GET {{Mintada.Api_HostAddress}}/api/issuers/afghanistan/coin-types
+Accept: application/json
+
+###
+
+### Get coin type detail by id
+GET {{Mintada.Api_HostAddress}}/api/coin-types/1
 Accept: application/json
 
 ###
