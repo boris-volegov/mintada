@@ -1,39 +1,44 @@
-import { useState, memo } from 'react';
-import type { IssuerTreeDto } from '../../models/IssuerTreeDto';
+import { memo, useState, type MouseEvent } from 'react';
+import type { IssuerTreeViewNode } from './issuerTreeView.types';
 import './IssuerNode.css';
 
 interface IssuerNodeProps {
-    node: IssuerTreeDto;
-    onSelect: (node: IssuerTreeDto) => void;
+    node: IssuerTreeViewNode;
+    onSelect: (node: IssuerTreeViewNode) => void;
     level?: number;
     forceExpanded?: boolean;
     showFlag?: boolean;
     disableIndent?: boolean;
 }
 
-export const IssuerNode = memo(function IssuerNode({ node, onSelect, level = 0, forceExpanded = false, showFlag = true, disableIndent = false }: IssuerNodeProps) {
+export const IssuerNode = memo(function IssuerNode({
+    node,
+    onSelect,
+    level = 0,
+    forceExpanded = false,
+    showFlag = true,
+    disableIndent = false,
+}: IssuerNodeProps) {
     // Condition:
     // 1. Roots (ParentId == null, TopParentId == null) -> Expanded (Shows Level 1)
     // 2. Level 1 (ParentId == TopParentId) -> Expanded (Shows Level 2)
     // 3. Level 2+ (ParentId != TopParentId) -> Collapsed (Hides deeper levels)
-    // We use loose equality (==) to handle null/undefined matches.
     const isAlwaysExpanded = node.parentId == node.topParentId;
 
     const [isExpandedState, setIsExpandedState] = useState(false);
 
-    // Effective expanded state
     const isExpanded = isAlwaysExpanded || isExpandedState || forceExpanded;
-    const hasChildren = node.children && node.children.length > 0;
+    const hasChildren = node.children.length > 0;
     const isLeaf = !node.isSection;
 
-    const handleToggle = (e: React.MouseEvent) => {
+    const handleToggle = (e: MouseEvent) => {
         e.stopPropagation();
         if (hasChildren && !isAlwaysExpanded) {
             setIsExpandedState(!isExpandedState);
         }
     };
 
-    const handleSelect = (e: React.MouseEvent) => {
+    const handleSelect = (e: MouseEvent) => {
         e.stopPropagation();
         onSelect(node);
     };
@@ -41,20 +46,17 @@ export const IssuerNode = memo(function IssuerNode({ node, onSelect, level = 0, 
     const indentation = disableIndent ? 0 : (level === 0 ? 0 : 20);
 
     return (
-        <div className="issuer-node" style={{ paddingLeft: `${indentation}px` }}> {/* Simple indent for now, CSS can handle it too */}
+        <div className="issuer-node" style={{ paddingLeft: `${indentation}px` }}>
             <div
                 className={`issuer-row ${isLeaf ? 'is-leaf' : 'is-section'} ${isAlwaysExpanded ? 'always-expanded' : ''} ${level === 0 ? 'is-root' : ''} ${node.isHistoricalPeriod ? 'is-historical' : ''}`}
             >
-
-                {/* Expand/Collapse Icon */}
                 <span
                     className={`toggle-icon ${isExpanded ? 'expanded' : ''}`}
                     onClick={handleToggle}
                 >
-                    {hasChildren && !isAlwaysExpanded ? '▶' : <span className="spacer"></span>}
+                    {hasChildren && !isAlwaysExpanded ? '\u25B6' : <span className="spacer"></span>}
                 </span>
 
-                {/* Flag */}
                 {showFlag && (level === 0 || !node.parentId) && node.urlSlug && (
                     <span
                         className={`sprite s${node.urlSlug} issuer-flag`}
@@ -76,7 +78,7 @@ export const IssuerNode = memo(function IssuerNode({ node, onSelect, level = 0, 
                             node={child}
                             onSelect={onSelect}
                             level={level + 1}
-                            forceExpanded={!!(child as any).forceExpanded}
+                            forceExpanded={!!child.forceExpanded}
                         />
                     ))}
                 </div>

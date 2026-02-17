@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
 import './ScrollToTop.css';
 
+function getScrollContainer(): HTMLElement | Window {
+    return document.querySelector<HTMLElement>('.content-wrapper') ?? window;
+}
+
 export const ScrollToTop = () => {
     const [isVisible, setIsVisible] = useState(false);
 
-    const toggleVisibility = () => {
-        const scrollContainer = document.querySelector('.content-wrapper') || window;
+    const toggleVisibility = (scrollContainer: HTMLElement | Window) => {
         const scrollTop = scrollContainer instanceof Window ? scrollContainer.scrollY : scrollContainer.scrollTop;
 
-        if (scrollTop > 300) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
-        }
+        setIsVisible(scrollTop > 300);
     };
 
     const scrollToTop = () => {
-        const scrollContainer = document.querySelector('.content-wrapper') || window;
+        const scrollContainer = getScrollContainer();
         scrollContainer.scrollTo({
             top: 0,
             behavior: 'smooth',
@@ -24,10 +23,13 @@ export const ScrollToTop = () => {
     };
 
     useEffect(() => {
-        const scrollContainer = document.querySelector('.content-wrapper') || window;
-        scrollContainer.addEventListener('scroll', toggleVisibility);
+        const scrollContainer = getScrollContainer();
+        const onScroll = () => toggleVisibility(scrollContainer);
+        scrollContainer.addEventListener('scroll', onScroll);
+        toggleVisibility(scrollContainer);
+
         return () => {
-            scrollContainer.removeEventListener('scroll', toggleVisibility);
+            scrollContainer.removeEventListener('scroll', onScroll);
         };
     }, []);
 

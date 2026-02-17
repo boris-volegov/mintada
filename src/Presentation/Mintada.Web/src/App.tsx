@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { OpenAPI } from './api'
 import { MainLayout } from './components/Layout/MainLayout'
@@ -9,10 +8,6 @@ import { LandingPage } from './components/LandingPage/LandingPage'
 OpenAPI.BASE = 'http://localhost:8080';
 
 function App() {
-  useEffect(() => {
-    // Any other side effects
-  }, [])
-
   return (
     <BrowserRouter>
       <Routes>

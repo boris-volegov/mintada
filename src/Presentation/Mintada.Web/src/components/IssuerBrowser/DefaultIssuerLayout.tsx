@@ -1,21 +1,19 @@
-import type { IssuerTreeDto, IssuerDto } from '../../api';
 import { IssuerNode } from './IssuerNode';
+import type { IssuerTreeViewNode } from './issuerTreeView.types';
 
 interface DefaultIssuerLayoutProps {
-    filteredRoots: IssuerTreeDto[];
-    onSelect: (issuer: IssuerDto) => void;
+    filteredRoots: IssuerTreeViewNode[];
+    onSelect: (issuer: IssuerTreeViewNode) => void;
 }
 
 export function DefaultIssuerLayout({ filteredRoots, onSelect }: DefaultIssuerLayoutProps) {
     // --- DEFAULT LAYOUT (Original) ---
     // Heuristic: Calculate "weight" of each node (1 + children count) to better balance columns
-    const getNodeWeight = (node: IssuerTreeDto): number => {
+    const getNodeWeight = (node: IssuerTreeViewNode): number => {
         let weight = 1; // Visual weight of the root (always visible)
         // Only count immediate children (Level 2).
         // Level 3 and below are collapsed by default per user feedback.
-        if (node.children) {
-            weight += node.children.length;
-        }
+        weight += node.children.length;
         return weight;
     };
 
@@ -23,7 +21,7 @@ export function DefaultIssuerLayout({ filteredRoots, onSelect }: DefaultIssuerLa
     const totalWeight = nodesWithWeights.reduce((sum, item) => sum + item.weight, 0);
     const targetColWeight = totalWeight / 3;
 
-    const columns: IssuerTreeDto[][] = [[], [], []];
+    const columns: IssuerTreeViewNode[][] = [[], [], []];
     let currentCol = 0;
     let currentColWeight = 0;
 
@@ -47,7 +45,7 @@ export function DefaultIssuerLayout({ filteredRoots, onSelect }: DefaultIssuerLa
                             key={node.id}
                             node={node}
                             onSelect={onSelect}
-                            forceExpanded={!!(node as any).forceExpanded}
+                            forceExpanded={!!node.forceExpanded}
                         />
                     ))}
                 </div>

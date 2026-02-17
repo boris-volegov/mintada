@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
-import type { IssuerTreeDto } from '../models/IssuerTreeDto';
+import type { IssuerTreeDto } from '../../models/IssuerTreeDto';
+import type { IssuerTreeViewNode } from './issuerTreeView.types';
 
 export function useIssuerFilter(
     roots: IssuerTreeDto[],
-    filterText: string,
-    sortOption: string
+    filterText: string
 ) {
     return useMemo(() => {
-        if (!filterText && sortOption === 'default') return roots;
-
         const normalizeText = (text: string) =>
             text.normalize("NFD")
                 .toLowerCase()
@@ -20,9 +18,17 @@ export function useIssuerFilter(
                 .replace(/\s+/g, " ")
                 .trim();
 
-        const normalizedFilter = normalizeText(filterText);
+        const toViewNodes = (nodes: IssuerTreeDto[]): IssuerTreeViewNode[] => {
+            return nodes.map(node => ({
+                ...node,
+                children: toViewNodes(node.children || []),
+            }));
+        };
 
-        const filterNode = (node: IssuerTreeDto, forceKeep: boolean = false): IssuerTreeDto | null => {
+        const normalizedFilter = normalizeText(filterText);
+        if (!normalizedFilter) return toViewNodes(roots);
+
+        const filterNode = (node: IssuerTreeDto, forceKeep: boolean = false): IssuerTreeViewNode | null => {
             // 1. Determine if this node matches strictly
             // Always calculate match for expansion purposes
             const normalizedName = normalizeText(node.name || "");
@@ -41,7 +47,7 @@ export function useIssuerFilter(
             const shouldKeepAndForceChildren = forceKeep || strictMatch;
 
             // 3. Process children
-            let filteredChildren: IssuerTreeDto[] = [];
+            const filteredChildren: IssuerTreeViewNode[] = [];
             let hasStrictMatchingDescendant = false;
 
             if (node.children) {
@@ -51,16 +57,11 @@ export function useIssuerFilter(
                     if (filteredChild) {
                         filteredChildren.push(filteredChild);
                         // Check if child strictly matched or has strict matching descendants
-                        if ((filteredChild as any)._containsStrictMatch) {
+                        if (filteredChild.containsStrictMatch) {
                             hasStrictMatchingDescendant = true;
                         }
                     }
                 }
-            }
-
-            // Sort children if needed
-            if (sortOption === 'name_asc') {
-                filteredChildren.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             }
 
             // 4. Final Decision
@@ -78,14 +79,14 @@ export function useIssuerFilter(
                     ...node,
                     children: filteredChildren,
                     forceExpanded: shouldExpand,
-                    _containsStrictMatch: containsStrictMatch
-                } as any;
+                    containsStrictMatch
+                };
             }
 
             return null;
         };
 
-        const results: IssuerTreeDto[] = [];
+        const results: IssuerTreeViewNode[] = [];
         for (const root of roots) {
             const filteredRoot = filterNode(root);
             if (filteredRoot) {
@@ -93,10 +94,6 @@ export function useIssuerFilter(
             }
         }
 
-        if (sortOption === 'name_asc') {
-            results.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        }
-
         return results;
-    }, [roots, filterText, sortOption]);
+    }, [roots, filterText]);
 }

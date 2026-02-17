@@ -32,7 +32,7 @@
 .issuer-list-container {
   width: 100%;
   margin: 0;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 .issuer-tree-container {
@@ -137,7 +137,7 @@
 
 .breadcrumb-link:hover {
   text-decoration: underline;
-  color: #00332a;
+  color: #005c3c;
   cursor: pointer;
 }
 
@@ -159,6 +159,123 @@
   font-size: 0.95rem;
   cursor: default;
   text-decoration: none;
+}
+
+.catalog-browse-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.catalog-browse-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: #005c3c;
+  font-size: 1.15rem;
+  flex: 0 0 auto;
+}
+
+.catalog-browse-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.catalog-browse-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.catalog-browse-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 92, 60, 0.25);
+  border-radius: 999px;
+}
+
+.catalog-browse-tabs {
+  display: inline-flex;
+  min-width: max-content;
+  border: 1px solid rgba(0, 92, 60, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.catalog-browse-tab {
+  border: none;
+  border-right: 1px solid rgba(0, 92, 60, 0.2);
+  background: #fff;
+  color: #005c3c;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.catalog-browse-tab:last-child {
+  border-right: none;
+}
+
+.catalog-browse-tab.active {
+  background: #005c3c;
+  color: #f5d228;
+}
+
+.catalog-browse-tab:focus-visible {
+  outline: 2px solid #005c3c;
+  outline-offset: -2px;
+}
+
+.catalog-browse-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask-image: var(--catalog-browse-icon);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: var(--catalog-browse-icon);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.catalog-browse-tab[data-mode='ruler'] .catalog-browse-icon {
+  transform: scale(1.1);
+}
+
+.catalog-browse-panel {
+  width: 100%;
+}
+
+.catalog-browse-placeholder {
+  margin-top: 20px;
+  border: 1px solid rgba(0, 92, 60, 0.2);
+  border-radius: 10px;
+  background: #fffcf3;
+  padding: 18px 20px;
+  max-width: 860px;
+}
+
+.catalog-browse-placeholder h3 {
+  margin: 0 0 8px 0;
+  color: #005c3c;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+}
+
+.catalog-browse-placeholder p {
+  margin: 0;
+  color: #005c3c;
+  font-family: 'Outfit', sans-serif;
 }
 
 
@@ -185,14 +302,14 @@
   align-items: center;
   gap: 30px;
   flex-wrap: wrap;
-  margin-left: 40px;
+  margin-left: 0;
 }
 
 .filter-right-group {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-right: 128px;
+  margin-right: 0;
 }
 
 .filter-group {
@@ -246,7 +363,7 @@
 }
 
 .clear-button:hover {
-  background-color: #ffe066;
+  background-color: #f5d228;
   transform: translateY(-1px);
 }
 
@@ -338,7 +455,7 @@
 
 .letter-link a:hover {
 
-  color: #00332a;
+  color: #005c3c;
   /* Darker green */
   text-decoration: underline;
   /* Standard link behavior */
@@ -381,4 +498,68 @@
   grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
   gap: 15px 30px;
   /* Row gap 15px, Col gap 30px */
+}
+
+@media (max-width: 1024px) {
+  .filter-row {
+    gap: 14px;
+  }
+
+  .filter-left-group {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .issuer-tree-container {
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .catalog-browse-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .catalog-browse-label {
+    font-size: 1rem;
+  }
+
+  .catalog-browse-scroll {
+    width: 100%;
+  }
+
+  .catalog-browse-tab {
+    font-size: 1rem;
+    padding: 8px 14px;
+  }
+
+  .filter-left-group,
+  .filter-right-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .clear-button {
+    margin-left: 0;
+  }
+
+  .issuer-grid {
+    grid-template-columns: 1fr;
+  }
 }
