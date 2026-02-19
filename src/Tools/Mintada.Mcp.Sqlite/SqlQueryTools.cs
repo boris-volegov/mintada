@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
 using System.Text.Json;
 
-namespace Mintada.Mcp;
+namespace Mintada.Mcp.Sqlite;
 
 public static class SqlQueryTools
 {

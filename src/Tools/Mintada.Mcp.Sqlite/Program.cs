@@ -1,4 +1,4 @@
-using Mintada.Mcp;
+using Mintada.Mcp.Sqlite;
 using ModelContextProtocol.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,10 +17,11 @@ var app = builder.Build();
 
 app.MapGet("/", () => Results.Ok(new
 {
-    name = "mintada-mcp",
+    name = "sqlite-mcp",
     status = "ok"
 }));
 
+app.MapMcp("/mcp-sqlite");
 app.MapMcp("/mcp");
 
 app.Run();

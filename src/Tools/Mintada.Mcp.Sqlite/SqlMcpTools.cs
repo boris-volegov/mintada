@@ -1,6 +1,6 @@
 using ModelContextProtocol.Server;
 
-namespace Mintada.Mcp;
+namespace Mintada.Mcp.Sqlite;
 
 [McpServerToolType]
 public sealed class SqlMcpTools

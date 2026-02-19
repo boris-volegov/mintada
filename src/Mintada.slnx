@@ -9,7 +9,8 @@
     <Project Path="Presentation/Mintada.Api/Mintada.Api.csproj" />
   </Folder>
   <Folder Name="/Tools/">
-    <Project Path="Tools/Mintada.Mcp/Mintada.Mcp.csproj" />
+    <Project Path="Tools/Mintada.Mcp.Postgres/Mintada.Mcp.Postgres.csproj" />
+    <Project Path="Tools/Mintada.Mcp.Sqlite/Mintada.Mcp.Sqlite.csproj" />
     <Project Path="Tools/Mintada.Navigator/Mintada.Navigator.csproj" />
   </Folder>
 </Solution>

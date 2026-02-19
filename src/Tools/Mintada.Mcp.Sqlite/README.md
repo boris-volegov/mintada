@@ -1,12 +1,12 @@
-# Mintada MCP Server
+# SQLite MCP Server
 
-This directory contains the source code for the Mintada MCP Server, which exposes the Numista coin database via the Model Context Protocol.
+This directory contains the source code for the SQLite MCP Server, which exposes the Numista coin database via the Model Context Protocol.
 
 ## Transport
 
 The server now uses **streamable HTTP MCP** and exposes the MCP endpoint at:
 
-- `http://localhost:8080/mcp`
+- `http://localhost:8080/mcp-sqlite`
 
 ## Docker Usage
 
@@ -15,7 +15,7 @@ The server now uses **streamable HTTP MCP** and exposes the MCP endpoint at:
 From repo root:
 
 ```powershell
-docker build -t mintada-mcp -f src/Tools/Mintada.Mcp/Dockerfile .
+docker build -t sqlite-mcp -f src/Tools/Mintada.Mcp.Sqlite/Dockerfile .
 ```
 
 ### Run
@@ -23,7 +23,7 @@ docker build -t mintada-mcp -f src/Tools/Mintada.Mcp/Dockerfile .
 Mount the `coins.db` file and publish port `8080`:
 
 ```powershell
-docker run --rm -p 8080:8080 -v "d:\projects\mintada\data\numista\coins.db:/data/numista/coins.db" mintada-mcp
+docker run --rm -p 8080:8080 -v "d:\projects\mintada\data\numista\coins.db:/data/numista/coins.db" sqlite-mcp
 ```
 
 Optional environment variables:
@@ -36,8 +36,8 @@ Optional environment variables:
 Use a URL-based MCP server (no `docker run` spawn per connection):
 
 ```toml
-[mcp_servers.mintada]
-url = "http://localhost:8080/mcp"
+[mcp_servers.sqlite]
+url = "http://localhost:8080/mcp-sqlite"
 ```
 
 ## Other MCP Clients
@@ -47,8 +47,8 @@ For clients with JSON config:
 ```json
 {
   "mcpServers": {
-    "mintada": {
-      "url": "http://localhost:8080/mcp"
+    "sqlite": {
+      "url": "http://localhost:8080/mcp-sqlite"
     }
   }
 }

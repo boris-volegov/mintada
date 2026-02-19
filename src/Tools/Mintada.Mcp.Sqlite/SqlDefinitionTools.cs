@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace Mintada.Mcp;
+namespace Mintada.Mcp.Sqlite;
 
 public static class SqlDefinitionTools
 {
