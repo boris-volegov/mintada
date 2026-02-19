@@ -21,7 +21,6 @@ public class IssuersService : IIssuersService
             {
                 Id = i.Id,
                 ParentId = i.ParentId,
-                Url = i.Url,
                 Name = i.Name,
                 UrlSlug = i.UrlSlug,
                 TerritoryType = i.TerritoryType,

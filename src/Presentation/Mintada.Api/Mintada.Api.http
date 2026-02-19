@@ -6,7 +6,13 @@ Accept: application/json
 
 ###
 
-### Get issuer hierarchy
+### Get catalog issuer browser tree
+GET {{Mintada.Api_HostAddress}}/api/catalog/issuer-browser
+Accept: application/json
+
+###
+
+### Get issuer hierarchy (deprecated compatibility route)
 GET {{Mintada.Api_HostAddress}}/api/issuers/hierarchy
 Accept: application/json
 

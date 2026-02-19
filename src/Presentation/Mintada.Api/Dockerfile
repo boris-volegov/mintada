@@ -6,7 +6,6 @@ COPY ["Mintada.slnx", "./"]
 COPY ["Presentation/Mintada.Api/Mintada.Api.csproj", "Presentation/Mintada.Api/"]
 COPY ["Infrastructure/Mintada.Data/Mintada.Data.csproj", "Infrastructure/Mintada.Data/"]
 COPY ["Core/Mintada.Domain/Mintada.Domain.csproj", "Core/Mintada.Domain/"]
-COPY ["Tools/Mintada.Migrator/Mintada.Migrator.csproj", "Tools/Mintada.Migrator/"]
 
 # Restore dependencies
 RUN dotnet restore "Presentation/Mintada.Api/Mintada.Api.csproj"

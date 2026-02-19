@@ -13,6 +13,7 @@ builder.Services.AddDbContext<MintadaDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<Mintada.Api.Services.IIssuersService, Mintada.Api.Services.IssuersService>();
+builder.Services.AddScoped<Mintada.Api.Services.ICatalogBrowseService, Mintada.Api.Services.CatalogBrowseService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>

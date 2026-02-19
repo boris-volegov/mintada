@@ -63,6 +63,38 @@ Current standard for this API:
 3. Use plural resource names for collections (for example `issuers`).
 4. Keep nested resources explicit (for example `/api/issuers/{id}/coin-types`).
 
+## CatalogController
+
+Base route: `api/catalog`
+
+### GET `api/catalog/issuer-browser`
+
+Returns rooted tree of `IssuerTreeDto` for catalog browsing by issuer.
+
+Tree building logic:
+
+- Load all issuers into memory
+- Build parent-child links by `ParentId`
+- Any issuer with missing/unknown parent becomes a root
+- Sort roots and all descendants alphabetically by `Name` (case-insensitive)
+
+### GET `api/catalog/ruler-browser`
+
+Returns hierarchical issuer tree for ruler browsing (`CatalogIssuerRulerNodeDto`).
+
+Behavior:
+
+- Starts from full issuer hierarchy.
+- Attaches rulers only to leaf issuers.
+- Prunes branches that contain no ruler data.
+- Computes subtree aggregates on each node:
+  - `LeafIssuerCountWithRulers`
+  - `RulerCountInSubtree`
+- Ruler display name preference:
+  1. `issuers_rulers_rel.name`
+  2. `rulers.name`
+  3. fallback `Ruler {id}`
+
 ## CoinTypesController
 
 Base route: `api/coin-types`
@@ -91,16 +123,14 @@ Notes:
 - No pagination or filtering currently
 - Returns all issuers in one response
 
-### GET `api/issuers/hierarchy`
+### GET `api/issuers/hierarchy` (deprecated compatibility route)
 
-Returns rooted tree of `IssuerTreeDto`.
+Returns the same data as `GET /api/catalog/issuer-browser`.
 
-Tree building logic:
+Notes:
 
-- Load all issuers into memory
-- Build parent-child links by `ParentId`
-- Any issuer with missing/unknown parent becomes a root
-- Sort roots and all descendants alphabetically by `Name` (case-insensitive)
+- Kept for backward compatibility while frontend/client code migrates
+- New catalog browsing integrations should use `GET /api/catalog/issuer-browser`
 
 ### GET `api/issuers/{id:int}/coin-types`
 
@@ -128,7 +158,6 @@ Notes:
 
 - `Id` (int)
 - `ParentId` (int?)
-- `Url` (string?)
 - `Name` (string?)
 - `UrlSlug` (string?)
 - `TerritoryType` (string?)

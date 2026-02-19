@@ -27,7 +27,6 @@ public class IssuersController : ControllerBase
             {
                 Id = i.Id,
                 ParentId = i.ParentId,
-                Url = i.Url,
                 Name = i.Name,
                 UrlSlug = i.UrlSlug,
                 TerritoryType = i.TerritoryType,
@@ -38,6 +37,7 @@ public class IssuersController : ControllerBase
     }
 
     [HttpGet("hierarchy")]
+    [Obsolete("Use GET /api/catalog/issuer-browser instead.")]
     public async Task<ActionResult<IEnumerable<IssuerTreeDto>>> GetIssuerHierarchy()
     {
         var result = await _issuersService.GetIssuerHierarchyAsync();
@@ -57,9 +57,9 @@ public class IssuersController : ControllerBase
                 Title = ct.Title,
                 Subtitle = ct.Subtitle,
                 EdgeImage = ct.EdgeImage,
-                Period = ct.Period,
+                Period = ct.CoinagePeriod != null ? ct.CoinagePeriod.Name : null,
                 RarityIndex = ct.RarityIndex,
-                CoinTypeSlug = ct.CoinTypeSlug,
+                CoinTypeSlug = ct.UrlSlug,
                 DateTimeInserted = ct.DateTimeInserted,
                 IssueTypeId = ct.IssueTypeId,
                 ObverseImage = ct.Samples.Where(s => s.SampleType == 1).Select(s => s.ObverseImage).FirstOrDefault(),
@@ -83,9 +83,9 @@ public class IssuersController : ControllerBase
                 Title = ct.Title,
                 Subtitle = ct.Subtitle,
                 EdgeImage = ct.EdgeImage,
-                Period = ct.Period,
+                Period = ct.CoinagePeriod != null ? ct.CoinagePeriod.Name : null,
                 RarityIndex = ct.RarityIndex,
-                CoinTypeSlug = ct.CoinTypeSlug,
+                CoinTypeSlug = ct.UrlSlug,
                 DateTimeInserted = ct.DateTimeInserted,
                 IssueTypeId = ct.IssueTypeId,
                 ObverseImage = ct.Samples.Where(s => s.SampleType == 1).Select(s => s.ObverseImage).FirstOrDefault(),
