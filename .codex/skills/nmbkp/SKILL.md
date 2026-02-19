@@ -1,6 +1,6 @@
 ---
 name: nmbkp
-description: Create Numista backup archives by running tools/commands/backup_data.ps1. Use when the user asks to backup, snapshot, or archive the Numista data (coins.db, and optionally coin_types/html). Supports optional suffix and optional db-only toggle.
+description: Create Numista backups by running tools/commands/backup_data.ps1. Supports SQLite archive backups and Postgres dump backups with optional suffix, db-only toggle, background toggle, and db type selection.
 ---
 
 # Numista Backup
@@ -12,17 +12,33 @@ Run the project backup command and choose parameters from the user request.
 Supported options in user text:
 
 - `suffix=<text>`: optional explicit suffix to use
+- `dbtype=s|p|sqlite|postgres`: required DB type selector
 - `dbonly=true|false|1|0`: optional toggle
 - `background=true|false|1|0`: optional toggle
-- Default `dbonly=true` if not specified
+- Default `dbonly=true` if not specified.
 
-If `dbonly=false`, include both DB and HTML in the archive.
-If `dbonly=true`, include DB only.
+If `dbtype` is missing:
+- Ask a short clarifying question before running anything:
+  - "Choose backup type: `s` (SQLite archive) or `p` (Postgres dump)?"
+- Do not assume a default.
+
+Mode behavior:
+
+- `dbtype=s` (SQLite):
+  - if `dbonly=false`, include both DB and HTML in the `.7z` archive
+  - if `dbonly=true`, include DB only
+- `dbtype=p` (Postgres):
+  - create a Postgres `.dump` backup via `pg_dump`
+  - `dbonly` is ignored (Postgres backup is DB-only)
 
 Background default:
 
-- `dbonly=false` -> default `background=true` (avoid blocking on large HTML backups)
-- `dbonly=true` -> default `background=false`
+- `dbtype=s`:
+  - `dbonly=false` -> default `background=true` (avoid blocking on large HTML backups)
+  - `dbonly=true` -> default `background=false`
+- `dbtype=p`:
+  - default `background=false`
+  - if user sets `background=true`, script runs foreground and reports that background is unsupported for dump mode
 
 If user sets `background`, use the explicit value.
 
@@ -41,18 +57,20 @@ If user sets `background`, use the explicit value.
 Run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File tools/commands/backup_data.ps1 -suffix "<suffix>" -dbonly <true_or_false_or_1_or_0> -background <true_or_false_or_1_or_0>
+powershell -ExecutionPolicy Bypass -File tools/commands/backup_data.ps1 -suffix "<suffix>" -dbtype <s_or_p> -dbonly <true_or_false_or_1_or_0> -background <true_or_false_or_1_or_0>
 ```
 
 After running, read:
 
-`D:\bkp\numista_bkp\logs\last_backup.json`
+- if `dbtype=s`: `D:\bkp\numista_bkp\logs\last_backup.json`
+- if `dbtype=p`: `D:\numista_bkp\logs\last_backup.json`
 
 Use this file as source of truth for status, archive path, PID, and log paths.
 
 Then report:
 
 - resolved suffix
+- `dbtype` value used
 - `dbonly` value used
 - `background` value used
 - resulting archive path

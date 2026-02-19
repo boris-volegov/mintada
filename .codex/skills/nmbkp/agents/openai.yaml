@@ -1,4 +1,4 @@
 interface:
   display_name: "Numista Backup"
-  short_description: "Run database/html backup with auto suffix"
-  default_prompt: "Create a Numista backup archive using the project backup command."
+  short_description: "Run SQLite archive or Postgres dump backup with auto suffix"
+  default_prompt: "Create a Numista backup. If dbtype is missing, ask me to choose s (SQLite) or p (Postgres) before running."
