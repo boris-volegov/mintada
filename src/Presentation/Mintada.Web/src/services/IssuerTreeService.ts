@@ -11,7 +11,7 @@ export class IssuerTreeService {
     public static getIssuerHierarchy(): CancelablePromise<Array<IssuerTreeDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/issuers/hierarchy',
+            url: '/api/catalog/issuer-browser',
         });
     }
 }

@@ -19,11 +19,8 @@ export const IssuerNode = memo(function IssuerNode({
     showFlag = true,
     disableIndent = false,
 }: IssuerNodeProps) {
-    // Condition:
-    // 1. Roots (ParentId == null, TopParentId == null) -> Expanded (Shows Level 1)
-    // 2. Level 1 (ParentId == TopParentId) -> Expanded (Shows Level 2)
-    // 3. Level 2+ (ParentId != TopParentId) -> Collapsed (Hides deeper levels)
-    const isAlwaysExpanded = node.parentId == node.topParentId;
+    // Keep root and first child level expanded to preserve the current UX.
+    const isAlwaysExpanded = level <= 1;
 
     const [isExpandedState, setIsExpandedState] = useState(false);
 
