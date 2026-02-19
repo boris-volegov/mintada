@@ -10,6 +10,11 @@ public class CoinTypeSample : BaseEntity
 
     public string? ObverseImage { get; set; }
     public string? ReverseImage { get; set; }
-    
+
     public int SampleType { get; set; }
+    public bool? IsHolder { get; set; }
+    public bool? IsCounterstamped { get; set; }
+    public bool? IsRoll { get; set; }
+    public bool? ContainsHolder { get; set; }
+    public bool? IsMultiCoin { get; set; }
 }
