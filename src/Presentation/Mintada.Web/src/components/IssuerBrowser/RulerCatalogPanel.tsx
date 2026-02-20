@@ -185,21 +185,27 @@ export function RulerCatalogPanel({ roots, loading, error }: RulerCatalogPanelPr
 
   return (
     <div className="ruler-catalog-panel">
-      <div className="ruler-toolbar">
-        <label htmlFor="ruler-search" className="form-label">Filter:</label>
-        <input
-          id="ruler-search"
-          type="text"
-          className="form-control filter-input"
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-          placeholder="Issuer, ruler, period, title..."
-        />
-        {searchText ? (
-          <button type="button" className="btn btn--brand btn--compact" onClick={() => setSearchText('')}>
-            Clear
-          </button>
-        ) : null}
+      <div className="filter-toolbar ruler-toolbar">
+        <div className="filter-toolbar-row">
+          <div className="filter-toolbar-left">
+            <div className="filter-field">
+              <label htmlFor="ruler-search" className="form-label">Filter:</label>
+              <input
+                id="ruler-search"
+                type="text"
+                className="form-control filter-control filter-control--primary filter-input"
+                value={searchText}
+                onChange={(event) => setSearchText(event.target.value)}
+                placeholder="Issuer, ruler, period, title..."
+              />
+            </div>
+            {searchText ? (
+              <button type="button" className="btn btn--brand btn--compact" onClick={() => setSearchText('')}>
+                Clear
+              </button>
+            ) : null}
+          </div>
+        </div>
       </div>
 
       {loading ? <div className="loading-state">Loading ruler catalog...</div> : null}

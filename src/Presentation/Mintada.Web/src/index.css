@@ -16,14 +16,23 @@
 
   /* Text */
   --text-default: var(--brand-green);
-  --text-muted: #5a5a5a;
-  --text-subtle: #666666;
+  --text-muted: #474747;
+  --text-subtle: #525252;
   --text-on-brand: var(--brand-yellow);
 
   /* Borders + effects */
   --border-soft: rgba(var(--brand-green-rgb), 0.2);
   --border-softer: rgba(var(--brand-green-rgb), 0.1);
   --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Typography */
+  --font-size-body: 1.02rem;
+  --font-size-body-sm: 1rem;
+  --font-size-caption: 0.92rem;
+  --font-size-micro: 0.86rem;
+  --line-height-body: 1.5;
+  --filter-toolbar-gap: 16px;
+  --filter-field-gap: 10px;
 
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   height: 100%;
@@ -40,6 +49,8 @@ body {
   font-family: var(--font-main);
   background-color: var(--surface-base);
   color: var(--text-default);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   margin: 0;
@@ -126,7 +137,7 @@ button {
 
 .btn--compact {
   padding: 6px 12px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-caption);
 }
 
 .tabs {
@@ -142,7 +153,7 @@ button {
   border: none;
   border-right: 1px solid var(--border-soft);
   background: var(--surface-raised);
-  font-size: 1.05rem;
+  font-size: var(--font-size-body);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -164,14 +175,14 @@ button {
 
 .form-label {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-body);
 }
 
 .form-control {
   padding: 6px 10px;
   border: 1px solid var(--border-soft);
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body-sm);
   color: var(--text-default);
   min-width: 140px;
   background-color: var(--surface-raised);
@@ -188,6 +199,54 @@ button {
   height: 4px;
   width: 100%;
   background: linear-gradient(90deg, var(--brand-yellow) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.filter-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.filter-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+.filter-toolbar-left,
+.filter-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--filter-toolbar-gap);
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  align-items: center;
+  gap: var(--filter-field-gap);
+}
+
+.filter-field--triple-gap {
+  margin-inline-start: calc(var(--filter-toolbar-gap) * 3);
+}
+
+.filter-control {
+  min-width: 0;
+}
+
+.filter-control--primary {
+  flex: 1 1 32rem;
+  width: clamp(22rem, 42vw, 40rem);
+}
+
+.filter-control--secondary {
+  flex: 0 1 13rem;
+  width: clamp(10rem, 14vw, 13rem);
 }
 
 /* Common Utilities */
@@ -223,4 +282,34 @@ button {
 ::-webkit-scrollbar-thumb {
   background: var(--brand-yellow);
   border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .filter-toolbar-row {
+    gap: 12px;
+  }
+
+  .filter-toolbar-left,
+  .filter-toolbar-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .filter-field {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filter-field--triple-gap {
+    margin-inline-start: 0;
+  }
+
+  .filter-control--primary,
+  .filter-control--secondary {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
 }

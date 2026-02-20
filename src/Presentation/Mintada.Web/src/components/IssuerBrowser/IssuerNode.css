@@ -12,7 +12,7 @@
     transition: background-color 0.2s;
     user-select: none;
     font-weight: 400;
-    font-size: 0.95rem;
+    font-size: var(--font-size-body-sm);
     color: var(--brand-green);
     text-decoration: none;
     position: relative;
@@ -71,7 +71,7 @@
     justify-content: center;
     margin-right: 4px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: var(--font-size-caption);
     color: var(--text-muted);
     opacity: 0.6;
     transition: transform 0.2s ease;
@@ -111,7 +111,7 @@
 }
 
 .issuer-label .type {
-    font-size: 0.8em;
+    font-size: var(--font-size-caption);
     color: var(--text-muted);
     font-style: italic;
     white-space: nowrap;

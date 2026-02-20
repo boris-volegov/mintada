@@ -282,8 +282,6 @@ export function IssuerBrowser() {
                   </div>
                 </div>
               </div>
-              <div className="title-separator-gradient brand-divider"></div>
-
               <div
                 id="catalog-browse-panel-issuer"
                 role="tabpanel"
@@ -294,22 +292,22 @@ export function IssuerBrowser() {
                 {browseMode === 'issuer' && (
                   <>
                     {/* Filter Toolbar */}
-                    <div className="issuer-filter-toolbar">
-                      <div className="filter-row">
-                        <div className="filter-left-group">
-                          <div className="filter-group">
+                    <div className="filter-toolbar issuer-filter-toolbar">
+                      <div className="filter-toolbar-row">
+                        <div className="filter-toolbar-left">
+                          <div className="filter-field">
                             <label className="form-label">Filter:</label>
                             <input
                               type="text"
-                              className="form-control filter-input"
+                              className="form-control filter-control filter-control--primary filter-input"
                               value={filterText}
                               onChange={(e) => setFilterText(e.target.value)}
                             />
                           </div>
-                          <div className="filter-group">
+                          <div className="filter-field">
                             <label className="form-label">Category:</label>
                             <select
-                              className="form-control filter-select"
+                              className="form-control filter-control filter-control--secondary filter-select"
                               value={categoryFilter}
                               onChange={(e) => setCategoryFilter(e.target.value)}
                             >
@@ -326,13 +324,10 @@ export function IssuerBrowser() {
                           }}>
                             Clear
                           </button>
-                        </div>
-
-                        <div className="filter-right-group">
-                          <div className="filter-group">
+                          <div className="filter-field filter-field--triple-gap">
                             <label className="form-label">Sort:</label>
                             <select
-                              className="form-control filter-select"
+                              className="form-control filter-control filter-control--secondary filter-select"
                               value={sortOption}
                               onChange={(e) => setSortOption(e.target.value)}
                             >
@@ -342,7 +337,6 @@ export function IssuerBrowser() {
                           </div>
                         </div>
                       </div>
-                      <div className="toolbar-separator-gradient brand-divider"></div>
                     </div>
 
                     {/* Letter Selector for Alphabetical Mode */}
