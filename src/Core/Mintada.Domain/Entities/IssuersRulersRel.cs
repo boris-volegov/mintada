@@ -16,6 +16,9 @@ public class IssuersRulersRel : BaseEntity
 
     public string? Name { get; set; }
     public string? RuleType { get; set; }
+    public int? StartYear { get; set; }
+    public int? EndYear { get; set; }
+    public bool IsApprox { get; set; }
 
     public ICollection<CoinTypesIssuersRulersRel> CoinTypeRelations { get; set; } = new List<CoinTypesIssuersRulersRel>();
 }

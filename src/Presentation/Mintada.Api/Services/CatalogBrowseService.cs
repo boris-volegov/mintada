@@ -56,16 +56,6 @@ public class CatalogBrowseService : ICatalogBrowseService
         var leafIssuerIds = CollectLeafIssuerIds(roots);
         AttachLeafIssuerRulers(leafIssuerIds, nodesById, relationRowsByIssuer);
 
-        foreach (var node in nodesById.Values)
-        {
-            if (node.Rulers.Count > 1)
-            {
-                node.Rulers = node.Rulers
-                    .OrderBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-            }
-        }
-
         PruneRootsWithoutRulers(roots);
         SortTree(roots);
         ComputeStats(roots, containerLeafIssuerCountOverrides);
@@ -82,6 +72,8 @@ public class CatalogBrowseService : ICatalogBrowseService
                 ir."Name" AS issuer_ruler_name,
                 ir."RuleType" AS rule_type,
                 ir."GroupId" AS group_id,
+                ir."StartYear" AS start_year,
+                ir."EndYear" AS end_year,
                 g."Name" AS group_name,
                 r."Name" AS ruler_name,
                 NULL::text AS ruler_title
@@ -96,7 +88,15 @@ public class CatalogBrowseService : ICatalogBrowseService
                   SELECT 1
                   FROM coin_types_issuers_rulers_rel ctirr
                   WHERE ctirr."IssuerRulerRelId" = ir."Id"
-              );
+              )
+            ORDER BY
+                ir."IssuerId",
+                CASE WHEN ir."StartYear" IS NULL THEN 1 ELSE 0 END,
+                ir."StartYear",
+                CASE WHEN ir."EndYear" IS NULL THEN 1 ELSE 0 END,
+                ir."EndYear",
+                ir."Name",
+                ir."Id";
             """;
 
         var rows = new List<IssuerRulerRow>();
@@ -115,6 +115,8 @@ public class CatalogBrowseService : ICatalogBrowseService
         var issuerRulerNameOrdinal = reader.GetOrdinal("issuer_ruler_name");
         var ruleTypeOrdinal = reader.GetOrdinal("rule_type");
         var groupIdOrdinal = reader.GetOrdinal("group_id");
+        var startYearOrdinal = reader.GetOrdinal("start_year");
+        var endYearOrdinal = reader.GetOrdinal("end_year");
         var groupNameOrdinal = reader.GetOrdinal("group_name");
         var rulerNameOrdinal = reader.GetOrdinal("ruler_name");
         var rulerTitleOrdinal = reader.GetOrdinal("ruler_title");
@@ -131,6 +133,8 @@ public class CatalogBrowseService : ICatalogBrowseService
                 IssuerRulerName = ReadString(reader, issuerRulerNameOrdinal),
                 RuleType = ReadString(reader, ruleTypeOrdinal),
                 GroupId = ReadNullableInt(reader, groupIdOrdinal),
+                StartYear = ReadNullableInt(reader, startYearOrdinal),
+                EndYear = ReadNullableInt(reader, endYearOrdinal),
                 GroupName = ReadString(reader, groupNameOrdinal),
                 RulerName = ReadString(reader, rulerNameOrdinal),
                 RulerTitle = ReadString(reader, rulerTitleOrdinal)
@@ -164,8 +168,9 @@ public class CatalogBrowseService : ICatalogBrowseService
 
             var issuersWithRulers = new HashSet<int>();
             var distinctRulers = new Dictionary<(int rulerId, string name), CatalogRulerDto>();
+            var sortKeysByRuler = new Dictionary<(int rulerId, string name), (int? startYear, int? endYear)>();
 
-            foreach (var issuerId in descendantIssuerIds)
+            foreach (var issuerId in descendantIssuerIds.OrderBy(x => x))
             {
                 if (!relationRowsByIssuer.TryGetValue(issuerId, out var issuerRows) || issuerRows.Count == 0)
                 {
@@ -174,7 +179,7 @@ public class CatalogBrowseService : ICatalogBrowseService
 
                 issuersWithRulers.Add(issuerId);
 
-                foreach (var row in issuerRows)
+                foreach (var row in OrderRowsForDisplay(issuerRows))
                 {
                     var displayName = GetDisplayName(row);
                     var dedupKey = (row.RulerId, displayName);
@@ -185,6 +190,14 @@ public class CatalogBrowseService : ICatalogBrowseService
                         {
                             existingRuler.GroupId = row.GroupId;
                             existingRuler.GroupName = row.GroupName;
+                        }
+
+                        if (sortKeysByRuler.TryGetValue(dedupKey, out var currentSortKey))
+                        {
+                            sortKeysByRuler[dedupKey] = (
+                                MinNullableYear(currentSortKey.startYear, row.StartYear),
+                                MinNullableYear(currentSortKey.endYear, row.EndYear)
+                            );
                         }
 
                         continue;
@@ -199,11 +212,16 @@ public class CatalogBrowseService : ICatalogBrowseService
                         GroupId = row.GroupId,
                         GroupName = row.GroupName
                     };
+
+                    sortKeysByRuler[dedupKey] = (row.StartYear, row.EndYear);
                 }
             }
 
-            node.Rulers = distinctRulers.Values
-                .OrderBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+            node.Rulers = distinctRulers
+                .OrderBy(entry => SortNullLast(entry.Value, sortKeysByRuler, useStart: true))
+                .ThenBy(entry => SortNullLast(entry.Value, sortKeysByRuler, useStart: false))
+                .ThenBy(entry => entry.Value.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(entry => entry.Value)
                 .ToList();
 
             node.Children.Clear();
@@ -282,7 +300,7 @@ public class CatalogBrowseService : ICatalogBrowseService
 
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var row in issuerRows)
+            foreach (var row in OrderRowsForDisplay(issuerRows))
             {
                 var dedupKey = $"{row.RulerId}|{GetDisplayName(row)}|{(row.RuleType ?? string.Empty).Trim()}|{row.GroupId?.ToString() ?? string.Empty}|{(row.GroupName ?? string.Empty).Trim()}";
                 if (!seen.Add(dedupKey))
@@ -316,6 +334,48 @@ public class CatalogBrowseService : ICatalogBrowseService
         }
 
         return $"Ruler {row.RulerId}";
+    }
+
+    private static IOrderedEnumerable<IssuerRulerRow> OrderRowsForDisplay(IEnumerable<IssuerRulerRow> rows)
+    {
+        return rows
+            .OrderBy(row => row.StartYear.HasValue ? 0 : 1)
+            .ThenBy(row => row.StartYear ?? int.MaxValue)
+            .ThenBy(row => row.EndYear.HasValue ? 0 : 1)
+            .ThenBy(row => row.EndYear ?? int.MaxValue)
+            .ThenBy(row => GetDisplayName(row), StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.RulerId);
+    }
+
+    private static int? MinNullableYear(int? left, int? right)
+    {
+        if (!left.HasValue)
+        {
+            return right;
+        }
+
+        if (!right.HasValue)
+        {
+            return left;
+        }
+
+        return Math.Min(left.Value, right.Value);
+    }
+
+    private static int SortNullLast(
+        CatalogRulerDto ruler,
+        IReadOnlyDictionary<(int rulerId, string name), (int? startYear, int? endYear)> sortKeysByRuler,
+        bool useStart)
+    {
+        var key = (ruler.Id, ruler.Name);
+        if (!sortKeysByRuler.TryGetValue(key, out var sortKey))
+        {
+            return int.MaxValue;
+        }
+
+        return useStart
+            ? sortKey.startYear ?? int.MaxValue
+            : sortKey.endYear ?? int.MaxValue;
     }
 
     private static int ReadInt(DbDataReader reader, int ordinal)
@@ -432,6 +492,8 @@ public class CatalogBrowseService : ICatalogBrowseService
         public string? IssuerRulerName { get; init; }
         public string? RuleType { get; init; }
         public int? GroupId { get; init; }
+        public int? StartYear { get; init; }
+        public int? EndYear { get; init; }
         public string? GroupName { get; init; }
         public string? RulerName { get; init; }
         public string? RulerTitle { get; init; }

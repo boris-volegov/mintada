@@ -46,13 +46,13 @@ export const IssuerNode = memo(function IssuerNode({
     return (
         <div className="issuer-node" style={{ paddingLeft: `${indentation}px` }}>
             <div
-                className={`issuer-row ${isLeaf ? 'is-leaf' : 'is-section'} ${isAlwaysExpanded ? 'always-expanded' : ''} ${level === 0 ? 'is-root' : ''} ${node.isHistoricalPeriod ? 'is-historical' : ''}`}
+                className={`issuer-row catalog-tree-row catalog-tree-row--interactive ${level === 0 ? 'catalog-tree-row--root' : 'catalog-tree-row--item'} ${isLeaf ? 'is-leaf' : 'is-section'} ${isAlwaysExpanded ? 'always-expanded' : ''} ${level === 0 ? 'is-root' : ''} ${node.isHistoricalPeriod ? 'is-historical' : ''}`}
             >
                 <span
-                    className={`toggle-icon ${isExpanded ? 'expanded' : ''}`}
+                    className={`toggle-icon catalog-tree-toggle ${level === 0 ? 'catalog-tree-toggle--root' : ''} ${isExpanded ? 'expanded' : ''}`}
                     onClick={handleToggle}
                 >
-                    {hasChildren && !isAlwaysExpanded ? '\u25B6' : <span className="spacer"></span>}
+                    {hasChildren && !isAlwaysExpanded ? '\u25B6' : <span className={`spacer catalog-tree-toggle-spacer ${level === 0 ? 'catalog-tree-toggle-spacer--root' : ''}`}></span>}
                 </span>
 
                 {showFlag && (level === 0 || !node.parentId) && node.urlSlug && (
@@ -62,9 +62,9 @@ export const IssuerNode = memo(function IssuerNode({
                     ></span>
                 )}
 
-                <div className="issuer-label" onClick={handleSelect}>
-                    <span className="name">{node.name}</span>
-                    {node.territoryType && <span className="type"> ({node.territoryType})</span>}
+                <div className={`issuer-label catalog-tree-label ${level === 0 ? 'catalog-tree-label--baseline' : ''}`} onClick={handleSelect}>
+                    <span className={`name catalog-link catalog-tree-name ${level === 0 ? 'catalog-tree-name--root' : ''}`}>{node.name}</span>
+                    {node.territoryType && <span className="type catalog-tree-meta"> ({node.territoryType})</span>}
                 </div>
             </div>
 

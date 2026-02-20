@@ -216,6 +216,11 @@
   margin-top: 10px;
 }
 
+.ruler-letter-selector {
+  max-width: none;
+  padding: 8px 0 14px;
+}
+
 .ruler-detail-hero {
   display: grid;
   grid-template-columns: minmax(160px, 220px) 1fr;
@@ -262,7 +267,7 @@
 .ruler-tree {
   width: 100%;
   border-radius: 10px;
-  background: var(--surface-subtle-alt);
+  background: transparent;
   padding: 10px;
 }
 
@@ -271,55 +276,12 @@
   flex-direction: column;
 }
 
-.ruler-node-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px;
-  border-radius: 6px;
-}
-
 .ruler-node-row:hover {
   background: rgba(var(--brand-green-rgb), 0.05);
 }
 
-.ruler-toggle {
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: var(--font-size-caption);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  padding: 0;
-}
-
-.ruler-toggle.expanded {
-  transform: rotate(90deg);
-}
-
-.ruler-toggle:disabled {
-  cursor: default;
-  opacity: 0.35;
-}
-
-.ruler-node-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.ruler-node-name {
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.ruler-node-flag {
+  flex: 0 0 auto;
 }
 
 .ruler-node-tag {
@@ -365,30 +327,19 @@
 }
 
 .ruler-list-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
-  border: 1px solid rgba(var(--brand-green-rgb), 0.18);
-  border-radius: 999px;
-  background: var(--surface-raised);
-  padding: 4px 10px;
-}
-
-.ruler-name {
-  font-size: var(--font-size-caption);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.ruler-meta {
-  font-size: var(--font-size-micro);
-  color: var(--text-subtle);
-  border-left: 1px solid rgba(var(--brand-green-rgb), 0.18);
-  padding-left: 8px;
+  font-size: var(--font-size-body-sm);
 }
 
 .ruler-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.ruler-root-anchor {
+  scroll-margin-top: 60px;
+}
+
+.ruler-letter-group {
   display: flex;
   flex-direction: column;
 }
@@ -572,10 +523,6 @@
 
   .ruler-detail-portrait-wrap {
     max-width: 180px;
-  }
-
-  .ruler-node-row {
-    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .ruler-node-details {
