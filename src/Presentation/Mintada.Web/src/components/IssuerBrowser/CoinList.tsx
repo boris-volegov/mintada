@@ -11,7 +11,7 @@ interface CoinListProps {
 
 export function CoinList({ coinTypes, selectedIssuer, loading }: CoinListProps) {
 
-    const getImageUrl = (issuerSlug: string | null | undefined, coinTypeSlug: string | null | undefined, coinId: number | undefined, filename: string | null | undefined) => {
+    const getImageUrl = (issuerSlug: string | null | undefined, coinTypeSlug: string | null | undefined, coinId: number | string | undefined, filename: string | null | undefined) => {
         if (!filename || !issuerSlug || !coinTypeSlug || coinId == null) return undefined;
         return `${OpenAPI.BASE}/images/coin_samples/${issuerSlug}/${coinTypeSlug}_${coinId}/images/${filename}`;
     };

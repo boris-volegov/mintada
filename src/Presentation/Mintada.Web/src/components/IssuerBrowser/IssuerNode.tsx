@@ -19,10 +19,11 @@ export const IssuerNode = memo(function IssuerNode({
     showFlag = true,
     disableIndent = false,
 }: IssuerNodeProps) {
-    // Keep root and first child level expanded to preserve the current UX.
-    const isAlwaysExpanded = level <= 1;
+    // Keep only root nodes expanded by default.
+    // All deeper levels start collapsed unless expanded by filter/manual toggle.
+    const isAlwaysExpanded = level === 0;
 
-    const [isExpandedState, setIsExpandedState] = useState(false);
+    const [isExpandedState, setIsExpandedState] = useState(level === 0);
 
     const isExpanded = isAlwaysExpanded || isExpandedState || forceExpanded;
     const hasChildren = node.children.length > 0;

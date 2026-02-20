@@ -15,6 +15,18 @@ public class IssuersService : IIssuersService
 
     public async Task<IEnumerable<IssuerTreeDto>> GetIssuerHierarchyAsync()
     {
+        var issuerIdsWithCoinTypes = await _context.CoinTypes
+            .Select(ct => ct.IssuerId)
+            .Distinct()
+            .ToListAsync();
+
+        if (issuerIdsWithCoinTypes.Count == 0)
+        {
+            return [];
+        }
+
+        var issuerIdsWithCoinTypesSet = issuerIdsWithCoinTypes.ToHashSet();
+
         // 1. Fetch all issuers
         var issuers = await _context.Issuers
             .Select(i => new IssuerTreeDto
@@ -25,7 +37,8 @@ public class IssuersService : IIssuersService
                 UrlSlug = i.UrlSlug,
                 TerritoryType = i.TerritoryType,
                 IsHistoricalPeriod = i.IsHistoricalPeriod,
-                IsSection = i.IsSection
+                IsSection = i.IsSection,
+                IsRulersContainer = i.IsRulersContainer
             })
             .ToListAsync();
 
@@ -46,11 +59,20 @@ public class IssuersService : IIssuersService
             }
         }
 
-        // 3. Optional: Sort roots and children by Name for consistent display
-        // Recursive sorting might be needed if we want alphabetical order everywhere.
+        // 3. Keep only branches that contain at least one issuer with coin types.
+        roots.RemoveAll(root => !PruneNode(root, issuerIdsWithCoinTypesSet));
+
+        // 4. Sort roots and children by Name for consistent display.
         SortTree(roots);
 
         return roots;
+    }
+
+    private static bool PruneNode(IssuerTreeDto node, HashSet<int> issuerIdsWithCoinTypes)
+    {
+        node.Children.RemoveAll(child => !PruneNode(child, issuerIdsWithCoinTypes));
+
+        return issuerIdsWithCoinTypes.Contains(node.Id) || node.Children.Count > 0;
     }
 
     private void SortTree(List<IssuerTreeDto> nodes)

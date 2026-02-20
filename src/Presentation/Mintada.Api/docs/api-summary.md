@@ -76,7 +76,9 @@ Tree building logic:
 - Load all issuers into memory
 - Build parent-child links by `ParentId`
 - Any issuer with missing/unknown parent becomes a root
+- Keep only branches where at least one issuer in the subtree has coin types
 - Sort roots and all descendants alphabetically by `Name` (case-insensitive)
+- Return an empty list when no issuers have coin types
 
 ### GET `api/catalog/ruler-browser`
 
