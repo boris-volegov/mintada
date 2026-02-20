@@ -29,8 +29,8 @@ export function MainLayout({ children }: MainLayoutProps) {
                         <span className="arrow-down"></span>
                     </div>
                     <div className="auth-buttons">
-                        <button className="btn-auth-ghost">Sign in</button>
-                        <button className="btn-auth-solid">Register</button>
+                        <button className="btn btn--ghost btn-auth">Sign in</button>
+                        <button className="btn btn--solid btn-auth">Register</button>
                     </div>
                 </div>
             </header>

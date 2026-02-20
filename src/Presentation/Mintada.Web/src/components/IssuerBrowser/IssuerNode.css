@@ -13,7 +13,7 @@
     user-select: none;
     font-weight: 400;
     font-size: 0.95rem;
-    color: #005c3c;
+    color: var(--brand-green);
     text-decoration: none;
     position: relative;
 }
@@ -27,7 +27,7 @@
 }
 
 .issuer-row:hover {
-    color: #00332a;
+    color: var(--brand-green-strong);
 }
 
 .issuer-row:hover .issuer-label .name {
@@ -35,23 +35,23 @@
 }
 
 .issuer-row:hover .issuer-label {
-    color: #00332a;
+    color: var(--brand-green-strong);
 }
 
 .issuer-row:hover .type {
-    color: #5a5a5a;
+    color: var(--text-muted);
     opacity: 1;
     cursor: default;
 }
 
 
 .issuer-row.is-leaf {
-    color: #005c3c;
+    color: var(--brand-green);
 }
 
 .issuer-row.is-section,
 .issuer-row.is-root {
-    color: #005c3c;
+    color: var(--brand-green);
 }
 
 .issuer-row.is-root {
@@ -60,7 +60,7 @@
 
 .issuer-row.is-historical {
     font-style: italic;
-    color: #005c3c;
+    color: var(--brand-green);
 }
 
 .toggle-icon {
@@ -72,7 +72,7 @@
     margin-right: 4px;
     cursor: pointer;
     font-size: 0.9rem;
-    color: #5a5a5a;
+    color: var(--text-muted);
     opacity: 0.6;
     transition: transform 0.2s ease;
     text-decoration: none !important;
@@ -80,7 +80,7 @@
 
 .issuer-row:hover .toggle-icon {
     text-decoration: none;
-    color: #5a5a5a;
+    color: var(--text-muted);
 }
 
 .toggle-icon.expanded {
@@ -112,7 +112,7 @@
 
 .issuer-label .type {
     font-size: 0.8em;
-    color: #5a5a5a;
+    color: var(--text-muted);
     font-style: italic;
     white-space: nowrap;
     flex-shrink: 0;

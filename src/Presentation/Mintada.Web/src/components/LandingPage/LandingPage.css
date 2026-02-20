@@ -19,15 +19,14 @@
 }
 
 .landing-title {
-    color: #005c3c;
+    color: var(--text-default);
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 16px;
-    font-family: 'Outfit', sans-serif;
 }
 
 .landing-subtitle {
-    color: #666;
+    color: var(--text-subtle);
     font-size: 1.2rem;
     line-height: 1.6;
     margin: 0;
@@ -49,7 +48,7 @@
 .landing-card {
     width: 400px;
     height: 500px;
-    background-color: #fff;
+    background-color: var(--surface-raised);
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     overflow: hidden;
@@ -57,7 +56,7 @@
     flex-direction: column;
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-softer);
 }
 
 .landing-card:hover {
@@ -65,34 +64,32 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
 }
 
-.card-stripe-gradient-yellow {
+.card-stripe {
     height: 8px;
-    background-color: #f5d228;
 }
 
-.card-stripe-gradient-green {
-    height: 8px;
-    background-color: #005c3c;
+.card-stripe--yellow {
+    background-color: var(--brand-yellow);
 }
 
-.card-image-container-catalog {
+.card-stripe--green {
+    background-color: var(--brand-green);
+}
+
+.card-image-container {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #fffaf0;
-    /* Removed borderBottom */
     padding: 20px;
 }
 
-.card-image-container-collection {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f2f7f4;
-    /* Removed borderBottom */
-    padding: 20px;
+.card-image-container--catalog {
+    background-color: var(--surface-base);
+}
+
+.card-image-container--collection {
+    background-color: var(--surface-subtle);
 }
 
 .card-image {
@@ -102,16 +99,17 @@
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-.card-stripe-middle-yellow {
+.card-stripe-middle {
     height: 4px;
     flex-shrink: 0;
-    background: linear-gradient(90deg, #f5d228 0%, rgba(255, 255, 255, 0) 100%);
 }
 
-.card-stripe-middle-green {
-    height: 4px;
-    flex-shrink: 0;
-    background: linear-gradient(90deg, #005c3c 0%, rgba(255, 255, 255, 0) 100%);
+.card-stripe-middle--yellow {
+    background: linear-gradient(90deg, var(--brand-yellow) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.card-stripe-middle--green {
+    background: linear-gradient(90deg, var(--brand-green) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .card-text-container {
@@ -120,26 +118,21 @@
     justify-content: center;
     flex-direction: column;
     padding: 24px;
-    background-color: #fff;
+    background-color: var(--surface-raised);
 }
 
-.card-title-yellow {
+.card-title {
     font-size: 2rem;
-    color: #f5d228;
-    /* Strict Logo Yellow */
-    font-family: 'Outfit', sans-serif;
     margin: 0;
     text-align: center;
     font-weight: 700;
+}
+
+.card-title--yellow {
+    color: var(--brand-yellow);
     text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
-.card-title-green {
-    font-size: 2rem;
-    color: #005c3c;
-    /* Logo Green */
-    font-family: 'Outfit', sans-serif;
-    margin: 0;
-    text-align: center;
-    font-weight: 700;
+.card-title--green {
+    color: var(--brand-green);
 }

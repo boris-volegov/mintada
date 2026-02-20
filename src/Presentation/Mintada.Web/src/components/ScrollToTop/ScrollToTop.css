@@ -3,8 +3,8 @@
     bottom: 30px;
     right: 30px;
     z-index: 1000;
-    background-color: #f5d228;
-    color: #005c3c;
+    background-color: var(--brand-yellow);
+    color: var(--brand-green);
     border: none;
     border-radius: 50%;
     width: 50px;
@@ -20,7 +20,7 @@
 }
 
 .scroll-to-top:hover {
-    background-color: #ffe066;
+    background-color: var(--brand-yellow-hover);
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
 }

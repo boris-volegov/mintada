@@ -16,12 +16,12 @@
     top: 0;
     height: 72px;
     /* Explicit height ensures alignment */
-    background-color: #f5d228;
+    background-color: var(--brand-yellow);
     /* Fix: Hides sub-pixel rendering gaps */
 }
 
 .brand-part-solid {
-    background-color: #f5d228;
+    background-color: var(--brand-yellow);
     /* Solid Logo Yellow */
     display: flex;
     align-items: center;
@@ -33,7 +33,7 @@
 .brand-part-gradient {
     flex: 1;
     /* Take remaining width */
-    background: linear-gradient(to right, #f5d228 0%, #fffde7 100%);
+    background: linear-gradient(to right, var(--brand-yellow) 0%, var(--brand-yellow-soft) 100%);
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -59,7 +59,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #005c3c;
+    color: var(--text-default);
     /* Dark Green - Brand Color */
     font-weight: 600;
     font-size: 1.1rem;
@@ -78,7 +78,7 @@
     height: 0;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
-    border-top: 5px solid #005c3c;
+    border-top: 5px solid var(--text-default);
     /* Arrow color matching text */
     margin-top: 2px;
 }
@@ -89,38 +89,8 @@
     align-items: center;
 }
 
-.btn-auth-ghost {
-    background: transparent;
-    border: 1px solid #005c3c;
-    color: #005c3c;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: 600;
+.btn-auth {
     font-size: 1.05rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-auth-ghost:hover {
-    background: rgba(0, 92, 60, 0.1);
-}
-
-.btn-auth-solid {
-    background: #005c3c;
-    border: 1px solid #005c3c;
-    color: #f5d228;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 1.05rem;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-.btn-auth-solid:hover {
-    filter: brightness(0.85);
-    transform: translateY(-1px);
 }
 
 
@@ -132,7 +102,7 @@
     flex: 1;
     overflow: hidden;
     position: relative;
-    background: var(--bg-app);
+    background: var(--surface-base);
 }
 
 .content-wrapper {

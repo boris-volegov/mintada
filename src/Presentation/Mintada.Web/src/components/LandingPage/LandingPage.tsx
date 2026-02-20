@@ -20,9 +20,9 @@ export function LandingPage() {
             <div className="landing-buttons-container">
                 <Link to="/catalog/issuers" className="landing-card-link">
                     <div className="landing-card">
-                        <div className="card-stripe-gradient-yellow" />
+                        <div className="card-stripe card-stripe--yellow" />
 
-                        <div className="card-image-container-catalog">
+                        <div className="card-image-container card-image-container--catalog">
                             <img
                                 src={browseCatalog}
                                 alt="Catalog"
@@ -30,10 +30,10 @@ export function LandingPage() {
                             />
                         </div>
 
-                        <div className="card-stripe-middle-yellow" />
+                        <div className="card-stripe-middle card-stripe-middle--yellow" />
 
                         <div className="card-text-container">
-                            <h2 className="card-title-yellow">
+                            <h2 className="card-title card-title--yellow">
                                 Catalog of World Coins
                             </h2>
                         </div>
@@ -42,9 +42,9 @@ export function LandingPage() {
 
                 <Link to="/collection" className="landing-card-link">
                     <div className="landing-card">
-                        <div className="card-stripe-gradient-green" />
+                        <div className="card-stripe card-stripe--green" />
 
-                        <div className="card-image-container-collection">
+                        <div className="card-image-container card-image-container--collection">
                             <img
                                 src={manageCoinCollection}
                                 alt="Collection"
@@ -52,10 +52,10 @@ export function LandingPage() {
                             />
                         </div>
 
-                        <div className="card-stripe-middle-green" />
+                        <div className="card-stripe-middle card-stripe-middle--green" />
 
                         <div className="card-text-container">
-                            <h2 className="card-title-green">
+                            <h2 className="card-title card-title--green">
                                 Manage Your Collection
                             </h2>
                         </div>

@@ -236,9 +236,9 @@ export function IssuerBrowser() {
         <div className="issuer-list-container fade-in">
           <div className="issuer-tree-container glass-panel">
             <h2 className="section-title">
-              {selectedIssuer.name} <span style={{ fontSize: '1rem', color: '#999', fontWeight: 'normal' }}>({selectedIssuer.territoryType})</span>
+              {selectedIssuer.name} <span className="section-title-meta">({selectedIssuer.territoryType})</span>
             </h2>
-            <div className="title-separator-gradient"></div>
+            <div className="title-separator-gradient brand-divider"></div>
 
             <CoinList
               coinTypes={coinTypes}
@@ -252,12 +252,12 @@ export function IssuerBrowser() {
           <div className="issuer-tree-container glass-panel">
             <div className="issuer-list-header">
               <h2 className="section-title">Catalog of World Coins</h2>
-              <div className="title-separator-gradient"></div>
+              <div className="title-separator-gradient brand-divider"></div>
 
               <div className="catalog-browse-row">
                 <span className="catalog-browse-label">View by:</span>
                 <div className="catalog-browse-scroll">
-                  <div className="catalog-browse-tabs" role="tablist" aria-label="Catalog browse mode">
+                  <div className="tabs" role="tablist" aria-label="Catalog browse mode">
                     {catalogBrowseModeOptions.map((option) => {
                       const isActive = browseMode === option.mode;
                       return (
@@ -268,7 +268,7 @@ export function IssuerBrowser() {
                           aria-selected={isActive}
                           aria-controls={`catalog-browse-panel-${option.mode}`}
                           tabIndex={isActive ? 0 : -1}
-                          className={`catalog-browse-tab ${isActive ? 'active' : ''}`}
+                          className={`tab catalog-browse-tab ${isActive ? 'is-active' : ''}`}
                           data-mode={option.mode}
                           onClick={() => handleBrowseModeChange(option.mode)}
                           onKeyDown={(event) => handleBrowseModeKeyDown(event, option.mode)}
@@ -282,7 +282,7 @@ export function IssuerBrowser() {
                   </div>
                 </div>
               </div>
-              <div className="title-separator-gradient"></div>
+              <div className="title-separator-gradient brand-divider"></div>
 
               <div
                 id="catalog-browse-panel-issuer"
@@ -298,18 +298,18 @@ export function IssuerBrowser() {
                       <div className="filter-row">
                         <div className="filter-left-group">
                           <div className="filter-group">
-                            <label className="filter-label">Filter:</label>
+                            <label className="form-label">Filter:</label>
                             <input
                               type="text"
-                              className="filter-input"
+                              className="form-control filter-input"
                               value={filterText}
                               onChange={(e) => setFilterText(e.target.value)}
                             />
                           </div>
                           <div className="filter-group">
-                            <label className="filter-label">Category:</label>
+                            <label className="form-label">Category:</label>
                             <select
-                              className="filter-select"
+                              className="form-control filter-select"
                               value={categoryFilter}
                               onChange={(e) => setCategoryFilter(e.target.value)}
                             >
@@ -319,7 +319,7 @@ export function IssuerBrowser() {
                               <option value="existing">Existing</option>
                             </select>
                           </div>
-                          <button className="clear-button" onClick={() => {
+                          <button className="btn btn--brand btn--compact" onClick={() => {
                             setFilterText('');
                             setCategoryFilter('');
                             // Do NOT reset sortOption
@@ -330,9 +330,9 @@ export function IssuerBrowser() {
 
                         <div className="filter-right-group">
                           <div className="filter-group">
-                            <label className="filter-label">Sort:</label>
+                            <label className="form-label">Sort:</label>
                             <select
-                              className="filter-select"
+                              className="form-control filter-select"
                               value={sortOption}
                               onChange={(e) => setSortOption(e.target.value)}
                             >
@@ -342,7 +342,7 @@ export function IssuerBrowser() {
                           </div>
                         </div>
                       </div>
-                      <div className="toolbar-separator-gradient"></div>
+                      <div className="toolbar-separator-gradient brand-divider"></div>
                     </div>
 
                     {/* Letter Selector for Alphabetical Mode */}
