@@ -26,7 +26,8 @@ public class CatalogBrowseService : ICatalogBrowseService
                 UrlSlug = i.UrlSlug,
                 TerritoryType = i.TerritoryType,
                 IsHistoricalPeriod = i.IsHistoricalPeriod,
-                IsSection = i.IsSection
+                IsSection = i.IsSection,
+                IsRulersContainer = i.IsRulersContainer
             })
             .ToListAsync(cancellationToken);
 
@@ -45,50 +46,15 @@ public class CatalogBrowseService : ICatalogBrowseService
             }
         }
 
-        var leafIssuerIds = nodesById.Values
-            .Where(i => i.Children.Count == 0)
-            .Select(i => i.Id)
-            .ToHashSet();
-
         var relationRows = await LoadIssuerRulerRowsAsync(cancellationToken);
-        var seenByIssuer = new Dictionary<int, HashSet<string>>();
+        var relationRowsByIssuer = relationRows
+            .GroupBy(row => row.IssuerId)
+            .ToDictionary(group => group.Key, group => group.ToList());
 
-        foreach (var row in relationRows)
-        {
-            if (!leafIssuerIds.Contains(row.IssuerId))
-            {
-                continue;
-            }
+        var containerLeafIssuerCountOverrides = FlattenRulerContainerSections(roots, relationRowsByIssuer);
 
-            if (!nodesById.TryGetValue(row.IssuerId, out var issuerNode))
-            {
-                continue;
-            }
-
-            if (!seenByIssuer.TryGetValue(row.IssuerId, out var seen))
-            {
-                seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                seenByIssuer[row.IssuerId] = seen;
-            }
-
-            var dedupKey = $"{row.RulerId}|{(row.RuleType ?? string.Empty).Trim()}";
-            if (!seen.Add(dedupKey))
-            {
-                continue;
-            }
-
-            var displayName = !string.IsNullOrWhiteSpace(row.IssuerRulerName)
-                ? row.IssuerRulerName!
-                : (!string.IsNullOrWhiteSpace(row.RulerName) ? row.RulerName! : $"Ruler {row.RulerId}");
-
-            issuerNode.Rulers.Add(new CatalogRulerDto
-            {
-                Id = row.RulerId,
-                Name = displayName,
-                RuleType = row.RuleType,
-                Title = row.RulerTitle
-            });
-        }
+        var leafIssuerIds = CollectLeafIssuerIds(roots);
+        AttachLeafIssuerRulers(leafIssuerIds, nodesById, relationRowsByIssuer);
 
         foreach (var node in nodesById.Values)
         {
@@ -102,7 +68,7 @@ public class CatalogBrowseService : ICatalogBrowseService
 
         PruneRootsWithoutRulers(roots);
         SortTree(roots);
-        ComputeStats(roots);
+        ComputeStats(roots, containerLeafIssuerCountOverrides);
 
         return roots;
     }
@@ -111,16 +77,26 @@ public class CatalogBrowseService : ICatalogBrowseService
     {
         const string sql = """
             SELECT
-                ir.issuer_id,
-                ir.ruler_id,
-                ir.name AS issuer_ruler_name,
-                ir.rule_type,
-                r.name AS ruler_name,
-                r.title AS ruler_title
+                ir."IssuerId" AS issuer_id,
+                ir."RulerId" AS ruler_id,
+                ir."Name" AS issuer_ruler_name,
+                ir."RuleType" AS rule_type,
+                ir."GroupId" AS group_id,
+                g."Name" AS group_name,
+                r."Name" AS ruler_name,
+                NULL::text AS ruler_title
             FROM issuers_rulers_rel ir
-            LEFT JOIN rulers r ON r.id = ir.ruler_id
-            WHERE ir.issuer_id IS NOT NULL
-              AND ir.ruler_id IS NOT NULL;
+            LEFT JOIN issuers_rulers_rel_groups g
+                ON g."Id" = ir."GroupId"
+                AND g."IssuerId" = ir."IssuerId"
+            LEFT JOIN rulers r ON r."Id" = ir."RulerId"
+            WHERE ir."IssuerId" IS NOT NULL
+              AND ir."RulerId" IS NOT NULL
+              AND EXISTS (
+                  SELECT 1
+                  FROM coin_types_issuers_rulers_rel ctirr
+                  WHERE ctirr."IssuerRulerRelId" = ir."Id"
+              );
             """;
 
         var rows = new List<IssuerRulerRow>();
@@ -138,6 +114,8 @@ public class CatalogBrowseService : ICatalogBrowseService
         var rulerIdOrdinal = reader.GetOrdinal("ruler_id");
         var issuerRulerNameOrdinal = reader.GetOrdinal("issuer_ruler_name");
         var ruleTypeOrdinal = reader.GetOrdinal("rule_type");
+        var groupIdOrdinal = reader.GetOrdinal("group_id");
+        var groupNameOrdinal = reader.GetOrdinal("group_name");
         var rulerNameOrdinal = reader.GetOrdinal("ruler_name");
         var rulerTitleOrdinal = reader.GetOrdinal("ruler_title");
 
@@ -152,12 +130,192 @@ public class CatalogBrowseService : ICatalogBrowseService
                 RulerId = rulerId,
                 IssuerRulerName = ReadString(reader, issuerRulerNameOrdinal),
                 RuleType = ReadString(reader, ruleTypeOrdinal),
+                GroupId = ReadNullableInt(reader, groupIdOrdinal),
+                GroupName = ReadString(reader, groupNameOrdinal),
                 RulerName = ReadString(reader, rulerNameOrdinal),
                 RulerTitle = ReadString(reader, rulerTitleOrdinal)
             });
         }
 
         return rows;
+    }
+
+    private static Dictionary<int, int> FlattenRulerContainerSections(
+        List<CatalogIssuerRulerNodeDto> roots,
+        IReadOnlyDictionary<int, List<IssuerRulerRow>> relationRowsByIssuer)
+    {
+        var containerLeafIssuerCountOverrides = new Dictionary<int, int>();
+        var allNodes = new List<CatalogIssuerRulerNodeDto>();
+
+        foreach (var root in roots)
+        {
+            CollectNodesPreOrder(root, allNodes);
+        }
+
+        foreach (var node in allNodes)
+        {
+            if (!node.IsSection || !node.IsRulersContainer)
+            {
+                continue;
+            }
+
+            var descendantIssuerIds = new HashSet<int>();
+            CollectDescendantIssuerIds(node, descendantIssuerIds);
+
+            var issuersWithRulers = new HashSet<int>();
+            var distinctRulers = new Dictionary<(int rulerId, string name), CatalogRulerDto>();
+
+            foreach (var issuerId in descendantIssuerIds)
+            {
+                if (!relationRowsByIssuer.TryGetValue(issuerId, out var issuerRows) || issuerRows.Count == 0)
+                {
+                    continue;
+                }
+
+                issuersWithRulers.Add(issuerId);
+
+                foreach (var row in issuerRows)
+                {
+                    var displayName = GetDisplayName(row);
+                    var dedupKey = (row.RulerId, displayName);
+
+                    if (distinctRulers.TryGetValue(dedupKey, out var existingRuler))
+                    {
+                        if (existingRuler.GroupId is null && row.GroupId is not null)
+                        {
+                            existingRuler.GroupId = row.GroupId;
+                            existingRuler.GroupName = row.GroupName;
+                        }
+
+                        continue;
+                    }
+
+                    distinctRulers[dedupKey] = new CatalogRulerDto
+                    {
+                        Id = row.RulerId,
+                        Name = displayName,
+                        RuleType = row.RuleType,
+                        Title = row.RulerTitle,
+                        GroupId = row.GroupId,
+                        GroupName = row.GroupName
+                    };
+                }
+            }
+
+            node.Rulers = distinctRulers.Values
+                .OrderBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            node.Children.Clear();
+            containerLeafIssuerCountOverrides[node.Id] = issuersWithRulers.Count;
+        }
+
+        return containerLeafIssuerCountOverrides;
+    }
+
+    private static void CollectNodesPreOrder(CatalogIssuerRulerNodeDto node, List<CatalogIssuerRulerNodeDto> nodes)
+    {
+        nodes.Add(node);
+
+        foreach (var child in node.Children)
+        {
+            CollectNodesPreOrder(child, nodes);
+        }
+    }
+
+    private static void CollectDescendantIssuerIds(CatalogIssuerRulerNodeDto node, HashSet<int> issuerIds)
+    {
+        foreach (var child in node.Children)
+        {
+            issuerIds.Add(child.Id);
+            CollectDescendantIssuerIds(child, issuerIds);
+        }
+    }
+
+    private static HashSet<int> CollectLeafIssuerIds(List<CatalogIssuerRulerNodeDto> roots)
+    {
+        var leafIssuerIds = new HashSet<int>();
+
+        foreach (var root in roots)
+        {
+            CollectLeafIssuerIds(root, leafIssuerIds);
+        }
+
+        return leafIssuerIds;
+    }
+
+    private static void CollectLeafIssuerIds(CatalogIssuerRulerNodeDto node, HashSet<int> leafIssuerIds)
+    {
+        if (node.Children.Count == 0)
+        {
+            leafIssuerIds.Add(node.Id);
+            return;
+        }
+
+        foreach (var child in node.Children)
+        {
+            CollectLeafIssuerIds(child, leafIssuerIds);
+        }
+    }
+
+    private static void AttachLeafIssuerRulers(
+        HashSet<int> leafIssuerIds,
+        IReadOnlyDictionary<int, CatalogIssuerRulerNodeDto> nodesById,
+        IReadOnlyDictionary<int, List<IssuerRulerRow>> relationRowsByIssuer)
+    {
+        foreach (var issuerId in leafIssuerIds)
+        {
+            if (!nodesById.TryGetValue(issuerId, out var issuerNode))
+            {
+                continue;
+            }
+
+            if (issuerNode.IsSection && issuerNode.IsRulersContainer)
+            {
+                continue;
+            }
+
+            if (!relationRowsByIssuer.TryGetValue(issuerId, out var issuerRows) || issuerRows.Count == 0)
+            {
+                continue;
+            }
+
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var row in issuerRows)
+            {
+                var dedupKey = $"{row.RulerId}|{GetDisplayName(row)}|{(row.RuleType ?? string.Empty).Trim()}|{row.GroupId?.ToString() ?? string.Empty}|{(row.GroupName ?? string.Empty).Trim()}";
+                if (!seen.Add(dedupKey))
+                {
+                    continue;
+                }
+
+                issuerNode.Rulers.Add(new CatalogRulerDto
+                {
+                    Id = row.RulerId,
+                    Name = GetDisplayName(row),
+                    RuleType = row.RuleType,
+                    Title = row.RulerTitle,
+                    GroupId = row.GroupId,
+                    GroupName = row.GroupName
+                });
+            }
+        }
+    }
+
+    private static string GetDisplayName(IssuerRulerRow row)
+    {
+        if (!string.IsNullOrWhiteSpace(row.IssuerRulerName))
+        {
+            return row.IssuerRulerName!;
+        }
+
+        if (!string.IsNullOrWhiteSpace(row.RulerName))
+        {
+            return row.RulerName!;
+        }
+
+        return $"Ruler {row.RulerId}";
     }
 
     private static int ReadInt(DbDataReader reader, int ordinal)
@@ -174,6 +332,16 @@ public class CatalogBrowseService : ICatalogBrowseService
             string s when int.TryParse(s, out var parsed) => parsed,
             _ => Convert.ToInt32(value)
         };
+    }
+
+    private static int? ReadNullableInt(DbDataReader reader, int ordinal)
+    {
+        if (reader.IsDBNull(ordinal))
+        {
+            return null;
+        }
+
+        return ReadInt(reader, ordinal);
     }
 
     private static string? ReadString(DbDataReader reader, int ordinal)
@@ -210,16 +378,29 @@ public class CatalogBrowseService : ICatalogBrowseService
         }
     }
 
-    private static void ComputeStats(List<CatalogIssuerRulerNodeDto> roots)
+    private static void ComputeStats(
+        List<CatalogIssuerRulerNodeDto> roots,
+        IReadOnlyDictionary<int, int> containerLeafIssuerCountOverrides)
     {
         foreach (var root in roots)
         {
-            ComputeStats(root);
+            ComputeStats(root, containerLeafIssuerCountOverrides);
         }
     }
 
-    private static (int leafIssuerCountWithRulers, int rulerCountInSubtree) ComputeStats(CatalogIssuerRulerNodeDto node)
+    private static (int leafIssuerCountWithRulers, int rulerCountInSubtree) ComputeStats(
+        CatalogIssuerRulerNodeDto node,
+        IReadOnlyDictionary<int, int> containerLeafIssuerCountOverrides)
     {
+        if (node.IsSection && node.IsRulersContainer)
+        {
+            var leafIssuerCountWithRulers = containerLeafIssuerCountOverrides.GetValueOrDefault(node.Id, 0);
+            var rulerCount = node.Rulers.Count;
+            node.LeafIssuerCountWithRulers = leafIssuerCountWithRulers;
+            node.RulerCountInSubtree = rulerCount;
+            return (leafIssuerCountWithRulers, rulerCount);
+        }
+
         if (node.Children.Count == 0)
         {
             var leafIssuerCountWithRulers = node.Rulers.Count > 0 ? 1 : 0;
@@ -230,11 +411,11 @@ public class CatalogBrowseService : ICatalogBrowseService
         }
 
         var leafCount = 0;
-        var rulerCountInSubtree = 0;
+        var rulerCountInSubtree = node.Rulers.Count;
 
         foreach (var child in node.Children)
         {
-            var (childLeafCount, childRulerCount) = ComputeStats(child);
+            var (childLeafCount, childRulerCount) = ComputeStats(child, containerLeafIssuerCountOverrides);
             leafCount += childLeafCount;
             rulerCountInSubtree += childRulerCount;
         }
@@ -250,6 +431,8 @@ public class CatalogBrowseService : ICatalogBrowseService
         public int RulerId { get; init; }
         public string? IssuerRulerName { get; init; }
         public string? RuleType { get; init; }
+        public int? GroupId { get; init; }
+        public string? GroupName { get; init; }
         public string? RulerName { get; init; }
         public string? RulerTitle { get; init; }
     }

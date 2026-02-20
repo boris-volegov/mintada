@@ -3,11 +3,14 @@ import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { IssuersService, type IssuerDto, type CoinTypeDto } from '../../api';
 import { IssuerTreeService } from '../../services/IssuerTreeService';
 import type { IssuerTreeDto } from '../../models/IssuerTreeDto';
+import type { CatalogIssuerRulerNodeDto } from '../../models/CatalogIssuerRulerNodeDto';
+import { CatalogBrowseService } from '../../services/CatalogBrowseService';
 import { IssuerNode } from './IssuerNode';
 import { useIssuerFilter } from './useIssuerFilter';
 import { useAlphabeticalGrouping } from './useAlphabeticalGrouping';
 import { CoinList } from './CoinList';
 import { DefaultIssuerLayout } from './DefaultIssuerLayout';
+import { RulerCatalogPanel } from './RulerCatalogPanel';
 import { ScrollToTop } from '../ScrollToTop/ScrollToTop';
 import type { IssuerTreeViewNode } from './issuerTreeView.types';
 import issuerViewIcon from '../../assets/images/catalog-view-issuer.svg';
@@ -43,6 +46,9 @@ export function IssuerBrowser() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [roots, setRoots] = useState<IssuerTreeDto[]>([]);
+  const [rulerRoots, setRulerRoots] = useState<CatalogIssuerRulerNodeDto[]>([]);
+  const [rulerLoading, setRulerLoading] = useState(false);
+  const [rulerLoadError, setRulerLoadError] = useState<string | null>(null);
   const [selectedIssuer, setSelectedIssuer] = useState<IssuerDto | null>(null);
   const [coinTypes, setCoinTypes] = useState<CoinTypeDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -81,6 +87,30 @@ export function IssuerBrowser() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (browseMode !== 'ruler') {
+      return;
+    }
+
+    if (rulerRoots.length > 0 || rulerLoading) {
+      return;
+    }
+
+    setRulerLoading(true);
+    setRulerLoadError(null);
+
+    CatalogBrowseService.getRulerBrowser()
+      .then((data) => {
+        setRulerRoots(data);
+        setRulerLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setRulerLoadError('Could not load ruler catalog. Please try again.');
+        setRulerLoading(false);
+      });
+  }, [browseMode, rulerLoading, rulerRoots.length]);
 
   // Sync URL to Selected Issuer
   useEffect(() => {
@@ -385,11 +415,16 @@ export function IssuerBrowser() {
                 id="catalog-browse-panel-ruler"
                 role="tabpanel"
                 aria-labelledby="catalog-browse-tab-ruler"
-                className="catalog-browse-placeholder"
+                className="catalog-browse-panel"
                 hidden={browseMode !== 'ruler'}
               >
-                <h3>Ruler Catalog View</h3>
-                <p>This view is ready in the UI and will display grouped ruler data as soon as the API endpoint is added.</p>
+                {browseMode === 'ruler' && (
+                  <RulerCatalogPanel
+                    roots={rulerRoots}
+                    loading={rulerLoading}
+                    error={rulerLoadError}
+                  />
+                )}
               </div>
 
               <div

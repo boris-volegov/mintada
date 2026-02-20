@@ -31,7 +31,8 @@ public class IssuersController : ControllerBase
                 UrlSlug = i.UrlSlug,
                 TerritoryType = i.TerritoryType,
                 IsHistoricalPeriod = i.IsHistoricalPeriod,
-                IsSection = i.IsSection
+                IsSection = i.IsSection,
+                IsRulersContainer = i.IsRulersContainer
             })
             .ToListAsync();
     }

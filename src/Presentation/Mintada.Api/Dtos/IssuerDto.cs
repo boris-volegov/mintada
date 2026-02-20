@@ -9,4 +9,5 @@ public class IssuerDto
     public string? TerritoryType { get; set; }
     public bool IsHistoricalPeriod { get; set; }
     public bool IsSection { get; set; }
+    public bool IsRulersContainer { get; set; }
 }

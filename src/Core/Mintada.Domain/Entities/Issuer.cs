@@ -15,6 +15,7 @@ public class Issuer : BaseEntity
     public string? TerritoryType { get; set; }
     public bool IsHistoricalPeriod { get; set; }
     public bool IsSection { get; set; }
+    public bool IsRulersContainer { get; set; }
 
     public ICollection<IssuerAltName> AltNames { get; set; } = new List<IssuerAltName>();
     public ICollection<CoinType> CoinTypes { get; set; } = new List<CoinType>();

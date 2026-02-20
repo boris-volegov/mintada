@@ -10,4 +10,5 @@ export type IssuerDto = {
     territoryType?: string | null;
     isHistoricalPeriod?: boolean;
     isSection?: boolean;
+    isRulersContainer?: boolean;
 };
