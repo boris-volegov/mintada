@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { OpenAPI } from './api'
 import { MainLayout } from './components/Layout/MainLayout'
 import { IssuerBrowser } from './components/IssuerBrowser/IssuerBrowser'
+import { RulerDetailPage } from './components/IssuerBrowser/RulerDetailPage'
 import { LandingPage } from './components/LandingPage/LandingPage'
 
 // Initialize API Base URL immediately to avoid race conditions with initial render
@@ -19,7 +20,8 @@ function App() {
         <Route path="/catalog/issuers/:issuerSlug" element={<MainLayout><IssuerBrowser /></MainLayout>} />
 
         {/* Placeholders */}
-        <Route path="/catalog/rulers" element={<MainLayout><div style={{ padding: '20px' }}>Rulers Browser (Coming Soon)</div></MainLayout>} />
+        <Route path="/catalog/rulers" element={<MainLayout><div style={{ padding: '20px' }}>Select a ruler from Catalog → View by Ruler.</div></MainLayout>} />
+        <Route path="/catalog/rulers/:rulerId" element={<MainLayout><RulerDetailPage /></MainLayout>} />
         <Route path="/catalog/mints" element={<MainLayout><div style={{ padding: '20px' }}>Mints Browser (Coming Soon)</div></MainLayout>} />
         <Route path="/collection" element={<MainLayout><div style={{ padding: '20px' }}>My Collection (Coming Soon)</div></MainLayout>} />
 

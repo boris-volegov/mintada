@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { CatalogIssuerRulerNodeDto } from '../../models/CatalogIssuerRulerNodeDto';
 
 interface RulerCatalogPanelProps {
@@ -127,7 +128,9 @@ function RulerTreeNode({ node, level, forceExpanded }: RulerTreeNodeProps) {
                 <ul className="ruler-list">
                   {ungrouped.map((ruler, index) => (
                     <li key={`ungrouped-${ruler.id}-${ruler.ruleType ?? ''}-${index}`} className="ruler-list-item">
-                      <span className="ruler-name">{ruler.name}</span>
+                      <Link to={`/catalog/rulers/${ruler.id}`} className="ruler-name">
+                        {ruler.name}
+                      </Link>
                       {ruler.ruleType ? <span className="ruler-meta">{ruler.ruleType}</span> : null}
                       {ruler.title ? <span className="ruler-meta">{ruler.title}</span> : null}
                     </li>
@@ -144,7 +147,9 @@ function RulerTreeNode({ node, level, forceExpanded }: RulerTreeNodeProps) {
                         key={`${group.groupName}-${ruler.id}-${ruler.ruleType ?? ''}-${index}`}
                         className="ruler-list-item"
                       >
-                        <span className="ruler-name">{ruler.name}</span>
+                        <Link to={`/catalog/rulers/${ruler.id}`} className="ruler-name">
+                          {ruler.name}
+                        </Link>
                         {ruler.ruleType ? <span className="ruler-meta">{ruler.ruleType}</span> : null}
                         {ruler.title ? <span className="ruler-meta">{ruler.title}</span> : null}
                       </li>
