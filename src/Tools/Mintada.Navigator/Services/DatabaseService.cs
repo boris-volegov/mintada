@@ -97,7 +97,10 @@ namespace Mintada.Navigator.Services
                              ct.restrike_date, ct.restrike_start_mint_date, ct.restrike_end_mint_date,
                              ct.erroneous_dates,
                              ct.calendar_system_id,
-                             ct.period_id
+                             ct.period_id,
+                             ct._title,
+                             ct._subtitle,
+                             ct._use_denom_as_title
                       FROM coin_types ct
                       LEFT JOIN coin_type_samples cts ON ct.id = cts.coin_type_id AND (cts.removed IS NULL OR cts.removed = 0)
                       WHERE ct.issuer_id = $issuerId 
@@ -120,6 +123,9 @@ namespace Mintada.Navigator.Services
                             {
                                 Id = coinId,
                                 IssuerId = issuerId,
+                                SourceTitle = reader.IsDBNull(42) ? null : reader.GetString(42),
+                                SourceSubtitle = reader.IsDBNull(43) ? null : reader.GetString(43),
+                                UseDenomAsTitle = !reader.IsDBNull(44) && reader.GetInt32(44) == 1,
                                 Title = reader.GetString(1),
                                 Subtitle = reader.IsDBNull(5) ? null : reader.GetString(5),
                                 CoinTypeSlug = reader.GetString(6),
@@ -646,6 +652,114 @@ namespace Mintada.Navigator.Services
             }
         }
 
+        private static async Task<bool> ColumnExistsAsync(SqliteConnection connection, string tableName, string columnName)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = $"PRAGMA table_info({tableName})";
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.IsDBNull(1))
+                {
+                    continue;
+                }
+
+                var currentColumnName = reader.GetString(1);
+                if (string.Equals(currentColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static int? ParseNullableInt(object? rawValue)
+        {
+            if (rawValue == null || rawValue == DBNull.Value)
+            {
+                return null;
+            }
+
+            switch (rawValue)
+            {
+                case int i:
+                    return i;
+                case long l when l <= int.MaxValue && l >= int.MinValue:
+                    return (int)l;
+                case short s:
+                    return s;
+                case byte b:
+                    return b;
+                case decimal d when d <= int.MaxValue && d >= int.MinValue:
+                    return (int)d;
+                case double dbl when dbl <= int.MaxValue && dbl >= int.MinValue:
+                    return (int)dbl;
+                case float f when f <= int.MaxValue && f >= int.MinValue:
+                    return (int)f;
+            }
+
+            var text = rawValue.ToString()?.Trim();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            return int.TryParse(text, out var parsed) ? parsed : null;
+        }
+
+        private static bool? ParseNullableBool(object? rawValue)
+        {
+            if (rawValue == null || rawValue == DBNull.Value)
+            {
+                return null;
+            }
+
+            switch (rawValue)
+            {
+                case bool b:
+                    return b;
+                case int i:
+                    return i != 0;
+                case long l:
+                    return l != 0;
+                case short s:
+                    return s != 0;
+                case byte bt:
+                    return bt != 0;
+            }
+
+            var text = rawValue.ToString()?.Trim();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            if (bool.TryParse(text, out var parsedBool))
+            {
+                return parsedBool;
+            }
+
+            if (int.TryParse(text, out var parsedInt))
+            {
+                return parsedInt != 0;
+            }
+
+            return null;
+        }
+
+        private static string? ParseNullableString(object? rawValue)
+        {
+            if (rawValue == null || rawValue == DBNull.Value)
+            {
+                return null;
+            }
+
+            var text = rawValue.ToString()?.Trim();
+            return string.IsNullOrWhiteSpace(text) ? null : text;
+        }
+
         public async Task<int?> GetShapeIdByNameAsync(string shapeName)
         {
             if (string.IsNullOrWhiteSpace(shapeName)) return null;
@@ -797,10 +911,12 @@ namespace Mintada.Navigator.Services
 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-                    SELECT ruler_id
-                    FROM coin_types_rulers_rel
-                    WHERE coin_type_id = @coinTypeId
-                    ORDER BY rowid";
+                    SELECT irr.ruler_id
+                    FROM coin_types_issuers_rulers_rel AS ctirr
+                    JOIN issuers_rulers_rel AS irr ON irr.id = ctirr.issuer_ruler_rel_id
+                    WHERE ctirr.coin_type_id = @coinTypeId
+                      AND irr.ruler_id IS NOT NULL
+                    ORDER BY ctirr.rowid";
                 command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
 
                 using (var reader = await command.ExecuteReaderAsync())
@@ -820,6 +936,300 @@ namespace Mintada.Navigator.Services
             return ids
                 .Distinct()
                 .ToList();
+        }
+
+        public async Task<string?> GetPrimaryRulerNameForCoinTypeAsync(long coinTypeId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT COALESCE(NULLIF(TRIM(irr.name), ''), 'Ruler ' || irr.ruler_id) AS ruler_name
+                FROM coin_types_issuers_rulers_rel AS ctirr
+                JOIN issuers_rulers_rel AS irr ON irr.id = ctirr.issuer_ruler_rel_id
+                WHERE ctirr.coin_type_id = @coinTypeId
+                  AND irr.ruler_id IS NOT NULL
+                ORDER BY ctirr.rowid
+                LIMIT 1";
+            command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+
+            var result = await command.ExecuteScalarAsync();
+            if (result == null || result == DBNull.Value)
+            {
+                return null;
+            }
+
+            var rulerName = Convert.ToString(result)?.Trim();
+            return string.IsNullOrWhiteSpace(rulerName) ? null : rulerName;
+        }
+
+        public async Task<List<RulerOption>> GetRulerOptionsForTopIssuerAsync(long issuerId)
+        {
+            var options = new List<RulerOption>();
+
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var hasRuleType = await ColumnExistsAsync(connection, "issuers_rulers_rel", "rule_type");
+            var hasStartYear = await ColumnExistsAsync(connection, "issuers_rulers_rel", "start_year");
+            var hasEndYear = await ColumnExistsAsync(connection, "issuers_rulers_rel", "end_year");
+            var hasIsApprox = await ColumnExistsAsync(connection, "issuers_rulers_rel", "is_approx");
+
+            var ruleTypeExpr = hasRuleType ? "irr.rule_type" : "NULL";
+            var startYearExpr = hasStartYear ? "irr.start_year" : "NULL";
+            var endYearExpr = hasEndYear ? "irr.end_year" : "NULL";
+            var isApproxExpr = hasIsApprox ? "irr.is_approx" : "NULL";
+
+            using var command = connection.CreateCommand();
+            command.CommandText = $@"
+                WITH RECURSIVE ancestors AS (
+                    SELECT id,
+                           COALESCE(NULLIF(TRIM(numista_url_slug), ''), NULLIF(TRIM(url_slug), '')) AS slug,
+                           COALESCE(NULLIF(TRIM(numista_parent_url_slug), ''), NULLIF(TRIM(parent_url_slug), '')) AS parent_slug
+                    FROM issuers
+                    WHERE id = @issuerId
+                    UNION ALL
+                    SELECT p.id,
+                           COALESCE(NULLIF(TRIM(p.numista_url_slug), ''), NULLIF(TRIM(p.url_slug), '')) AS slug,
+                           COALESCE(NULLIF(TRIM(p.numista_parent_url_slug), ''), NULLIF(TRIM(p.parent_url_slug), '')) AS parent_slug
+                    FROM issuers p
+                    JOIN ancestors a ON a.parent_slug = COALESCE(NULLIF(TRIM(p.numista_url_slug), ''), NULLIF(TRIM(p.url_slug), ''))
+                    WHERE a.parent_slug IS NOT NULL
+                      AND a.parent_slug <> ''
+                ),
+                top_issuer AS (
+                    SELECT id, slug
+                    FROM ancestors
+                    WHERE parent_slug IS NULL OR parent_slug = ''
+                    LIMIT 1
+                ),
+                descendants AS (
+                    SELECT i.id,
+                           COALESCE(NULLIF(TRIM(i.numista_url_slug), ''), NULLIF(TRIM(i.url_slug), '')) AS slug
+                    FROM issuers i
+                    JOIN top_issuer t ON i.id = t.id
+                    UNION ALL
+                    SELECT c.id,
+                           COALESCE(NULLIF(TRIM(c.numista_url_slug), ''), NULLIF(TRIM(c.url_slug), '')) AS slug
+                    FROM issuers c
+                    JOIN descendants d ON COALESCE(NULLIF(TRIM(c.numista_parent_url_slug), ''), NULLIF(TRIM(c.parent_url_slug), '')) = d.slug
+                )
+                SELECT DISTINCT
+                       irr.ruler_id,
+                       COALESCE(NULLIF(TRIM(irr.name), ''), 'Ruler ' || irr.ruler_id) AS ruler_name,
+                       {ruleTypeExpr} AS rule_type,
+                       {startYearExpr} AS start_year,
+                       {endYearExpr} AS end_year,
+                       {isApproxExpr} AS is_approx
+                FROM descendants d
+                JOIN issuers_rulers_rel irr ON irr.issuer_id = d.id
+                WHERE irr.ruler_id IS NOT NULL
+                ORDER BY ruler_name, irr.ruler_id";
+            command.Parameters.AddWithValue("@issuerId", issuerId);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.IsDBNull(0))
+                {
+                    continue;
+                }
+
+                var rulerId = Convert.ToInt64(reader[0]);
+                var rulerName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                var ruleType = ParseNullableString(reader.IsDBNull(2) ? null : reader.GetValue(2));
+                var startYear = ParseNullableInt(reader.IsDBNull(3) ? null : reader.GetValue(3));
+                var endYear = ParseNullableInt(reader.IsDBNull(4) ? null : reader.GetValue(4));
+                var isApprox = ParseNullableBool(reader.IsDBNull(5) ? null : reader.GetValue(5));
+
+                options.Add(new RulerOption
+                {
+                    Id = rulerId,
+                    Name = string.IsNullOrWhiteSpace(rulerName) ? $"Ruler {rulerId}" : rulerName,
+                    RuleType = ruleType,
+                    StartYear = startYear,
+                    EndYear = endYear,
+                    IsApprox = isApprox
+                });
+            }
+
+            return options;
+        }
+
+        public async Task SaveRulerForCoinTypeAsync(long coinTypeId, long issuerId, RulerOption selectedRuler)
+        {
+            if (selectedRuler == null || selectedRuler.Id <= 0)
+            {
+                return;
+            }
+
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var hasRuleType = await ColumnExistsAsync(connection, "issuers_rulers_rel", "rule_type");
+            var hasStartYear = await ColumnExistsAsync(connection, "issuers_rulers_rel", "start_year");
+            var hasEndYear = await ColumnExistsAsync(connection, "issuers_rulers_rel", "end_year");
+            var hasIsApprox = await ColumnExistsAsync(connection, "issuers_rulers_rel", "is_approx");
+
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                long issuerRulerRelId;
+
+                using (var existingIssuerRulerRelCommand = connection.CreateCommand())
+                {
+                    existingIssuerRulerRelCommand.Transaction = transaction;
+                    existingIssuerRulerRelCommand.CommandText = @"
+                        SELECT id
+                        FROM issuers_rulers_rel
+                        WHERE issuer_id = @issuerId
+                          AND ruler_id = @rulerId
+                          AND (
+                              (@name = '' AND (name IS NULL OR TRIM(name) = ''))
+                              OR (@name <> '' AND TRIM(name) = @name)
+                          )
+                        ORDER BY id
+                        LIMIT 1";
+                    existingIssuerRulerRelCommand.Parameters.AddWithValue("@issuerId", issuerId);
+                    existingIssuerRulerRelCommand.Parameters.AddWithValue("@rulerId", selectedRuler.Id);
+                    existingIssuerRulerRelCommand.Parameters.AddWithValue("@name", (selectedRuler.Name ?? string.Empty).Trim());
+
+                    var existingId = await existingIssuerRulerRelCommand.ExecuteScalarAsync();
+                    if (existingId != null && existingId != DBNull.Value)
+                    {
+                        issuerRulerRelId = Convert.ToInt64(existingId);
+                    }
+                    else
+                    {
+                        using var fallbackIssuerRulerRelCommand = connection.CreateCommand();
+                        fallbackIssuerRulerRelCommand.Transaction = transaction;
+                        fallbackIssuerRulerRelCommand.CommandText = @"
+                            SELECT id
+                            FROM issuers_rulers_rel
+                            WHERE issuer_id = @issuerId
+                              AND ruler_id = @rulerId
+                            ORDER BY id
+                            LIMIT 1";
+                        fallbackIssuerRulerRelCommand.Parameters.AddWithValue("@issuerId", issuerId);
+                        fallbackIssuerRulerRelCommand.Parameters.AddWithValue("@rulerId", selectedRuler.Id);
+
+                        var fallbackId = await fallbackIssuerRulerRelCommand.ExecuteScalarAsync();
+                        if (fallbackId != null && fallbackId != DBNull.Value)
+                        {
+                            issuerRulerRelId = Convert.ToInt64(fallbackId);
+                        }
+                        else
+                        {
+                            var seed = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            issuerRulerRelId = await GetNextIssuerRulerRelationIdAsync(connection, transaction, seed);
+
+                            var insertColumns = new List<string> { "id", "issuer_id", "ruler_id", "name" };
+                            var insertValues = new List<string> { "@id", "@issuerId", "@rulerId", "@name" };
+                            if (hasRuleType)
+                            {
+                                insertColumns.Add("rule_type");
+                                insertValues.Add("@ruleType");
+                            }
+                            if (hasStartYear)
+                            {
+                                insertColumns.Add("start_year");
+                                insertValues.Add("@startYear");
+                            }
+                            if (hasEndYear)
+                            {
+                                insertColumns.Add("end_year");
+                                insertValues.Add("@endYear");
+                            }
+                            if (hasIsApprox)
+                            {
+                                insertColumns.Add("is_approx");
+                                insertValues.Add("@isApprox");
+                            }
+
+                            using var insertIssuerRulerRelCommand = connection.CreateCommand();
+                            insertIssuerRulerRelCommand.Transaction = transaction;
+                            insertIssuerRulerRelCommand.CommandText = $@"
+                                INSERT INTO issuers_rulers_rel ({string.Join(", ", insertColumns)})
+                                VALUES ({string.Join(", ", insertValues)})";
+                            insertIssuerRulerRelCommand.Parameters.AddWithValue("@id", issuerRulerRelId);
+                            insertIssuerRulerRelCommand.Parameters.AddWithValue("@issuerId", issuerId);
+                            insertIssuerRulerRelCommand.Parameters.AddWithValue("@rulerId", selectedRuler.Id);
+                            insertIssuerRulerRelCommand.Parameters.AddWithValue("@name", string.IsNullOrWhiteSpace(selectedRuler.Name) ? $"Ruler {selectedRuler.Id}" : selectedRuler.Name.Trim());
+                            if (hasRuleType)
+                            {
+                                insertIssuerRulerRelCommand.Parameters.AddWithValue("@ruleType", string.IsNullOrWhiteSpace(selectedRuler.RuleType) ? DBNull.Value : selectedRuler.RuleType.Trim());
+                            }
+                            if (hasStartYear)
+                            {
+                                insertIssuerRulerRelCommand.Parameters.AddWithValue("@startYear", selectedRuler.StartYear.HasValue ? (object)selectedRuler.StartYear.Value : DBNull.Value);
+                            }
+                            if (hasEndYear)
+                            {
+                                insertIssuerRulerRelCommand.Parameters.AddWithValue("@endYear", selectedRuler.EndYear.HasValue ? (object)selectedRuler.EndYear.Value : DBNull.Value);
+                            }
+                            if (hasIsApprox)
+                            {
+                                insertIssuerRulerRelCommand.Parameters.AddWithValue("@isApprox", selectedRuler.IsApprox.HasValue ? (object)(selectedRuler.IsApprox.Value ? 1 : 0) : DBNull.Value);
+                            }
+                            await insertIssuerRulerRelCommand.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
+
+                using (var existingCoinTypeRelCommand = connection.CreateCommand())
+                {
+                    existingCoinTypeRelCommand.Transaction = transaction;
+                    existingCoinTypeRelCommand.CommandText = @"
+                        SELECT 1
+                        FROM coin_types_issuers_rulers_rel
+                        WHERE coin_type_id = @coinTypeId
+                          AND issuer_ruler_rel_id = @issuerRulerRelId
+                        LIMIT 1";
+                    existingCoinTypeRelCommand.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                    existingCoinTypeRelCommand.Parameters.AddWithValue("@issuerRulerRelId", issuerRulerRelId);
+
+                    var exists = await existingCoinTypeRelCommand.ExecuteScalarAsync();
+                    if (exists == null)
+                    {
+                        using var insertCoinTypeRelCommand = connection.CreateCommand();
+                        insertCoinTypeRelCommand.Transaction = transaction;
+                        insertCoinTypeRelCommand.CommandText = @"
+                            INSERT INTO coin_types_issuers_rulers_rel (coin_type_id, issuer_ruler_rel_id)
+                            VALUES (@coinTypeId, @issuerRulerRelId)";
+                        insertCoinTypeRelCommand.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                        insertCoinTypeRelCommand.Parameters.AddWithValue("@issuerRulerRelId", issuerRulerRelId);
+                        await insertCoinTypeRelCommand.ExecuteNonQueryAsync();
+                    }
+                }
+
+                // Once a real ruler link exists, remove stale links for this coin_type that point to
+                // placeholder issuers_rulers_rel rows without a concrete ruler_id.
+                using (var cleanupNullRulerLinksCommand = connection.CreateCommand())
+                {
+                    cleanupNullRulerLinksCommand.Transaction = transaction;
+                    cleanupNullRulerLinksCommand.CommandText = @"
+                        DELETE FROM coin_types_issuers_rulers_rel
+                        WHERE coin_type_id = @coinTypeId
+                          AND issuer_ruler_rel_id <> @issuerRulerRelId
+                          AND issuer_ruler_rel_id IN (
+                              SELECT irr.id
+                              FROM issuers_rulers_rel AS irr
+                              WHERE irr.ruler_id IS NULL
+                          )";
+                    cleanupNullRulerLinksCommand.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+                    cleanupNullRulerLinksCommand.Parameters.AddWithValue("@issuerRulerRelId", issuerRulerRelId);
+                    await cleanupNullRulerLinksCommand.ExecuteNonQueryAsync();
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<List<CalendarSystem>> GetCalendarSystemsAsync()
@@ -874,12 +1284,13 @@ namespace Mintada.Navigator.Services
                         for (int i = 0; i < rulers.Count; i++)
                         {
                             var ruler = rulers[i];
+                            long issuerRulerRelId;
 
                             using (var existsIssuerRelCmd = connection.CreateCommand())
                             {
                                 existsIssuerRelCmd.Transaction = transaction;
                                 existsIssuerRelCmd.CommandText = @"
-                                    SELECT 1
+                                    SELECT id
                                     FROM issuers_rulers_rel
                                     WHERE issuer_id = @issuerId AND ruler_id = @rulerId
                                     LIMIT 1";
@@ -887,9 +1298,14 @@ namespace Mintada.Navigator.Services
                                 existsIssuerRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
 
                                 var exists = await existsIssuerRelCmd.ExecuteScalarAsync();
-                                if (exists == null)
+                                if (exists != null)
+                                {
+                                    issuerRulerRelId = Convert.ToInt64(exists);
+                                }
+                                else
                                 {
                                     long newId = await GetNextIssuerRulerRelationIdAsync(connection, transaction, seedId + i);
+                                    issuerRulerRelId = newId;
 
                                     using (var insertIssuerRelCmd = connection.CreateCommand())
                                     {
@@ -913,11 +1329,11 @@ namespace Mintada.Navigator.Services
                                 existsCoinTypeRelCmd.Transaction = transaction;
                                 existsCoinTypeRelCmd.CommandText = @"
                                     SELECT 1
-                                    FROM coin_types_rulers_rel
-                                    WHERE coin_type_id = @coinTypeId AND ruler_id = @rulerId
+                                    FROM coin_types_issuers_rulers_rel
+                                    WHERE coin_type_id = @coinTypeId AND issuer_ruler_rel_id = @issuerRulerRelId
                                     LIMIT 1";
                                 existsCoinTypeRelCmd.Parameters.AddWithValue("@coinTypeId", coinTypeId);
-                                existsCoinTypeRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+                                existsCoinTypeRelCmd.Parameters.AddWithValue("@issuerRulerRelId", issuerRulerRelId);
 
                                 var exists = await existsCoinTypeRelCmd.ExecuteScalarAsync();
                                 if (exists == null)
@@ -926,10 +1342,10 @@ namespace Mintada.Navigator.Services
                                     {
                                         insertCoinTypeRelCmd.Transaction = transaction;
                                         insertCoinTypeRelCmd.CommandText = @"
-                                            INSERT INTO coin_types_rulers_rel (coin_type_id, ruler_id)
-                                            VALUES (@coinTypeId, @rulerId)";
+                                            INSERT INTO coin_types_issuers_rulers_rel (coin_type_id, issuer_ruler_rel_id)
+                                            VALUES (@coinTypeId, @issuerRulerRelId)";
                                         insertCoinTypeRelCmd.Parameters.AddWithValue("@coinTypeId", coinTypeId);
-                                        insertCoinTypeRelCmd.Parameters.AddWithValue("@rulerId", ruler.Id);
+                                        insertCoinTypeRelCmd.Parameters.AddWithValue("@issuerRulerRelId", issuerRulerRelId);
 
                                         try
                                         {
@@ -984,7 +1400,7 @@ namespace Mintada.Navigator.Services
             }
         }
 
-        public async Task UpdateCoinAttributesAsync(long coinTypeId, int? shapeId, string? shapeInfo, 
+        public async Task UpdateCoinAttributesAsync(long coinTypeId, string title, string? subtitle, int? shapeId, string? shapeInfo, 
             string? weightInfo, string? diameterInfo, string? thicknessInfo,
             decimal? weight, decimal? diameter, decimal? thickness, string? size,
             string? denominationText, decimal? valueAmount, string? denominationInfo1, decimal? valueAmountUsd, string? valueCurrencySymbol, string? denominationAlt,
@@ -1001,7 +1417,8 @@ namespace Mintada.Navigator.Services
                     try
                     {
                         string query = @"UPDATE coin_types 
-                                       SET shape_id = @sid, shape_info = @info, 
+                                       SET title = @title, subtitle = @subtitle,
+                                           shape_id = @sid, shape_info = @info, 
                                            weight_info = @weightInfo, diameter_info = @diameterInfo, thickness_info = @thicknessInfo,
                                            weight = @weight, diameter = @diameter, thickness = @thickness,
                                            size = @size,
@@ -1018,6 +1435,8 @@ namespace Mintada.Navigator.Services
                         {
                             command.Transaction = transaction;
                             command.CommandText = query;
+                            command.Parameters.AddWithValue("@title", title);
+                            command.Parameters.AddWithValue("@subtitle", subtitle ?? (object)DBNull.Value);
                             command.Parameters.AddWithValue("@sid", shapeId ?? (object)DBNull.Value);
                             command.Parameters.AddWithValue("@info", shapeInfo ?? (object)DBNull.Value);
                             command.Parameters.AddWithValue("@weightInfo", weightInfo ?? (object)DBNull.Value);
@@ -1072,6 +1491,22 @@ namespace Mintada.Navigator.Services
 
                 connection.Close();
             }
+        }
+
+        public async Task UpdateUseDenomAsTitleAsync(long coinTypeId, bool enabled)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                UPDATE coin_types
+                SET _use_denom_as_title = @enabled
+                WHERE id = @coinTypeId";
+            command.Parameters.AddWithValue("@enabled", enabled ? 1 : 0);
+            command.Parameters.AddWithValue("@coinTypeId", coinTypeId);
+
+            await command.ExecuteNonQueryAsync();
         }
 
     }

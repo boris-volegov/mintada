@@ -20,6 +20,9 @@
         <converters:TabIndexToVisibilityConverter x:Key="TabIndexToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <converters:BooleanInverseConverter x:Key="BooleanInverseConverter"/>
+        <converters:TitleSubtitleFormatterConverter x:Key="TitleSubtitleFormatterConverter"/>
+        <converters:StringEqualityConverter x:Key="StringEqualityConverter"/>
+        <converters:DateRangeFormatterConverter x:Key="DateRangeFormatterConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -714,26 +717,159 @@
                 </Border>
             </Grid>
 
-            <!-- Parse Panel Content (Sidebar) -->
-            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,0" Visibility="{Binding ParsedData, Converter={StaticResource NullToVisibilityConverter}}"
+            <!-- Coin Details Panel (Sidebar) -->
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,0" Visibility="{Binding SelectedCoin, Converter={StaticResource NullToVisibilityConverter}}"
                   IsEnabled="{Binding IsEditModeActive, Converter={StaticResource BooleanInverseConverter}}">
-                 <Grid.RowDefinitions>
-                     <RowDefinition Height="Auto"/>
-                     <RowDefinition Height="*"/>
-                 </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                 <!-- Parsed Title -->
-                 <StackPanel Grid.Row="0" Margin="0,5,0,10">
-                     <TextBlock Text="{Binding ParsedData.Title}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,2"/>
-                     <TextBlock Text="{Binding ParsedData.DenominationText}" FontSize="12" Foreground="#2E7D32" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                 </StackPanel>
+                <StackPanel Grid.Row="0" Margin="5">
+                    <WrapPanel Margin="0,0,0,6">
+                        <TextBlock FontSize="13" Foreground="#757575" TextWrapping="Wrap"
+                                   Text="{Binding SelectedCoin.SourceTitle, TargetNullValue=''}"/>
+                        <TextBlock FontSize="13" Foreground="#757575" TextWrapping="Wrap"
+                                   Typography.Capitals="SmallCaps"
+                                   Text="{Binding SelectedCoin.SourceSubtitle, StringFormat=' ({0})'}"
+                                   Visibility="{Binding SelectedCoin.SourceSubtitle, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    </WrapPanel>
 
-                 <!-- Content Stack (Vertical Scroll) -->
-                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                     <StackPanel Margin="5">
-                     </StackPanel>
-                 </ScrollViewer>
+                    <WrapPanel Margin="0,0,0,6">
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedCoin.UseDenomAsTitle}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <TextBlock FontSize="13" Foreground="#EF6C00" TextWrapping="Wrap"
+                                   Text="{Binding SelectedCoin.Title, TargetNullValue=''}"/>
+                        <TextBlock FontSize="13" Foreground="#EF6C00" TextWrapping="Wrap"
+                                   Typography.Capitals="SmallCaps"
+                                   Text="{Binding SelectedCoin.Subtitle, StringFormat=' ({0})'}"
+                                   Visibility="{Binding SelectedCoin.Subtitle, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    </WrapPanel>
 
+                    <Button Command="{Binding SetUseDenomAsTitleCommand}" Padding="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Value="True">
+                                        <DataTrigger.Binding>
+                                            <MultiBinding Converter="{StaticResource StringEqualityConverter}">
+                                                <Binding Path="SelectedCoin.Title" TargetNullValue=""/>
+                                                <Binding Path="SelectedCoin.DenominationText" TargetNullValue=""/>
+                                            </MultiBinding>
+                                        </DataTrigger.Binding>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedCoin.UseDenomAsTitle}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <WrapPanel>
+                            <TextBlock FontSize="13" FontWeight="Bold" Foreground="#2E7D32" TextWrapping="Wrap"
+                                       Text="{Binding SelectedCoin.DenominationText, TargetNullValue=''}"/>
+                            <TextBlock FontSize="13" FontWeight="Bold" Foreground="#2E7D32" TextWrapping="Wrap"
+                                       Typography.Capitals="SmallCaps"
+                                       Text="{Binding SelectedCoin.Subtitle, StringFormat=' ({0})'}"
+                                       Visibility="{Binding SelectedCoin.Subtitle, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        </WrapPanel>
+                    </Button>
+
+                    <Button Command="{Binding SetUseDenomAsTitleCommand}" Padding="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Value="False">
+                                        <DataTrigger.Binding>
+                                            <MultiBinding Converter="{StaticResource StringEqualityConverter}">
+                                                <Binding Path="SelectedCoin.Title" TargetNullValue=""/>
+                                                <Binding Path="SelectedCoin.DenominationText" TargetNullValue=""/>
+                                            </MultiBinding>
+                                        </DataTrigger.Binding>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedCoin.UseDenomAsTitle}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <WrapPanel>
+                            <TextBlock FontSize="13" FontWeight="Bold" Foreground="#C62828" TextWrapping="Wrap"
+                                       Text="{Binding SelectedCoin.DenominationText, TargetNullValue=''}"/>
+                            <TextBlock FontSize="13" FontWeight="Bold" Foreground="#C62828" TextWrapping="Wrap"
+                                       Typography.Capitals="SmallCaps"
+                                       Text="{Binding SelectedCoin.Subtitle, StringFormat=' ({0})'}"
+                                       Visibility="{Binding SelectedCoin.Subtitle, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        </WrapPanel>
+                    </Button>
+
+                    <StackPanel Margin="0,8,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Ruler Name:"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="#000"
+                                       Margin="0,0,8,0"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding SelectedCoinRulerName}"
+                                       FontSize="13"
+                                       Foreground="#333"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding SelectedCoinRulerName, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding SelectedCoinRulerOptions}"
+                                      SelectedItem="{Binding SelectedCoinSelectedRulerOption}"
+                                      DisplayMemberPath="Name"
+                                      MinWidth="230"
+                                      Visibility="{Binding ShowSelectedCoinRulerDropdown, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </Grid>
+
+                        <Grid Margin="0,3,0,4"
+                              Visibility="{Binding ShowSelectedCoinRulerDropdown, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="1" FontSize="12" Foreground="#666">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource DateRangeFormatterConverter}">
+                                        <Binding Path="SelectedCoin.StartDate" TargetNullValue=""/>
+                                        <Binding Path="SelectedCoin.EndDate" TargetNullValue=""/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Row="1"
+                        Content="Save"
+                        Command="{Binding SaveSelectedCoinRulerCommand}"
+                        HorizontalAlignment="Right"
+                        Margin="5"
+                        Padding="14,4"
+                        Visibility="{Binding ShowSelectedCoinRulerDropdown, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </Grid>
 
             <!-- Non-Reference Samples List -->

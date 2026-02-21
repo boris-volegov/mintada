@@ -15,6 +15,27 @@
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="0,0,10,0">
+                <!-- First Line: Title & Subtitle -->
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Title:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="TitleTextBox" Margin="0,0,0,0" Padding="5"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Subtitle:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="SubtitleTextBox" Margin="0,0,0,0" Padding="5"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Margin="0,0,0,20"/>
+
                 <!-- Section: Denomination & Shape -->
                 <TextBlock Text="Denomination &amp; Shape" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
                 <Grid>
@@ -118,8 +139,8 @@
                 <Separator Margin="0,5,0,20"/>
 
                 <!-- Section: Periods & Rulers -->
-                <TextBlock Text="Periods &amp;Rulers" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
-                <Grid Margin="0,0,0,15">
+                <TextBlock Text="Periods &amp;Rulers" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" Visibility="Collapsed"/>
+                <Grid Margin="0,0,0,15" Visibility="Collapsed">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/>
@@ -151,7 +172,7 @@
                     </StackPanel>
                 </Grid>
 
-                <Separator Margin="0,5,0,20"/>
+                <Separator Margin="0,5,0,20" Visibility="Collapsed"/>
                 
                 <!-- Section: Dates -->
                 <TextBlock Text="Dates" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>

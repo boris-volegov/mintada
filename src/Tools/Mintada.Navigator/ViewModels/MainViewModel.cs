@@ -56,7 +56,23 @@ namespace Mintada.Navigator.ViewModels
         [NotifyCanExecuteChangedFor(nameof(OpenCoinFolderCommand))]
         [NotifyCanExecuteChangedFor(nameof(ImportFromUcoinCommand))]
         [NotifyCanExecuteChangedFor(nameof(ChangeCoinAttributesCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SaveSelectedCoinRulerCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SetUseDenomAsTitleCommand))]
         private CoinType? _selectedCoin;
+
+        [ObservableProperty]
+        private string? _selectedCoinRulerName;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveSelectedCoinRulerCommand))]
+        private bool _showSelectedCoinRulerDropdown;
+
+        [ObservableProperty]
+        private ObservableCollection<RulerOption> _selectedCoinRulerOptions = new();
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveSelectedCoinRulerCommand))]
+        private RulerOption? _selectedCoinSelectedRulerOption;
 
         [ObservableProperty]
         private Uri? _htmlSource;
@@ -115,6 +131,7 @@ namespace Mintada.Navigator.ViewModels
         private ObservableCollection<LeafIssuerViewModel> _leafIssuers = new();
         
         private List<LeafIssuerViewModel> _allLeafIssuers = new();
+        private long _selectedCoinRulerInfoRequestId = 0;
 
 
         public ObservableCollection<CoinSample> SelectedSamples { get; } = new();
@@ -348,6 +365,9 @@ namespace Mintada.Navigator.ViewModels
 
         partial void OnSelectedCoinChanged(CoinType? value)
         {
+            Interlocked.Increment(ref _selectedCoinRulerInfoRequestId);
+            ResetSelectedCoinRulerInfo();
+
             // Debug output
             System.Diagnostics.Debug.WriteLine($"OnSelectedCoinChanged: IsTransferModeActive={IsTransferModeActive}, value={value?.Title ?? "null"}");
             
@@ -379,6 +399,9 @@ namespace Mintada.Navigator.ViewModels
 
             if (value != null && SelectedIssuer != null)
             {
+                var requestId = _selectedCoinRulerInfoRequestId;
+                _ = LoadSelectedCoinRulerInfoAsync(value, requestId);
+
                 string path = _fileService.GetCoinHtmlPath(SelectedIssuer.UrlSlug, value.CoinTypeSlug, value.Id);
                 if (IO.File.Exists(path))
                 {
@@ -413,6 +436,141 @@ namespace Mintada.Navigator.ViewModels
             else
             {
                 HtmlSource = null;
+            }
+        }
+
+        private void ResetSelectedCoinRulerInfo()
+        {
+            SelectedCoinRulerName = null;
+            ShowSelectedCoinRulerDropdown = false;
+            SelectedCoinSelectedRulerOption = null;
+            SelectedCoinRulerOptions = new ObservableCollection<RulerOption>();
+        }
+
+        private async Task LoadSelectedCoinRulerInfoAsync(CoinType coin, long requestId)
+        {
+            try
+            {
+                var directRulerName = await _databaseService.GetPrimaryRulerNameForCoinTypeAsync(coin.Id);
+                if (requestId != _selectedCoinRulerInfoRequestId || SelectedCoin?.Id != coin.Id)
+                {
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(directRulerName))
+                {
+                    SelectedCoinRulerName = directRulerName;
+                    ShowSelectedCoinRulerDropdown = false;
+                    SelectedCoinSelectedRulerOption = null;
+                    SelectedCoinRulerOptions = new ObservableCollection<RulerOption>();
+                    return;
+                }
+
+                var fallbackOptions = await _databaseService.GetRulerOptionsForTopIssuerAsync(coin.IssuerId);
+                if (requestId != _selectedCoinRulerInfoRequestId || SelectedCoin?.Id != coin.Id)
+                {
+                    return;
+                }
+
+                SelectedCoinRulerName = null;
+                var optionsWithEmptyDefault = new List<RulerOption>
+                {
+                    new RulerOption { Id = 0, Name = string.Empty }
+                };
+                optionsWithEmptyDefault.AddRange(
+                    fallbackOptions
+                        .Where(r => r != null && r.Id > 0)
+                );
+
+                SelectedCoinRulerOptions = new ObservableCollection<RulerOption>(optionsWithEmptyDefault);
+                SelectedCoinSelectedRulerOption = SelectedCoinRulerOptions.FirstOrDefault();
+                ShowSelectedCoinRulerDropdown = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading selected coin ruler info: {ex.Message}");
+                if (requestId != _selectedCoinRulerInfoRequestId || SelectedCoin?.Id != coin.Id)
+                {
+                    return;
+                }
+
+                SelectedCoinRulerName = null;
+                SelectedCoinRulerOptions = new ObservableCollection<RulerOption>
+                {
+                    new RulerOption { Id = 0, Name = string.Empty }
+                };
+                SelectedCoinSelectedRulerOption = SelectedCoinRulerOptions.FirstOrDefault();
+                ShowSelectedCoinRulerDropdown = true;
+                StatusMessage = $"Ruler options fallback mode: {ex.Message}";
+            }
+        }
+
+        private bool CanSaveSelectedCoinRuler()
+        {
+            return SelectedCoin != null
+                && ShowSelectedCoinRulerDropdown
+                && SelectedCoinSelectedRulerOption != null
+                && SelectedCoinSelectedRulerOption.Id > 0;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanSaveSelectedCoinRuler))]
+        private async Task SaveSelectedCoinRuler()
+        {
+            if (!CanSaveSelectedCoinRuler() || SelectedCoin == null || SelectedCoinSelectedRulerOption == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await _databaseService.SaveRulerForCoinTypeAsync(
+                    SelectedCoin.Id,
+                    SelectedCoin.IssuerId,
+                    SelectedCoinSelectedRulerOption);
+
+                SelectedCoinRulerName = string.IsNullOrWhiteSpace(SelectedCoinSelectedRulerOption.Name)
+                    ? $"Ruler {SelectedCoinSelectedRulerOption.Id}"
+                    : SelectedCoinSelectedRulerOption.Name.Trim();
+
+                ShowSelectedCoinRulerDropdown = false;
+                SelectedCoinSelectedRulerOption = null;
+                SelectedCoinRulerOptions = new ObservableCollection<RulerOption>();
+                StatusMessage = $"Ruler saved for coin type {SelectedCoin.Id}.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error saving ruler: {ex.Message}";
+            }
+        }
+
+        private bool CanSetUseDenomAsTitle()
+        {
+            return SelectedCoin != null && !string.IsNullOrWhiteSpace(SelectedCoin.DenominationText);
+        }
+
+        [RelayCommand(CanExecute = nameof(CanSetUseDenomAsTitle))]
+        private async Task SetUseDenomAsTitle()
+        {
+            if (!CanSetUseDenomAsTitle() || SelectedCoin == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var coinTypeId = SelectedCoin.Id;
+                await _databaseService.UpdateUseDenomAsTitleAsync(coinTypeId, true);
+
+                if (SelectedIssuer != null)
+                {
+                    await LoadCoinsForIssuer(SelectedIssuer, coinTypeId);
+                }
+
+                StatusMessage = $"Set _use_denom_as_title=1 for coin type {coinTypeId}.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error setting _use_denom_as_title: {ex.Message}";
             }
         }
 
@@ -2088,7 +2246,7 @@ namespace Mintada.Navigator.ViewModels
             var dialog = new ChangeCoinAttributesDialog();
             dialog.Owner = System.Windows.Application.Current.MainWindow;
             
-            dialog.SetData(shapes, initialShapeId, initialShapeInfo, 
+            dialog.SetData(shapes, initialShapeId, SelectedCoin.Title, SelectedCoin.Subtitle, initialShapeInfo, 
                 SelectedCoin.WeightInfo, SelectedCoin.DiameterInfo, SelectedCoin.ThicknessInfo,
                 SelectedCoin.Weight, SelectedCoin.Diameter, SelectedCoin.Thickness, SelectedCoin.Size,
                 SelectedCoin.DenominationText, SelectedCoin.ValueAmount, SelectedCoin.DenominationInfo1, SelectedCoin.ValueAmountUsd, SelectedCoin.ValueCurrencySymbol, SelectedCoin.DenominationAlt,
@@ -2099,6 +2257,8 @@ namespace Mintada.Navigator.ViewModels
             // Handle Save
             dialog.RequestSave += async (s, e) => 
             {
+                var newTitle = dialog.CoinTitle.Trim();
+                var newSubtitle = string.IsNullOrWhiteSpace(dialog.CoinSubtitle) ? null : dialog.CoinSubtitle.Trim();
                 var newShapeId = dialog.SelectedShape?.Id;
                 var newShapeInfo = dialog.ShapeInfo;
                 var newWeightInfo = dialog.WeightInfo;
@@ -2135,7 +2295,9 @@ namespace Mintada.Navigator.ViewModels
                     selectedRulers);
 
                 // Calculate if any attribute changed
-                bool changed = newShapeId != SelectedCoin.ShapeId || 
+                bool changed = newTitle != SelectedCoin.Title ||
+                    (newSubtitle ?? string.Empty) != (SelectedCoin.Subtitle ?? string.Empty) ||
+                    newShapeId != SelectedCoin.ShapeId || 
                     (newShapeInfo ?? string.Empty) != (SelectedCoin.ShapeInfo ?? string.Empty) ||
                     (newWeightInfo ?? string.Empty) != (SelectedCoin.WeightInfo ?? string.Empty) ||
                     (newDiameterInfo ?? string.Empty) != (SelectedCoin.DiameterInfo ?? string.Empty) ||
@@ -2164,7 +2326,7 @@ namespace Mintada.Navigator.ViewModels
                     newPeriodId != SelectedCoin.PeriodId ||
                     relationInsertions > 0;
 
-                await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newShapeId, newShapeInfo, 
+                await _databaseService.UpdateCoinAttributesAsync(SelectedCoin.Id, newTitle, newSubtitle, newShapeId, newShapeInfo, 
                     newWeightInfo, newDiameterInfo, newThicknessInfo,
                     newWeight, newDiameter, newThickness, newSize,
                     newDenText, newDenVal, newDenInfo1, newValUsd, newValSym, newDenAlt,
@@ -2172,6 +2334,8 @@ namespace Mintada.Navigator.ViewModels
                     newRestrikeDate, newRestrikeStartMintDate, newRestrikeEndMintDate, newErroneousDates, newCalendarSystemId, newPeriodId,
                     markAsFixed: changed);
                 
+                SelectedCoin.Title = newTitle;
+                SelectedCoin.Subtitle = newSubtitle;
                 SelectedCoin.ShapeId = newShapeId;
                 SelectedCoin.ShapeInfo = newShapeInfo;
                 SelectedCoin.WeightInfo = newWeightInfo;

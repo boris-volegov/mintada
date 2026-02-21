@@ -4,6 +4,9 @@ namespace Mintada.Navigator.Models
     {
         public long Id { get; set; }
         public long IssuerId { get; set; }
+        public string? SourceTitle { get; set; }
+        public string? SourceSubtitle { get; set; }
+        public bool UseDenomAsTitle { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Subtitle { get; set; }
         public string CoinTypeSlug { get; set; } = string.Empty;

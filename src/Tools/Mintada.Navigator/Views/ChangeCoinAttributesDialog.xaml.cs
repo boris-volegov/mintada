@@ -38,6 +38,8 @@ namespace Mintada.Navigator.Views
         public decimal? ValueAmountUsd => ParseDecimal(ValueAmountUsdTextBox.Text);
         public string ValueCurrencySymbol => ValueCurrencySymbolTextBox.Text;
         public string DenominationAlt => DenominationAltTextBox.Text;
+        public string CoinTitle => TitleTextBox.Text;
+        public string CoinSubtitle => SubtitleTextBox.Text;
 
         public string StartDate => StartDateTextBox.Text;
         public string EndDate => EndDateTextBox.Text;
@@ -58,7 +60,7 @@ namespace Mintada.Navigator.Views
             InitializeComponent();
         }
 
-        public void SetData(List<CoinShape> shapes, int? currentShapeId, 
+        public void SetData(List<CoinShape> shapes, int? currentShapeId, string? currentTitle, string? currentSubtitle,
             string? currentInfo, string? currentWeightInfo, string? currentDiameterInfo, string? currentThicknessInfo,
             decimal? currentWeight, decimal? currentDiameter, decimal? currentThickness, string? currentSize,
             string? currentDenominationText, decimal? currentValueAmount, string? currentDenominationInfo1, decimal? currentValueAmountUsd, string? currentValueCurrencySymbol, string? currentDenominationAlt,
@@ -99,6 +101,9 @@ namespace Mintada.Navigator.Views
             Ruler1ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(0);
             Ruler2ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(1);
             Ruler3ComboBox.SelectedItem = selectedOptions.ElementAtOrDefault(2);
+
+            TitleTextBox.Text = currentTitle ?? string.Empty;
+            SubtitleTextBox.Text = currentSubtitle ?? string.Empty;
             
             ShapeInfoTextBox.Text = currentInfo ?? string.Empty;
             WeightInfoTextBox.Text = currentWeightInfo ?? string.Empty;
