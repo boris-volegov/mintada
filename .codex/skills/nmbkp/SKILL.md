@@ -63,7 +63,7 @@ powershell -ExecutionPolicy Bypass -File tools/commands/backup_data.ps1 -suffix 
 After running, read:
 
 - if `dbtype=s`: `D:\bkp\numista_bkp\logs\last_backup.json`
-- if `dbtype=p`: `D:\numista_bkp\logs\last_backup.json`
+- if `dbtype=p`: `D:\bkp\numista_bkp\logs\last_backup.json`
 
 Use this file as source of truth for status, archive path, PID, and log paths.
 
