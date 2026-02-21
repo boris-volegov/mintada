@@ -33,7 +33,7 @@ namespace Mintada.Navigator.Services
 
                 var command = connection.CreateCommand();
                 command.CommandText = 
-                    @"SELECT id, numista_name, numista_url_slug, numista_parent_url_slug, numista_territory_type 
+                    @"SELECT id, numista_name, numista_url_slug, numista_parent_url_slug, numista_territory_type, is_historical_period, is_section
                       FROM issuers 
                       ORDER BY numista_name";
 
@@ -44,10 +44,12 @@ namespace Mintada.Navigator.Services
                         issuers.Add(new Issuer
                         {
                             Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            UrlSlug = reader.GetString(2),
+                            Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                            UrlSlug = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                             ParentUrlSlug = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            TerritoryType = reader.IsDBNull(4) ? "" : reader.GetString(4)
+                            TerritoryType = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                            IsHistoricalPeriod = !reader.IsDBNull(5) && Convert.ToInt32(reader[5]) != 0,
+                            IsSection = !reader.IsDBNull(6) && Convert.ToInt32(reader[6]) != 0
                         });
                     }
                 }

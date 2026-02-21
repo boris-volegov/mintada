@@ -192,7 +192,18 @@
                             <Style TargetType="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Header="deploy"
+                                                      Command="{Binding PlacementTarget.Tag.DeployIssuerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
                                 <EventSetter Event="Selected" Handler="TreeViewItem_Selected" />
+                                <EventSetter Event="PreviewMouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown" />
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="FontWeight" Value="Bold"/>
@@ -234,6 +245,16 @@
                                 <Setter Property="Background" Value="Transparent"/>
                                 <Setter Property="BorderThickness" Value="0"/>
                                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Header="deploy"
+                                                      Command="{Binding PlacementTarget.Tag.DeployIssuerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListBoxItem">

@@ -41,6 +41,15 @@ public partial class MainWindow : Window
         }
     }
 
+    private void TreeViewItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is TreeViewItem item)
+        {
+            item.Focus();
+            item.IsSelected = true;
+        }
+    }
+
     private async void AddCoinTypeButton_Click(object sender, RoutedEventArgs e)
     {
         if (DataContext is not ViewModels.MainViewModel viewModel)

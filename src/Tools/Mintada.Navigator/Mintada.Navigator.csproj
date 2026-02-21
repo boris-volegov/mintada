@@ -14,6 +14,7 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3650.58" />
+    <PackageReference Include="Npgsql" Version="8.0.6" />
   </ItemGroup>
 
   <ItemGroup>

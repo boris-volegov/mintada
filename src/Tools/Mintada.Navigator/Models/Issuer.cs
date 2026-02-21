@@ -12,6 +12,8 @@ namespace Mintada.Navigator.Models
         public string UrlSlug { get; set; } = string.Empty;
         public string? ParentUrlSlug { get; set; }
         public string TerritoryType { get; set; } = string.Empty;
+        public bool IsHistoricalPeriod { get; set; }
+        public bool IsSection { get; set; }
         
         [JsonIgnore]
         public List<Issuer> Children { get; set; } = new List<Issuer>();

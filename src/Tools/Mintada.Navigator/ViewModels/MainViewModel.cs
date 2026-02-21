@@ -1892,6 +1892,9 @@ namespace Mintada.Navigator.ViewModels
                      Name = issuer.Name,
                      UrlSlug = issuer.UrlSlug,
                      ParentUrlSlug = issuer.ParentUrlSlug,
+                     TerritoryType = issuer.TerritoryType,
+                     IsHistoricalPeriod = issuer.IsHistoricalPeriod,
+                     IsSection = issuer.IsSection,
                      HasNonReferenceSamples = issuer.HasNonReferenceSamples,
                      Children = filteredChildren
                  };
