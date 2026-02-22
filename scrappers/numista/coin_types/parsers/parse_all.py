@@ -14,6 +14,7 @@ PARSER_ORDER = [
     "parse_size",
     "parse_composition",
     "parse_calendar",
+    "parse_catalog_references",
 ]
 
 DEPENDENCIES = {
@@ -33,6 +34,10 @@ PARSER_ALIASES = {
     "size": "parse_size",
     "composition": "parse_composition",
     "calendar": "parse_calendar",
+    "catalog_references": "parse_catalog_references",
+    "catalog_reference": "parse_catalog_references",
+    "catalog": "parse_catalog_references",
+    "catalogs": "parse_catalog_references",
 }
 
 
